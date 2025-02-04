@@ -1,0 +1,25 @@
+.iconPDF{
+  padding: 30px 0;
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconPDF div{
+  cursor: pointer;
+}
+
+.iconPDF svg, .iconPDF path{
+  font-size: 48px;
+  cursor: pointer;
+}
+
+.iconPDF div:hover svg, .iconPDF div:hover path{
+  color: var(--bg5);
+}
+
+.iconPDF div:active svg, .iconPDF div:active path{
+  color: var(--bg4);
+}

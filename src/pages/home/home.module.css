@@ -1,0 +1,71 @@
+.main{
+  width: 100%;
+  height: auto;
+  padding: 0 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.section{
+  margin: 5px;
+  width: 250px;
+  height: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg1);
+  border-radius: 5%;
+}
+
+.icon{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon1 svg, .icon1 path{
+  font-size: 30px;
+  color: var(--clr3);
+}
+
+.icon2 svg, .icon2 path{
+  margin: 0 4px 10px -6px;
+  font-size: 20px;
+  color: var(--clr3);
+}
+
+.icon h1{
+  font-size: 18px;
+  font-family: 'Bebas' !important;
+}
+
+.count, .folios{
+  padding: 0 5px;
+  margin-top: 10px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.folios h1{
+  font-size: 40px;
+  font-family: 'Bebas' !important;
+}
+
+.folios h1:nth-child(1){
+  color: var(--clr3);
+}
+
+.folios h1:nth-child(2){
+  margin: 0 5px !important;
+}
+
+.count h1{
+  font-size: 35px;
+  font-family: 'Bebas' !important;
+}

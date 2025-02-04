@@ -1,0 +1,166 @@
+.ui.form{
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.ui.form input, .ui.form textarea{
+  padding-left: 5px !important;
+  width: 300px !important;
+  font-size: 12.5px !important;
+  color: azure !important;
+  background-color: var(--bg2) !important;
+}
+
+.ui.form input:focus, .ui.form textarea:focus, .ui.form select:focus{
+  border-color: var(--bg4) !important;
+  background-color: var(--bg4) !important;
+}
+
+.ui.form .field.field input:-webkit-autofill{
+  box-shadow: 0 0 0 100px var(--bg2) inset !important;
+  border-color: var(--bg2) !important;
+}
+
+.ui.form .field.field input:-webkit-autofill:focus{
+  box-shadow: 0 0 0 100px var(--bg4) inset !important;
+  border-color: var(--bg4) !important;
+}
+
+.ui.form select{
+  padding-left: 1px !important;
+  width: 300px !important;
+  font-size: 12.5px;
+  text-transform: capitalize;
+  color: azure !important;
+  background-color: var(--bg2) !important;
+} 
+
+.ui.form option{
+  color: var(--clrGR40) !important;
+}
+
+.fields{
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.field{
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.ui.form button{
+  margin-top: 30px;
+}
+
+.ui.circular.label{
+  color: azure;
+  font-size: 6.5px;
+  cursor: pointer;
+}
+
+.ui.label{
+  padding: 8px 4.5px !important;
+  width: 100%;
+  height: auto;
+  font-size: 14px;
+  color: var(--clr4) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start;
+  background-color: var(--bg0) !important;
+}
+
+.ui.page.modals{
+  background-color: rgba(0, 0, 0, .85 );
+}
+
+.field.error input, .field.error select, .field.error textarea{
+  border: 1px solid azure !important;
+} 
+
+.ui.negative.message{
+  color: red;
+}
+
+.rbc-agenda-view table{
+  background-color: var(--bg1);
+  border: none !important;
+}
+
+.rbc-agenda-table tbody > tr > td{
+  background-color: var(--bg2);
+  border: none !important;
+}
+
+.ui.selection.dropdown{
+  width: 300px !important;
+  background-color: var(--bg2) !important;
+}
+
+.ui.dropdown .menu .item span, .ui.dropdown .text{
+  cursor: pointer !important;
+  color: azure !important;
+}
+
+.ui.dropdown{
+  border: 1px solid var(--bg2) !important;
+}
+
+.ui.dropdown .menu:focus, .ui.dropdown:focus, .ui.dropdown:active{
+  border: 1px solid var(--bg2) !important;
+}
+
+.ui.dropdown .menu{
+  border: 1px solid var(--bg2) !important;
+  background-color: var(--bg2) !important;
+}
+
+.ui.selection.dropdown .menu>.item{
+  border: none;
+}
+
+.ui.tabular.menu{
+  border: none;
+}
+
+.ui.tabular.menu .item{
+  color: gray;
+  background-color: var(--bg1) !important;
+  border: none;
+}
+
+.ui.tabular.menu .active.item{
+  color: azure;
+  background-color: var(--bg2) !important;
+  border: none;
+}
+
+.ui.tabular.menu .item:hover{
+  color: azure;
+  background-color: var(--bg3) !important;
+}
+
+@media screen and (min-width:768px) {
+
+  .ui.form input, .ui.form textarea, .ui.selection.dropdown{
+    width: 450px !important;
+  }
+
+  .ui.form textarea{
+    height: 350px;
+  }
+
+  .ui.label{
+    margin-top: 20px;
+  }
+
+}
+
+

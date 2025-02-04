@@ -1,42 +1,36 @@
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@import './colors.css';
+@import './form.css';
+@import './confirm.css';
+@import './datepicker-custom.css';
+
+@font-face {
+  font-family: 'Mulish';
+  src: url('../../public/fonts/Mulish/static/Mulish-Light.ttf');
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@font-face {
+  font-family: 'Bebas';
+  src: url('../../public/fonts/Bebas/BebasNeue-Regular.ttf');
 }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-* {
-  box-sizing: border-box;
+*{
   padding: 0;
   margin: 0;
+  font-family: 'Mulish' !important;
+  font-weight: 200 !important;
+  color: rgb(175, 175, 175);
+  cursor: default;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+body{
+  background-color: var(--bg0) !important;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+h1,h2,h3,h4{
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+li.slick-active{
+  opacity: .3;
 }

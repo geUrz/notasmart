@@ -1,0 +1,262 @@
+.main{
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;  
+}
+
+.sectionDatos{
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;  
+}
+
+.datos_1 div, .datos_2 div{
+  margin: 10px 0;
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center; 
+}
+
+.datos_2 div{
+  align-items: flex-end !important;  
+}
+
+.datos_1 h1, .datos_2 h1{
+  font-size: 14px;
+  font-weight: 600 !important;
+  color: var(--clr1);
+}
+
+.datos_1 h2, .datos_2 h2{
+  font-size: 14px;
+}
+
+.datos_2 h2{
+  text-align: right;
+}
+
+.toggleOFF, .toggleON{
+  font-size: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggleOFF svg, .toggleON svg, .toggleOFF path, .toggleON path{
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+.toggleON svg, .toggleON path{
+  color: var(--clr1);
+  cursor: pointer;
+}
+
+.toggleNota{
+  margin-top: 30px;
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.toggleNota h1{
+  font-size: 14px;
+  color: azure;
+}
+
+.formNota{
+  margin-top: 10px;
+}
+
+.charCount{
+  margin-top: 20px;
+  font-size: 12px;
+}
+
+.iconPlus{
+  margin-top: 30px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconPlus div{
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: var(--bg1);
+  cursor: pointer;
+}
+
+.iconPlus div:hover{
+  background-color: var(--bg2);
+}
+
+.iconPlus div:active{
+  background-color: var(--bg3);
+}
+
+.iconPlus svg, .iconPlus path{
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.sectionTotal{
+  margin-top: 30px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.sectionTotal h1{
+  font-size: 12.5px;
+  color: azure;
+}
+
+.sectionTotal_1{
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.sectionTotal_2{
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.sectionTotal_2 h1{
+  margin: 3.5px 0 !important;
+}
+
+.sectionTotal_1 h1:nth-child(3), .sectionTotal_2 h1:nth-child(3){
+  font-weight: 600 !important;
+}
+
+.iconEdit{
+  margin-top: 50px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconEdit div{
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg2);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.iconEdit svg, .iconEdit path{
+  color: var(--clr2);
+}
+
+.iconEdit div:hover{
+  background-color: var(--bg3);
+}
+
+.iconEdit div:active{
+  background-color: var(--bg4);
+}
+
+.iconEdit svg, .iconEdit path{
+  font-size: 20px;
+  color: var(--clr0);
+  cursor: pointer;
+}
+
+.iconDel{
+  margin-top: 20px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.iconDel svg, .iconDel path{
+  margin-right: 10px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.iconClose svg, .iconClose path{
+  padding: 8px;
+  font-size: 34px;
+  border-radius: 50%;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.iconCheck{
+  margin-bottom: 20px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--clr0);
+  cursor: pointer;
+}
+
+.iconCheck:hover{
+  background-color: var(--bg2);
+}
+
+.iconCheck:active{
+  background-color: var(--bg3);
+}
+
+.iconCheck svg, .iconCheck path{
+  font-size: 22px;
+  color: var(--clrBL1);
+  cursor: pointer;
+}
+
+@media screen and (min-width: 768px) {
+
+  .datos_1 div, .datos_2 div{
+    margin: 15px 0; 
+  }
+
+  .sectionTotal_1 h1{
+    font-size: 14px;
+  }
+
+  .toggleNota{
+    margin-top: 50px;
+    max-width: 450px;
+  }
+
+}
+
