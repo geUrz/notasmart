@@ -1,12 +1,12 @@
 import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
-import styles from './Notas.module.css'
 import { BasicLayout, BasicModal } from '@/layouts'
 import { Add, Loading, Title, ToastDelete, ToastSuccess } from '@/components/Layouts'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-import { NotasLista } from '@/components/Notas/NotasLista'
-import { NotaForm } from '@/components/Notas/NotaForm'
 import { useAuth } from '@/contexts/AuthContext'
+import { size } from 'lodash'
+import { NotaForm, NotasLista } from '@/components/Notas'
+import styles from './Notas.module.css'
 
 export default function Notas() {
 
@@ -22,6 +22,8 @@ export default function Notas() {
 
   const [notas, setNotas] = useState(null)
 
+  const totalFolios = size(notas)
+  
   useEffect(() => {
     (async () => {
       try {
@@ -31,7 +33,7 @@ export default function Notas() {
         console.error(error)
       }
     })()
-  }, [reload, user])
+  }, [reload, user])  
 
   const [toastSuccess, setToastSuccessReportes] = useState(false)
   const [toastSuccessMod, setToastSuccessReportesMod] = useState(false)
@@ -76,7 +78,9 @@ export default function Notas() {
 
         <Title title='crear nota' />
 
-        <Add onOpenClose={onOpenCloseForm} />
+        {user && user.folios === totalFolios ?
+          null : <Add onOpenClose={onOpenCloseForm} /> 
+        }
 
         <NotasLista user={user} loading={loading} reload={reload} onReload={onReload} notas={notas} setNotas={setNotas} onToastSuccessMod={onToastSuccessMod} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
 

@@ -1,7 +1,7 @@
-import { FaFileInvoiceDollar, FaHome, FaPlusCircle, FaUser, FaUsers } from 'react-icons/fa'
+import { FaHome, FaPlusCircle, FaUser, FaUsers } from 'react-icons/fa'
 import Link from 'next/link'
-import styles from './BottomMenu.module.css'
 import { useAuth } from '@/contexts/AuthContext'
+import styles from './BottomMenu.module.css'
 
 export function BottomMenu() {
 
@@ -32,13 +32,6 @@ export function BottomMenu() {
                 <h1>Clientes</h1>
               </div>
             </Link>
-            <Link href='/cuentas' className={styles.tab}>
-              <div>
-                <FaFileInvoiceDollar />
-                <h1>Cuentas</h1>
-              </div>
-            </Link>
-
             <Link href='/usuario' className={styles.tab}>
               <div>
                 <FaUser />

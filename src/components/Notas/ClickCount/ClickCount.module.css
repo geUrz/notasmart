@@ -1,0 +1,21 @@
+.main{
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.section{
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.main h1{
+  font-size: 18px;
+  color: azure;
+  text-align: center;
+}

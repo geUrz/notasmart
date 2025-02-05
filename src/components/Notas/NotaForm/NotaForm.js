@@ -131,10 +131,15 @@ export function NotaForm(props) {
         cliente_id,
         nota
       })
+
       const notaId = res.data.id
+      const usuarioId = user.id
+
       await Promise.all(conceptos.map(concepto =>
         axios.post('/api/notas/conceptos', {
-          nota_id: notaId, ...concepto
+          nota_id: notaId,
+          usuario_id: usuarioId,  
+          ...concepto
         })
       ))
 

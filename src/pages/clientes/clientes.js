@@ -4,8 +4,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { BasicLayout, BasicModal } from '@/layouts'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
-import { FaSearch } from 'react-icons/fa'
-import { ClienteForm, ClientesLista, ClientesListSearch, SearchClientes } from '@/components/Clientes'
+import { ClienteForm, ClientesLista } from '@/components/Clientes'
 import styles from './clientes.module.css'
 
 export default function Clientes() {
