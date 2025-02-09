@@ -186,7 +186,7 @@ export function NotaDetalles(props) {
 
         <RowHeadModal rowMain />
 
-        <NotaConceptos conceptos={notaState?.conceptos || []} onOpenCloseConfirm={onOpenCloseConfirm} onOpenCloseEditConcep={onOpenCloseEditConcep} handleDeleteConcept={handleDeleteConcept} />
+        <NotaConceptos user={user} conceptos={notaState?.conceptos || []} onOpenCloseConfirm={onOpenCloseConfirm} onOpenCloseEditConcep={onOpenCloseEditConcep} handleDeleteConcept={handleDeleteConcept} />
 
         <div className={styles.iconPlus}>
           <div onClick={onOpenCloseConcep}>

@@ -1,18 +1,16 @@
-import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
-import { BasicLayout, BasicModal } from '@/layouts'
 import { Add, Loading, Title, ToastDelete, ToastSuccess } from '@/components/Layouts'
-import { useEffect, useState } from 'react'
-import axios from 'axios'
+import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
+import { UsuarioForm, UsuariosLista } from '@/components/Usuarios'
 import { useAuth } from '@/contexts/AuthContext'
-import { size } from 'lodash'
-import { NotaForm, NotasLista } from '@/components/Notas'
-import styles from './Notas.module.css'
+import { BasicLayout, BasicModal } from '@/layouts'
+import axios from 'axios'
+import React, { useEffect, useState } from 'react'
 
-export default function Notas() {
+export default function Usuarios() {
 
   const { user, loading } = useAuth()
 
-  const [reload, setReload] = useState(false)
+  const [reload, setReload]  = useState(false)
 
   const onReload = () => setReload((prevState) => !prevState)
 
@@ -20,33 +18,18 @@ export default function Notas() {
 
   const onOpenCloseForm = () => setOpenCloseForm((prevState) => !prevState)
 
-  const [notas, setNotas] = useState(null)
-  
-  const totalFolios = size(notas)
-  
+  const [usuarios, setUsuarios] = useState(null)
+
   useEffect(() => {
-    if(user) {
-      if(user.nivel === 'usuario') {
-        (async () => {
-          try {
-            const res = await axios.get(`/api/notas/notas?usuario_id=${user.id}`)
-            setNotas(res.data)
-          } catch (error) {
-            console.error(error)
-          }
-        })()
-      } else if(user.nivel === 'admin') {
-        (async () => {
-          try {
-            const res = await axios.get(`/api/notas/notas`)
-            setNotas(res.data)
-          } catch (error) {
-            console.error(error)
-          }
-        })()
+    (async () => {
+      try {
+        const res = await axios.get('/api/usuarios/usuarios')
+        setUsuarios(res.data)
+      } catch (error) {
+        console.error(error)
       }
-    } 
-  }, [reload, user])  
+    })()
+  }, [reload])
 
   const [toastSuccess, setToastSuccessReportes] = useState(false)
   const [toastSuccessMod, setToastSuccessReportesMod] = useState(false)
@@ -89,18 +72,16 @@ export default function Notas() {
 
         {toastSuccessDel && <ToastDelete contain='Eliminado exitosamente' onClose={() => setToastSuccessReportesDel(false)} />}
 
-        <Title title='notas' />
+        <Title title='usuarios' />
 
-        {user && user.folios === totalFolios ?
-          null : <Add onOpenClose={onOpenCloseForm} /> 
-        }
+        <Add onOpenClose={onOpenCloseForm} />
 
-        <NotasLista user={user} loading={loading} reload={reload} onReload={onReload} notas={notas} setNotas={setNotas} onToastSuccessMod={onToastSuccessMod} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
+        <UsuariosLista user={user} loading={loading} reload={reload} onReload={onReload} usuarios={usuarios} setUsuarios={setUsuarios} onToastSuccessMod={onToastSuccessMod} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
 
       </BasicLayout>
 
-      <BasicModal title='crear nota' show={openCloseForm} onClose={onOpenCloseForm}>
-        <NotaForm reload={reload} onReload={onReload} onToastSuccess={onToastSuccess} onOpenCloseForm={onOpenCloseForm} />
+      <BasicModal title='crear usuario' show={openCloseForm} onClose={onOpenCloseForm}>
+        <UsuarioForm reload={reload} onReload={onReload} onToastSuccess={onToastSuccess} onOpenCloseForm={onOpenCloseForm} />
       </BasicModal>
 
     </ProtectedRoute>

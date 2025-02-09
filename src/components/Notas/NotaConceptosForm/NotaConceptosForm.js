@@ -46,17 +46,21 @@ export function NotaConceptosForm(props) {
     }
 
     if (newConcept.tipo && newConcept.concepto && newConcept.precio && newConcept.cantidad) {
+
+      const total = newConcept.precio * newConcept.cantidad
+
       try {
         const response = await axios.post(`/api/notas/conceptos`, {
           nota_id: notaId,
           usuario_id: user.id, 
           ...newConcept,
+          total
         })
 
         if ((response.status === 200 || response.status === 201) && response.data) {
           const { id } = response.data
           if (id) {
-            const newConceptWithId = { ...newConcept, id }
+            const newConceptWithId = { ...newConcept, id, total }
             onAddConcept(newConceptWithId)
             setNewConcept({ tipo: '', concepto: '', precio: '', cantidad: '' })
 

@@ -22,15 +22,26 @@ export default function Clientes() {
   const [clientes, setClientes] = useState(null)
 
   useEffect(() => {
-    if(user && user.id) {
-      (async () => {
-        try {
-          const res = await axios.get(`/api/clientes/clientes?usuario_id=${user.id}`)
-          setClientes(res.data)
-        } catch (error) {
-          console.error(error)
-        }
-      })()
+    if(user) {
+      if (user.nivel === 'admin') {
+        (async () => {
+          try {
+            const res = await axios.get(`/api/clientes/clientes`)
+            setClientes(res.data)
+          } catch (error) {
+            console.error(error)
+          }
+        })()
+      } else {
+        (async () => {
+          try {
+            const res = await axios.get(`/api/clientes/clientes?usuario_id=${user.id}`)
+            setClientes(res.data)
+          } catch (error) {
+            console.error(error)
+          }
+        })()
+      }
     }
   }, [reload, user])
 

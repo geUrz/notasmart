@@ -39,6 +39,15 @@ export function BottomMenu() {
               </div>
             </Link>
 
+            {user.nivel === 'admin'} {
+              <Link href='/usuarios' className={styles.tab}>
+              <div>
+                <FaUsers />
+                <h1>Usuarios</h1>
+              </div>
+            </Link>
+            }
+
           </> : null
         }
 

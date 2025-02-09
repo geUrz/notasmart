@@ -2,12 +2,12 @@ import connection from "@/libs/db";
 
 export default async function handler(req, res) {
     if (req.method === 'POST') {
-        const { usuario_id, nota_id, tipo, concepto, precio, cantidad } = req.body;
+        const { usuario_id, nota_id, tipo, concepto, precio, cantidad, total } = req.body
 
         try {
             const [result] = await connection.query(
-                'INSERT INTO conceptosnot (usuario_id, nota_id, tipo, concepto, precio, cantidad ) VALUES (?, ?, ?, ?, ?, ?)',
-                [usuario_id, nota_id, tipo, concepto, precio, cantidad ]
+                'INSERT INTO conceptosnot (usuario_id, nota_id, tipo, concepto, precio, cantidad, total ) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                [usuario_id, nota_id, tipo, concepto, precio, cantidad, total ]
             );
             res.status(201).json({ id: result.insertId });
         } catch (error) {
@@ -15,7 +15,7 @@ export default async function handler(req, res) {
             res.status(500).json({ error: error.message });
         }
     } else if (req.method === 'GET') {
-        const { nota_id, usuario_id } = req.query; // Ahora se incluye usuario_id
+        const { nota_id, usuario_id } = req.query // Ahora se incluye usuario_id
 
         try {
             let query = 'SELECT * FROM conceptosnot';
@@ -41,7 +41,7 @@ export default async function handler(req, res) {
             res.status(500).json({ error: error.message });
         }
     } else if (req.method === 'DELETE') {
-        const { concepto_id } = req.query;
+        const { concepto_id } = req.query
 
         try {
             const [result] = await connection.query('DELETE FROM conceptosnot WHERE id = ?', [concepto_id]);
@@ -53,13 +53,13 @@ export default async function handler(req, res) {
             res.status(500).json({ error: error.message });
         }
     } else if (req.method === 'PUT') {
-        const { id } = req.query;
-        const { tipo, concepto, precio, cantidad } = req.body;
+        const { id } = req.query
+        const { tipo, concepto, precio, cantidad, total } = req.body
 
         try {
             const [result] = await connection.query(
-                'UPDATE conceptosnot SET tipo = ?, concepto = ?, precio = ?, cantidad = ? WHERE id = ?',
-                [tipo, concepto, precio, cantidad, id]
+                'UPDATE conceptosnot SET tipo = ?, concepto = ?, precio = ?, cantidad = ?, total = ? WHERE id = ?',
+                [tipo, concepto, precio, cantidad, total, id]
             );
             if (result.affectedRows === 0) {
                 return res.status(404).json({ error: 'Concepto no encontrado' });

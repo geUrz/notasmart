@@ -142,8 +142,12 @@ export function NotaForm(props) {
       await Promise.all(conceptos.map(concepto =>
         axios.post('/api/notas/conceptos', {
           nota_id: notaId,
-          usuario_id: usuarioId,  
-          ...concepto
+          usuario_id: usuarioId,
+          tipo: concepto.tipo,
+          concepto: concepto.concepto,
+          precio: concepto.precio,
+          cantidad: concepto.cantidad,
+          total: concepto.total
         })
       ))
 
@@ -164,7 +168,10 @@ export function NotaForm(props) {
     if (!validarFormConceptos()) {
       return
     }
-    setConceptos([...conceptos, nuevoConcepto])
+
+    const total = nuevoConcepto.precio * nuevoConcepto.cantidad
+
+    setConceptos([...conceptos, { ...nuevoConcepto, total }])
     setNuevoConcepto({ tipo: '', concepto: '', precio: '', cantidad: '' })
   }
 

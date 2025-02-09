@@ -17,20 +17,63 @@ export default function Home() {
 
   const onReload = () => setReload((prevState) => !prevState)
 
+  const [users, setUsers] = useState([])
   const [notas, setNotas] = useState(null)
 
   const totalNotas = size(notas)
 
+  const sumTotalFolios = () => {
+    if (user.nivel === 'admin') {
+      return users.reduce((total, user) => total + (parseInt(user.folios) || 0), 0)
+    }
+    return parseInt(user.folios) || 0
+  }
+  
   useEffect(() => {
-    if (user && user.id) {
-      (async () => {
-        try {
-          const res = await axios.get(`/api/notas/notas?usuario_id=${user.id}`)
-          setNotas(res.data)
-        } catch (error) {
-          console.error(error)
-        }
-      })()
+    if (user) {
+      if (user.nivel === 'admin') {
+        (async () => {
+          try {
+            const res = await axios.get('/api/usuarios/usuarios')
+            setUsers(res.data)
+          } catch (error) {
+            console.error(error)
+          }
+        })()
+      } else {
+        (async () => {
+          try {
+            const res = await axios.get(`/api/usuarios/usuarios?usuario_id=${user.id}`)
+            setNotas(res.data)
+          } catch (error) {
+            console.error(error)
+          }
+        })()
+      }
+    }
+  }, [user])
+  
+  useEffect(() => {
+    if (user) {
+      if (user.nivel === 'admin') {
+        (async () => {
+          try {
+            const res = await axios.get(`/api/notas/notas`)
+            setNotas(res.data)
+          } catch (error) {
+            console.error(error)
+          }
+        })()
+      } else {
+        (async () => {
+          try {
+            const res = await axios.get(`/api/notas/notas?usuario_id=${user.id}`)
+            setNotas(res.data)
+          } catch (error) {
+            console.error(error)
+          }
+        })()
+      }
     }
   }, [reload, user])
 
@@ -38,21 +81,32 @@ export default function Home() {
 
   const sumTotalPrice = () => {
     if (!conceptos) return 0;
-    return conceptos.reduce((total, concepto) => total + (concepto.precio || 0), 0);
+    return conceptos.reduce((total, concepto) => total + (concepto.total || 0), 0);
   }
 
   const totalPrice = sumTotalPrice()
 
   useEffect(() => {
-    if (user && user.id) {
-      (async () => {
-        try {
-          const res = await axios.get(`/api/notas/conceptos?usuario_id=${user.id}`)
-          setConceptos(res.data)
-        } catch (error) {
-          console.error(error)
-        }
-      })()
+    if (user) {
+      if (user.nivel === 'usuario') {
+        (async () => {
+          try {
+            const res = await axios.get(`/api/notas/conceptos?usuario_id=${user.id}`)
+            setConceptos(res.data)
+          } catch (error) {
+            console.error(error)
+          }
+        })()
+      } else if(user.nivel === 'admin') {
+        (async () => {
+          try {
+            const res = await axios.get(`/api/notas/conceptos`)
+            setConceptos(res.data)
+          } catch (error) {
+            console.error(error)
+          }
+        })()
+      }
     }
   }, [reload, user])
 
@@ -82,9 +136,7 @@ export default function Home() {
                 <>
                   <h1>{totalNotas}</h1>
                   <h1>/</h1>
-                  {user && user.folios ?
-                    <h1>{user.folios}</h1> : null
-                  }
+                  <h1>{sumTotalFolios()}</h1> 
                 </>
               }
             </div>

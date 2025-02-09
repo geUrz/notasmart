@@ -8,7 +8,7 @@ import { ClickCount } from '../ClickCount/ClickCount'
 
 export function NotaConceptos(props) {
 
-  const { conceptos, onOpenCloseEditConcep } = props
+  const { user, conceptos, onOpenCloseEditConcep } = props
 
   const [clickCount, setClickCount] = useState(0)
   const [showCount, setShowCount] = useState(false) 
@@ -28,6 +28,12 @@ export function NotaConceptos(props) {
   }, [clicks])
 
   const handleClick = (concepto) => {
+
+    if (user.nivel === 'admin') {
+      onOpenCloseEditConcep(concepto)
+      return
+    }
+
     if (clicks[concepto.id] && clicks[concepto.id] >= maxClicks) {
       setShowCount(true)
     } else {
@@ -55,7 +61,7 @@ export function NotaConceptos(props) {
               <h1>{concepto.concepto}</h1>
               <h1>${formatCurrency(concepto.precio * 1)}</h1>
               <h1>{concepto.cantidad}</h1>
-              <h1>${formatCurrency(concepto.precio * concepto.cantidad)}</h1>
+              <h1>${formatCurrency(concepto.total * 1)}</h1>
             </div>
           ))}
         </div>

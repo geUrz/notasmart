@@ -156,7 +156,7 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'ID del usuario es necesario para actualizar' });
         }
 
-        const { nombre, usuario, email, nivel, isactive } = req.body;
+        const { nombre, usuario, email, nivel, folios, isactive } = req.body;
 
         try {
             const [result] = await connection.query(
