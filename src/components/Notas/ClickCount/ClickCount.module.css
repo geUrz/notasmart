@@ -10,11 +10,17 @@
   width: 100%;
   height: auto;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
-.main h1{
+.section svg, .section path{
+  font-size: 50px;
+}
+
+.section h1{
+  margin-top: 30px !important;
   font-size: 18px;
   color: azure;
   text-align: center;

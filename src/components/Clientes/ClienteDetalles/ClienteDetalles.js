@@ -75,29 +75,20 @@ export function ClienteDetalles(props) {
           </div>
         </div>
 
-        {user.nivel === 'Admin' || user.nivel === 'Usuario' ? (
-          <>
+        <div className={styles.iconEdit}>
+          <div onClick={onOpenCloseEdit}>
+            <FaEdit />
+          </div>
+        </div>
 
-            <div className={styles.iconEdit}>
-              <div onClick={onOpenCloseEdit}>
-                <FaEdit />
-              </div>
+        {user.nivel === 'admin' ?
+          <div className={styles.iconDel}>
+            <div>
+              <FaTrash onClick={onOpenCloseConfirmDel} />
             </div>
+          </div> : null
+        }
 
-            {user.nivel === 'admin' ? (
-              <div className={styles.iconDel}>
-                <div>
-                  <FaTrash onClick={onOpenCloseConfirmDel} />
-                </div>
-              </div>
-            ) : (
-              ''
-            )}
-
-          </>
-        ) : (
-          ''
-        )}
       </div>
 
       <BasicModal title='modificar cliente' show={showEdit} onClose={onOpenCloseEdit}>

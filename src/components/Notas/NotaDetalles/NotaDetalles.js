@@ -4,20 +4,19 @@ import { BasicModal } from '@/layouts'
 import { formatCurrency, formatDateIncDet, getValueOrDefault } from '@/helpers'
 import { BiSolidToggleLeft, BiSolidToggleRight } from 'react-icons/bi'
 import { useEffect, useState } from 'react'
-import { NotaConceptos, ReciboConceptos } from '../NotaConceptos'
-import { NotaPDF, ReciboPDF } from '../NotaPDF'
-import { NotaConceptosForm, ReciboConceptosForm } from '../NotaConceptosForm'
+import { NotaConceptos } from '../NotaConceptos'
+import { NotaPDF } from '../NotaPDF'
+import { NotaConceptosForm } from '../NotaConceptosForm'
 import axios from 'axios'
-import { Button, Form, FormField, FormGroup, TextArea } from 'semantic-ui-react'
 import { RowHeadModal } from '../RowHead'
-import { NotaEditForm, ReciboEditForm } from '../NotaEditForm'
-import { NotaConceptosEditForm, ReciboConceptosEditForm } from '../NotaConceptosEditForm'
+import { NotaEditForm } from '../NotaEditForm'
+import { NotaConceptosEditForm } from '../NotaConceptosEditForm'
 import styles from './NotaDetalles.module.css'
 
 export function NotaDetalles(props) {
 
   const { user, loading, nota, notaId, reload, onReload, onOpenClose, onAddConcept, onDeleteConcept, onShowConfirm, onToastSuccess, onToastSuccessMod, onToastSuccessDel, notaSeleccionado } = props
-
+  
   const [showConcep, setShowForm] = useState(false)
   const [showEditConcep, setShowEditConcept] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -56,6 +55,30 @@ export function NotaDetalles(props) {
     setShowEditConcept(false)
   }
 
+  const [notaState, setNotaState] = useState(nota)
+
+  useEffect(() => {
+    setNotaState(nota)
+  }, [nota])
+  
+
+  const onEditConcept = (conceptoActualizado) => {
+    if (!notaState) return;
+  
+    setNotaState((prevNota) => {
+      const conceptosActualizados = prevNota.conceptos.map((c) =>
+        c.id === conceptoActualizado.id ? conceptoActualizado : c
+      )
+  
+      return {
+        ...prevNota,
+        conceptos: conceptosActualizados,
+      }
+    })
+  
+    onReload() 
+  }
+
   const [toggleIVA, setToggleIVA] = useState(false)
 
   const onIVA = () => {
@@ -73,11 +96,20 @@ export function NotaDetalles(props) {
     localStorage.setItem('ontoggleIVA', JSON.stringify(toggleIVA))
   }, [toggleIVA])
 
-  const subtotal = (nota?.conceptos || []).reduce(
+  const [ivaValue, setIvaValue] = useState(null)
+
+  useEffect(() => {
+    if (nota) {
+      setIvaValue(nota.iva)
+    }
+  }, [nota])
+  
+
+  const subtotal = (notaState?.conceptos || []).reduce(
     (sum, concepto) => sum + concepto.precio * concepto.cantidad,
     0
   )
-  const iva = subtotal * 0.16
+  const iva = subtotal * ivaValue / 100
   const total = subtotal + iva
 
   const handleDelete = async () => {
@@ -96,6 +128,21 @@ export function NotaDetalles(props) {
       console.error("Error al eliminar la nota:", error)
     }
   }
+
+  const [datoPDF, setDatoPDF] = useState(null)
+
+  useEffect(() => {
+    if(user && user.id) {
+      (async () => {
+        try {
+          const res = await axios.get(`/api/usuarios/datos_pdf?usuario_id=${user.id}`)
+          setDatoPDF(res.data)
+        } catch (error) {
+            console.error(error)
+        }
+      })()
+    }
+  }, [reload])
 
   if (loading) {
     return <Loading size={45} loading={1} />
@@ -139,7 +186,7 @@ export function NotaDetalles(props) {
 
         <RowHeadModal rowMain />
 
-        <NotaConceptos conceptos={nota?.conceptos || []} onOpenCloseConfirm={onOpenCloseConfirm} onOpenCloseEditConcep={onOpenCloseEditConcep} handleDeleteConcept={handleDeleteConcept} />
+        <NotaConceptos conceptos={notaState?.conceptos || []} onOpenCloseConfirm={onOpenCloseConfirm} onOpenCloseEditConcep={onOpenCloseEditConcep} handleDeleteConcept={handleDeleteConcept} />
 
         <div className={styles.iconPlus}>
           <div onClick={onOpenCloseConcep}>
@@ -197,14 +244,17 @@ export function NotaDetalles(props) {
           </div>
         </div>
 
-        <div className={styles.iconEdit} onClick={onOpenEditNota}>
-          <div><FaEdit /></div>
+        <div className={styles.iconEdit}>
+          <div onClick={onOpenEditNota}><FaEdit /></div>
         </div>
-        <div className={styles.iconDel}>
-          <div><FaTrash onClick={() => setShowConfirmDel(true)} /></div>
-        </div>
+        
+        {user && user.nivel === 'admin' ?
+          <div className={styles.iconDel}>
+            <div><FaTrash onClick={() => setShowConfirmDel(true)} /></div>
+          </div> : null
+        }
 
-        <NotaPDF nota={nota} conceptos={nota?.conceptos || []} />
+        <NotaPDF nota={nota} datoPDF={datoPDF} conceptos={nota?.conceptos || []} />
 
       </div>
 
@@ -213,13 +263,14 @@ export function NotaDetalles(props) {
       </BasicModal>
 
       <BasicModal title='Agregar concepto' show={showConcep} onClose={onOpenCloseConcep}>
-        <NotaConceptosForm reload={reload} onReload={onReload} onOpenCloseConcep={onOpenCloseConcep} onAddConcept={onAddConcept} notaId={notaId?.id || []} onToastSuccess={onToastSuccess} />
+        <NotaConceptosForm user={user} reload={reload} onReload={onReload} onOpenCloseConcep={onOpenCloseConcep} onAddConcept={onAddConcept} notaId={notaId?.id || []} onToastSuccess={onToastSuccess} />
       </BasicModal>
 
       <BasicModal title='Modificar concepto' show={showEditConcep} onClose={onOpenCloseEditConcep}>
         <NotaConceptosEditForm
           reload={reload}
           onReload={onReload}
+          onEditConcept={onEditConcept}
           conceptToEdit={currentConcept}
           onOpenCloseEditConcep={onOpenCloseEditConcep}
           onOpenCloseConfirm={onOpenCloseConfirm}
@@ -235,6 +286,10 @@ export function NotaDetalles(props) {
           email={getValueOrDefault(nota?.cliente_email)}
           onOpenCloseCliente={onOpenCloseCliente} />
       </BasicModal> */}
+
+      <BasicModal>
+        
+      </BasicModal>
 
       <Confirm
         open={showConfirm}

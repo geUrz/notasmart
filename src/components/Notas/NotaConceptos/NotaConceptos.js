@@ -1,10 +1,10 @@
 import { map } from 'lodash'
 import { Loading } from '@/components/Layouts'
 import { formatCurrency } from '@/helpers'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import styles from './NotaConceptos.module.css'
 import { BasicModal } from '@/layouts'
-import { ClickCount } from '../ClickCount/clickCount'
+import { ClickCount } from '../ClickCount/ClickCount'
 
 export function NotaConceptos(props) {
 
@@ -16,12 +16,28 @@ export function NotaConceptos(props) {
 
   const onOpenCloseCount = () => setShowCount((prevState) => !prevState)
 
+  const [clicks, setClicks] = useState({})
+
+  useEffect(() => {
+    const savedClicks = JSON.parse(localStorage.getItem('conceptClicks')) || {}
+    setClicks(savedClicks)
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem('conceptClicks', JSON.stringify(clicks))
+  }, [clicks])
+
   const handleClick = (concepto) => {
-    if (clickCount < maxClicks) {
-      setClickCount(prevCount => prevCount + 1)
-      onOpenCloseEditConcep(concepto)
+    if (clicks[concepto.id] && clicks[concepto.id] >= maxClicks) {
+      setShowCount(true)
     } else {
-        setShowCount(true)
+      setClicks(prevClicks => {
+        const newClicks = { ...prevClicks }
+        newClicks[concepto.id] = (newClicks[concepto.id] || 0) + 1
+        return newClicks
+      })
+
+      onOpenCloseEditConcep(concepto)
     }
   }
 

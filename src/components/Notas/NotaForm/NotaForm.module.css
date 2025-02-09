@@ -152,6 +152,10 @@
   cursor: pointer;
 }
 
+.ivaInput{
+  width: 38px !important;
+}
+
 .box3{
   padding-right: 3.5px !important;
   margin-top: 30px;

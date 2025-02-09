@@ -1,6 +1,6 @@
 import { Confirm, IconClose, ToastSuccess } from '@/components/Layouts'
 import { Button, Dropdown, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
-import { formatCurrency, genRECId } from '@/helpers'
+import { formatCurrency, genNVId } from '@/helpers'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useAuth } from '@/contexts/AuthContext'
@@ -43,6 +43,7 @@ export function NotaForm(props) {
     cantidad: ''
   })
   const [toggleIVA, setToggleIVA] = useState(false)
+  const [ivaValue, setIvaValue] = useState(16)
 
   const onShowConfirm = (index) => {
     setConceptoAEliminar(index)
@@ -104,16 +105,18 @@ export function NotaForm(props) {
 
   useEffect(() => {
     const fetchClientes = async () => {
-      try {
-        const res = await axios.get('/api/clientes/clientes')
-        setClientes(res.data)
-      } catch (error) {
-        console.error('Error al obtener los clientes:', error)
+      if(user && user.id) {
+        try {
+          const res = await axios.get(`/api/clientes/clientes?usuario_id=${user.id}`)
+          setClientes(res.data)
+        } catch (error) {
+          console.error('Error al obtener los clientes:', error)
+        }
       }
     }
 
     fetchClientes()
-  }, [reload])
+  }, [reload, user])
 
   const crearRecibo = async (e) => {
     e.preventDefault()
@@ -122,14 +125,15 @@ export function NotaForm(props) {
       return
     }
 
-    const folio = genRECId(4)
+    const folio = genNVId(4)
 
     try {
       const res = await axios.post('/api/notas/notas', {
         usuario_id: user.id,
         folio,
         cliente_id,
-        nota
+        nota,
+        iva: ivaValue
       })
 
       const notaId = res.data.id
@@ -174,12 +178,22 @@ export function NotaForm(props) {
 
   const calcularTotales = () => {
     const subtotal = conceptos.reduce((acc, curr) => acc + curr.cantidad * curr.precio, 0)
-    const iva = subtotal * 0.16;
-    const total = subtotal + iva;
+    const ivaDecimal = ivaValue / 100
+    const iva = subtotal * ivaDecimal
+    const total = subtotal + iva
     return { subtotal, iva, total }
-  };
+  }
 
   const { subtotal, iva, total } = calcularTotales()
+
+  const handleIvaChange = (e) => {
+    let value = e.target.value;
+  
+    if (/^\d{0,2}$/.test(value)) {
+      setIvaValue(value);
+    }
+  }
+  
 
   useEffect(() => {
     const savedToggleIVA = localStorage.getItem('ontoggleIVA')
@@ -316,8 +330,19 @@ export function NotaForm(props) {
 
               ) : (
 
-                <div className={styles.toggleON} onClick={onIVA}>
-                  <BiSolidToggleRight />
+                <div className={styles.toggleON} >
+                   <Form>
+                    <FormGroup>
+                    <FormField>
+                   <Input
+                      value={ivaValue}
+                      onChange={handleIvaChange}
+                      className={styles.ivaInput}
+                    />
+                   </FormField>
+                    </FormGroup>
+                   </Form>
+                  <BiSolidToggleRight onClick={onIVA} />
                   <h1>IVA:</h1>
                 </div>
 

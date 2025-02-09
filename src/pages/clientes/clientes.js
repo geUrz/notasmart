@@ -22,14 +22,16 @@ export default function Clientes() {
   const [clientes, setClientes] = useState(null)
 
   useEffect(() => {
-    (async () => {
-      try {
-        const res = await axios.get(`/api/clientes/clientes?usuario_id=${user.id}`);
-        setClientes(res.data);
-      } catch (error) {
-        console.error(error);
-      }
-    })()
+    if(user && user.id) {
+      (async () => {
+        try {
+          const res = await axios.get(`/api/clientes/clientes?usuario_id=${user.id}`)
+          setClientes(res.data)
+        } catch (error) {
+          console.error(error)
+        }
+      })()
+    }
   }, [reload, user])
 
   const [toastSuccess, setToastSuccess] = useState(false)

@@ -67,6 +67,7 @@
 
 .ui.label{
   padding: 8px 4.5px !important;
+  margin-top: 10px;
   width: 100%;
   height: auto;
   font-size: 14px;
@@ -86,6 +87,7 @@
 } 
 
 .ui.negative.message{
+  text-align: center;
   color: red;
 }
 

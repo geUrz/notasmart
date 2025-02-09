@@ -1,38 +1,44 @@
-import connection from '@/libs/db'; // Asegúrate de importar la configuración de la base de datos
+import connection from '@/libs/db';
 import bcrypt from 'bcrypt';
 
 export default async function registerHandler(req, res) {
-  const { folio, nombre, usuario, email, nivel, folios, isactive, password } = req.body;
-
   try {
-    // Verificar si el usuario o el correo ya están registrados
+    if (req.method !== 'POST') {
+      return res.status(405).json({ error: `Método ${req.method} no permitido` });
+    }
+
+    const { folio, nombre, usuario, email, nivel, folios, isactive, password } = req.body;
+
+    if (!folio || !nombre || !usuario || !email || !nivel || !folios || !isactive || !password) {
+      return res.status(400).json({ error: "Todos los campos son obligatorios." });
+    }
+
     const [existingUser] = await connection.query(
       'SELECT * FROM usuarios WHERE email = ? OR usuario = ?', 
       [email, usuario]
     );
 
-    if (existingUser.length > 0) {
-      if (existingUser[0].email === email) {
-        return res.status(400).json({ error: '¡ El correo ya está registrado !' });
-      }
+    if (existingUser && existingUser.length > 0) {
+      let errorMsg = "¡ El correo ya está registrado !";
       if (existingUser[0].usuario === usuario) {
-        return res.status(400).json({ error: '¡ El usuario ya está registrado !' });
+        errorMsg = "¡ El usuario ya está registrado !";
       }
+
+      console.warn("Error esperado en el registro:", errorMsg);
+
+      return res.status(400).json({ error: errorMsg });
     }
 
-    // Hashear la contraseña
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Guardar el nuevo usuario en la base de datos
     const [result] = await connection.query(
-      'INSERT INTO usuarios (folio, nombre, usuario, email, nivel, folios, isactive,  password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      'INSERT INTO usuarios (folio, nombre, usuario, email, nivel, folios, isactive, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
       [folio, nombre, usuario, email, nivel, folios, isactive, hashedPassword]
     );
 
-    // Devolver una respuesta exitosa
     return res.status(201).json({ message: 'Usuario registrado exitosamente', userId: result.insertId });
   } catch (error) {
-    console.error('Error al registrar el usuario:', error);
-    return res.status(500).json({ error: 'Error interno del servidor' });
+    console.error("🚨 Error inesperado en la API:", error);
+    return res.status(500).json({ error: "Error interno del servidor." });
   }
 }

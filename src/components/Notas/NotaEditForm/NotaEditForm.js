@@ -6,11 +6,14 @@ import { FaPlus } from 'react-icons/fa'
 import { BasicModal } from '@/layouts'
 import { ClienteForm } from '@/components/Clientes'
 import { ToastSuccess } from '@/components/Layouts'
+import { useAuth } from '@/contexts/AuthContext'
 import styles from './NotaEditForm.module.css'
 
 export function NotaEditForm(props) {
 
   const { reload, onReload, nota, onOpenEditNota, onToastSuccessMod } = props
+
+  const {user} = useAuth()
 
   const [show, setShow] = useState(false)
 
@@ -44,16 +47,18 @@ export function NotaEditForm(props) {
   
   useEffect(() => {
     const fetchClientes = async () => {
-      try {
-        const response = await axios.get('/api/clientes/clientes')
-        setClientes(response.data)
-      } catch (error) {
-        console.error('Error al obtener los clientes:', error)
+      if(user && user.id) {
+        try {
+          const res = await axios.get(`/api/clientes/clientes?usuario_id=${user.id}`)
+          setClientes(res.data)
+        } catch (error) {
+          console.error('Error al obtener los clientes:', error)
+        }
       }
     }
 
     fetchClientes()
-  }, [reload])
+  }, [reload, user])
 
   const handleChange = (e) => {
     const { name, value } = e.target

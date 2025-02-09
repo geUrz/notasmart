@@ -10,7 +10,7 @@ import styles from './NotasLista.module.css'
 
 export function NotasLista(props) {
 
-  const { reload, onReload, notas, onToastSuccess, onToastSuccessMod, onToastSuccessDel } = props
+  const { user, reload, onReload, notas, onToastSuccess, onToastSuccessMod, onToastSuccessDel } = props
 
   const [show, setShow] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -107,7 +107,7 @@ export function NotasLista(props) {
       )}
 
       <BasicModal title='detalles de la nota' show={show} onClose={onOpenClose}>
-        <NotaDetalles nota={notaSeleccionado} notaId={notaSeleccionado} reload={reload} onReload={onReload} onShowConfirm={onShowConfirm} onOpenClose={onOpenClose} onToastSuccess={onToastSuccess} onToastSuccessMod={onToastSuccessMod} onToastSuccessDel={onToastSuccessDel} onAddConcept={onAddConcept} onDeleteConcept={onDeleteConcept} notaSeleccionado={setNotaSeleccionado} />
+        <NotaDetalles user={user} nota={notaSeleccionado} notaId={notaSeleccionado} reload={reload} onReload={onReload} onShowConfirm={onShowConfirm} onOpenClose={onOpenClose} onToastSuccess={onToastSuccess} onToastSuccessMod={onToastSuccessMod} onToastSuccessDel={onToastSuccessDel} onAddConcept={onAddConcept} onDeleteConcept={onDeleteConcept} notaSeleccionado={setNotaSeleccionado} />
       </BasicModal>
 
     </>

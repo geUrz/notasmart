@@ -95,6 +95,15 @@ export function genRECId(length) {
   return result;
 }
 
+export function genNVId(length) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = 'NV-0'; // Prefijo para el folio
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
 export function genCUEId(length) {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let result = 'CUE-0'; // Prefijo para el folio

@@ -1,11 +1,11 @@
 import connection from "@/libs/db";
 
 export default async function handler(req, res) {
-    const { id, search } = req.query; // Se añade `id` para la búsqueda por ID
+    const { id, usuario_id, search } = req.query; // Se añade `id` para la búsqueda por ID
 
     if (req.method === 'GET') {
 
-        if (id) {
+        if (usuario_id) {
             try {
                 const [rows] = await connection.query(`
                 SELECT 
@@ -16,13 +16,14 @@ export default async function handler(req, res) {
                     clientes.cliente AS cliente_cliente, 
                     clientes.contacto AS cliente_contacto, 
                     notas.nota,
+                    notas.iva,
                     notas.createdAt
                 FROM notas
                 JOIN clientes ON notas.cliente_id = clientes.id 
-                WHERE id = ?
-                ORDER BY updatedAt DESC`, [id]);
+                WHERE notas.usuario_id = ?
+                ORDER BY notas.updatedAt DESC`, [usuario_id]);
 
-                res.status(200).json(rows[0]); // Devolver el evento con los datos del cliente
+                res.status(200).json(rows); // Devolver el evento con los datos del cliente
 
             } catch (error) {
                 res.status(500).json({ error: error.message });
@@ -42,6 +43,7 @@ export default async function handler(req, res) {
                         clientes.cliente AS cliente_cliente,  
                         clientes.contacto AS cliente_contacto, 
                         notas.nota,
+                        notas.iva,
                         conceptosnot.concepto AS concepto,
                         notas.createdAt
                     FROM notas
@@ -79,6 +81,7 @@ export default async function handler(req, res) {
                   clientes.cliente AS cliente_cliente, 
                   clientes.contacto AS cliente_contacto, 
                   notas.nota,
+                  notas.iva,
                   notas.createdAt
                 FROM notas
                 JOIN clientes ON notas.cliente_id = clientes.id
@@ -91,12 +94,12 @@ export default async function handler(req, res) {
         }
     } else if (req.method === 'POST') {
         // Maneja la solicitud POST
-        const { usuario_id, folio, cliente_id, nota } = req.body;
+        const { usuario_id, folio, cliente_id, nota, iva } = req.body;
 
         try {
             const [result] = await connection.query(
-                'INSERT INTO notas (usuario_id, folio, cliente_id, nota) VALUES (?, ?, ?, ?)',
-                [usuario_id, folio, cliente_id, nota]
+                'INSERT INTO notas (usuario_id, folio, cliente_id, nota, iva) VALUES (?, ?, ?, ?, ?)',
+                [usuario_id, folio, cliente_id, nota, iva]
             );
             res.status(201).json({ id: result.insertId });
         } catch (error) {

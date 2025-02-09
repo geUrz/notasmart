@@ -1,4 +1,4 @@
-import { Button, Form, FormField, FormGroup, Input, Label } from 'semantic-ui-react'
+import { Button, Dropdown, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
 import { useState } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/router'
@@ -20,6 +20,7 @@ export default function Signup() {
     usuario: '',
     email: '',
     nivel: '',
+    folios: '',
     password: '',
     confirmarPassword: ''
   });
@@ -28,11 +29,11 @@ export default function Signup() {
 
   const [error, setError] = useState(null)
 
-  const handleChange = (e) => {
+  const handleChange = (e, { name, value }) => {
     setCredentials({
       ...credentials,
-      [e.target.name]: e.target.value
-    })
+      [name]: value
+    });
   }
 
   const validarFormSignUp = () => {
@@ -41,7 +42,7 @@ export default function Signup() {
     if (!credentials.nombre) {
       newErrors.nombre = 'El campo es requerido'
     }
-    
+
     if (!credentials.usuario) {
       newErrors.usuario = 'El campo es requerido'
     }
@@ -52,6 +53,10 @@ export default function Signup() {
 
     if (!credentials.nivel) {
       newErrors.nivel = 'El campo es requerido'
+    }
+
+    if (!credentials.folios) {
+      newErrors.folios = 'El campo es requerido'
     }
 
     if (!credentials.password) {
@@ -68,57 +73,60 @@ export default function Signup() {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-
+    e.preventDefault();
+  
     if (!validarFormSignUp()) {
-      return
+      return;
     }
-    setError(null)
-
+  
+    setError(null);
+  
     if (credentials.password !== credentials.confirmarPassword) {
       setError("Las contraseñas no coinciden");
       return;
     }
-
-    const folio = genUserId(4)
-    const isactive = 1
-
+  
+    const folio = genUserId(4);
+    const isactive = 1;
+  
     try {
-      await axios.post('/api/auth/register', {
+      const response = await axios.post('/api/auth/register', {
         folio,
         nombre: credentials.nombre,
         usuario: credentials.usuario,
         email: credentials.email,
         nivel: credentials.nivel,
+        folios: credentials.folios,
         isactive,
         password: credentials.password
-      })
-
-      router.push('/join/signin')
-
-      setCredentials({
-        nombre: '',
-        usuario: '',
-        email: '',
-        nivel: '',
-        password: '',
-        confirmarPassword: ''
-      })
-
-      setError(null)
-    } catch (error) {
-      console.error('Error capturado:', error);
-
-      if (error.response && error.response.data && error.response.data.error) {
-         setError(error.response.data.error); // Error específico del backend
-      } else if (error.message) {
-         setError(error.message)
+      }, {
+        validateStatus: function (status) {
+          return status < 500; // ⚠️ Acepta todos los errores 4xx, evita que rompan la app
+        }
+      });
+  
+      if (response.status === 201) {
+        router.push('/join/signin');
+        setCredentials({
+          nombre: '',
+          usuario: '',
+          email: '',
+          nivel: '',
+          folios: '',
+          password: '',
+          confirmarPassword: ''
+        });
+        setError(null);
       } else {
-         setError('¡ Ocurrió un error inesperado !')
+        setError(response.data?.error || "Ocurrió un error inesperado.");
       }
+    } catch (error) {
+      console.error("🔥 Error inesperado:", error);
+      setError("Error de conexión con el servidor.");
     }
-  };
-
+  }
+  
+  
   return (
 
     <BasicJoin relative>
@@ -130,7 +138,7 @@ export default function Signup() {
 
       <Form onSubmit={handleSubmit}>
         <FormGroup>
-        <FormField error={!!errors.nombre}>
+          <FormField error={!!errors.nombre}>
             <Label>Nombre</Label>
             <Input
               name='nombre'
@@ -138,7 +146,7 @@ export default function Signup() {
               value={credentials.nombre}
               onChange={handleChange}
             />
-            {errors.nombre && <span className={styles.error}>{errors.nombre}</span>}
+            {errors.nombre && <Message className={styles.error}>{errors.nombre}</Message>}
           </FormField>
           <FormField error={!!errors.usuario}>
             <Label>Usuario</Label>
@@ -148,7 +156,7 @@ export default function Signup() {
               value={credentials.usuario}
               onChange={handleChange}
             />
-            {errors.usuario && <span className={styles.error}>{errors.usuario}</span>}
+            {errors.usuario && <Message className={styles.error}>{errors.usuario}</Message>}
           </FormField>
           <FormField>
             <Label>Correo</Label>
@@ -161,17 +169,29 @@ export default function Signup() {
           </FormField>
           <FormField error={!!errors.nivel}>
             <Label>Nivel</Label>
-            <select
+            <Dropdown
+              placeholder='Selecciona nivel'
+              fluid
+              selection
+              options={[
+                { key: 'Admin', text: 'Admin', value: 'admin' },
+                { key: 'Usuario', text: 'Usuario', value: 'usuario' },
+              ]}
               name='nivel'
-              type='text'
               value={credentials.nivel}
               onChange={handleChange}
-            >
-              <option value=''></option>
-              <option value='admin'>admin</option>
-              <option value='usuario'>usuario</option>
-            </select>
-            {errors.nivel && <span className={styles.error}>{errors.nivel}</span>}
+            />
+            {errors.nivel && <Message className={styles.error}>{errors.nivel}</Message>}
+          </FormField>
+          <FormField error={!!errors.folios}>
+            <Label>Folios</Label>
+            <Input
+              name='folios'
+              type='number'
+              value={credentials.folios}
+              onChange={handleChange}
+            />
+            {errors.folios && <Message className={styles.error}>{errors.folios}</Message>}
           </FormField>
           <FormField error={!!errors.password}>
             <Label>Contraseña</Label>
@@ -181,7 +201,7 @@ export default function Signup() {
               value={credentials.password}
               onChange={handleChange}
             />
-            {errors.password && <span className={styles.error}>{errors.password}</span>}
+            {errors.password && <Message className={styles.error}>{errors.password}</Message>}
           </FormField>
           <FormField error={!!errors.confirmarPassword}>
             <Label>Confirmar contraseña</Label>
@@ -191,16 +211,16 @@ export default function Signup() {
               value={credentials.confirmarPassword}
               onChange={handleChange}
             />
-            {errors.confirmarPassword && <span className={styles.error}>{errors.confirmarPassword}</span>}
+            {errors.confirmarPassword && <Message className={styles.error}>{errors.confirmarPassword}</Message>}
           </FormField>
         </FormGroup>
-        {error && <p className={styles.error}>{error}</p>}
+        {error && <Message>{error}</Message>}
         <Button primary type='submit'>Crear usuario</Button>
       </Form>
 
       <div className={styles.link}>
         <Link href='/join/signin'>
-          Iniciar sesión 
+          Iniciar sesión
         </Link>
       </div>
 

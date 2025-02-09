@@ -6,7 +6,7 @@ import styles from './NotaConceptosForm.module.css'
 
 export function NotaConceptosForm(props) {
 
-  const { reload, onReload, reciboId, onAddConcept, onOpenCloseConcep, onToastSuccess } = props
+  const { user, reload, onReload, notaId, onAddConcept, onOpenCloseConcep, onToastSuccess } = props
 
   const [newConcept, setNewConcept] = useState({ tipo: '', concepto: '', precio: '', cantidad: '' })
   const [errors, setErrors] = useState({})
@@ -47,8 +47,9 @@ export function NotaConceptosForm(props) {
 
     if (newConcept.tipo && newConcept.concepto && newConcept.precio && newConcept.cantidad) {
       try {
-        const response = await axios.post(`/api/recibos/conceptos`, {
-          recibo_id: reciboId,
+        const response = await axios.post(`/api/notas/conceptos`, {
+          nota_id: notaId,
+          usuario_id: user.id, 
           ...newConcept,
         })
 

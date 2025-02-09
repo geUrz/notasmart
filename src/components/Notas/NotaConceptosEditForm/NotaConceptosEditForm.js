@@ -7,7 +7,7 @@ import styles from './NotaConceptosEditForm.module.css'
 
 export function NotaConceptosEditForm(props) {
 
-  const { reload, onReload, onOpenCloseEditConcep, onOpenCloseConfirm, conceptToEdit } = props
+  const { reload, onReload, onOpenCloseEditConcep, onOpenCloseConfirm, conceptToEdit, onEditConcept } = props
 
   const [newConcept, setNewConcept] = useState(conceptToEdit || { tipo: '', concepto: '', precio: '', cantidad: '' })
   const [errors, setErrors] = useState({})
@@ -53,6 +53,7 @@ export function NotaConceptosEditForm(props) {
       })
 
       if (response.status === 200 && response.data) {
+        onEditConcept(newConcept)
         onReload()
         onOpenCloseEditConcep()
       } else {

@@ -4,15 +4,15 @@ import { Loading, Title } from '@/components/Layouts'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { size } from 'lodash'
-import styles from './home.module.css'
 import { useAuth } from '@/contexts/AuthContext'
 import { FaArrowDown, FaDollarSign, FaFileAlt } from 'react-icons/fa'
 import { formatCurrency } from '@/helpers'
+import styles from './home.module.css'
 
 export default function Home() {
 
-  const {user, loading} = useAuth()
-  
+  const { user, loading } = useAuth()
+
   const [reload, setReload] = useState(false)
 
   const onReload = () => setReload((prevState) => !prevState)
@@ -20,16 +20,18 @@ export default function Home() {
   const [notas, setNotas] = useState(null)
 
   const totalNotas = size(notas)
-  
+
   useEffect(() => {
-    (async () => {
-      try {
-        const res = await axios.get(`/api/notas/notas?usuario_id=${user.id}`)
-        setNotas(res.data)
-      } catch (error) {
+    if (user && user.id) {
+      (async () => {
+        try {
+          const res = await axios.get(`/api/notas/notas?usuario_id=${user.id}`)
+          setNotas(res.data)
+        } catch (error) {
           console.error(error)
-      }
-    })()
+        }
+      })()
+    }
   }, [reload, user])
 
   const [conceptos, setConceptos] = useState(null)
@@ -42,22 +44,24 @@ export default function Home() {
   const totalPrice = sumTotalPrice()
 
   useEffect(() => {
-    (async () => {
-      try {
-        const res = await axios.get(`/api/notas/conceptos?usuario_id=${user.id}`)
-        setConceptos(res.data)
-      } catch (error) {
-        console.error(error)
-      }
-    })()
+    if (user && user.id) {
+      (async () => {
+        try {
+          const res = await axios.get(`/api/notas/conceptos?usuario_id=${user.id}`)
+          setConceptos(res.data)
+        } catch (error) {
+          console.error(error)
+        }
+      })()
+    }
   }, [reload, user])
 
   if (loading) {
-      return <Loading size={45} loading={0} />
-    }
+    return <Loading size={45} loading={0} />
+  }
 
   return (
-    
+
     <ProtectedRoute>
 
       <BasicLayout relative onReload={onReload}>
@@ -65,7 +69,7 @@ export default function Home() {
         <Title title='home' />
 
         <div className={styles.main}>
-        <div className={styles.section}>
+          <div className={styles.section}>
             <div className={styles.icon}>
               <div className={styles.icon1}>
                 <FaFileAlt />

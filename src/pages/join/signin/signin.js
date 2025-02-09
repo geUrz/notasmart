@@ -1,4 +1,4 @@
-import { Button, Form, FormField, FormGroup, Input, Label } from 'semantic-ui-react'
+import { Button, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
 import { useEffect, useState, useRef } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { BasicJoin } from '@/layouts'
@@ -18,42 +18,41 @@ export default function Signin() {
   }
 
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyCode);
+    window.addEventListener('keydown', handleKeyCode)
 
     return () => {
-      window.removeEventListener('keydown', handleKeyCode);
+      window.removeEventListener('keydown', handleKeyCode)
     }
   }, [])
 
-  const gestureAreaRef = useRef(null);
+  const gestureAreaRef = useRef(null)
 
   const handleTouchStart = (e) => {
-    e.currentTarget.touchStartTime = e.timeStamp;
+    e.currentTarget.touchStartTime = e.timeStamp
   };
 
   const handleTouchEnd = (e) => {
-    const touchDuration = e.timeStamp - e.currentTarget.touchStartTime;
-    if (touchDuration > 100) {
+    const touchDuration = e.timeStamp - e.currentTarget.touchStartTime
+    if (touchDuration > 5000) {
       setKeyCode((prevState) => !prevState)
-      console.log('Toque prolongado detectado');
-      // Realiza alguna acción
+      console.log('Toque prolongado detectado')
     }
   };
 
   useEffect(() => {
     const element = gestureAreaRef.current;
     if (element) {
-      element.addEventListener('touchstart', handleTouchStart);
-      element.addEventListener('touchend', handleTouchEnd);
+      element.addEventListener('touchstart', handleTouchStart)
+      element.addEventListener('touchend', handleTouchEnd)
     }
 
     return () => {
       if (element) {
-        element.removeEventListener('touchstart', handleTouchStart);
-        element.removeEventListener('touchend', handleTouchEnd);
+        element.removeEventListener('touchstart', handleTouchStart)
+        element.removeEventListener('touchend', handleTouchEnd)
       }
     };
-  }, []);
+  }, [])
 
   const [errors, setErrors] = useState({})
 
@@ -100,12 +99,12 @@ export default function Signin() {
     try {
       await login(credentials.emailOrUsuario, credentials.password)
     } catch (error) {
-      console.error('Error capturado:', error);
+      console.error('Error capturado:', error)
       
       if (error?.status === 401) {
-        setError(error.data.error || '¡ Correo o contraseña no existe !');
+        setError(error.data.error || '¡ Correo o contraseña no existe !')
       } else {
-        setError(error?.data?.error || '¡ Ocurrió un error inesperado !');
+        setError(error?.data?.error || '¡ Ocurrió un error inesperado !')
       }
    }
   }
@@ -115,7 +114,10 @@ export default function Signin() {
     <BasicJoin relative>
 
       <div className={styles.user}>
-        <FaUser />
+        <FaUser 
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd} 
+        />
         <h1>Iniciar sesión</h1>
       </div>
 
@@ -129,7 +131,7 @@ export default function Signin() {
               value={credentials.emailOrUsuario}
               onChange={handleChange}
             />
-            {errors.emailOrUsuario && <span className={styles.error}>{errors.emailOrUsuario}</span>}
+            {errors.emailOrUsuario && <Message className={styles.error}>{errors.emailOrUsuario}</Message>}
           </FormField>
           <FormField error={!!errors.password}>
             <Label>Contraseña</Label>
@@ -139,10 +141,10 @@ export default function Signin() {
               value={credentials.password}
               onChange={handleChange}
             />
-            {errors.password && <span className={styles.error}>{errors.password}</span>}
+            {errors.password && <Message className={styles.error}>{errors.password}</Message>}
           </FormField>
         </FormGroup>
-        {error && <p className={styles.error}>{error}</p>}
+        {error && <Message>{error}</Message>}
         <Button primary type='submit'>Iniciar sesión</Button>
       </Form>
 

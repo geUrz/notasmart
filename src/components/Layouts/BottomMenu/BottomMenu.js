@@ -1,4 +1,4 @@
-import { FaHome, FaPlusCircle, FaUser, FaUsers } from 'react-icons/fa'
+import { FaFileAlt, FaHome, FaUser, FaUsers } from 'react-icons/fa'
 import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
 import styles from './BottomMenu.module.css'
@@ -22,7 +22,7 @@ export function BottomMenu() {
             </Link>
             <Link href='/notas' className={styles.tab}>
               <div>
-                <FaPlusCircle />
+                <FaFileAlt />
                 <h1>Notas</h1>
               </div>
             </Link>

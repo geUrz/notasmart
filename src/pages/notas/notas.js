@@ -25,14 +25,16 @@ export default function Notas() {
   const totalFolios = size(notas)
   
   useEffect(() => {
-    (async () => {
-      try {
-        const res = await axios.get(`/api/notas/notas?usuario_id=${user.id}`)
-        setNotas(res.data)
-      } catch (error) {
-        console.error(error)
-      }
-    })()
+    if(user && user.id) {
+      (async () => {
+        try {
+          const res = await axios.get(`/api/notas/notas?usuario_id=${user.id}`)
+          setNotas(res.data)
+        } catch (error) {
+          console.error(error)
+        }
+      })()
+    }
   }, [reload, user])  
 
   const [toastSuccess, setToastSuccessReportes] = useState(false)
