@@ -144,6 +144,19 @@ export function NotaDetalles(props) {
     }
   }, [reload])
 
+  const [notaData, setNotaData] = useState(nota)
+
+  useEffect(() => {
+    setNotaData(nota) 
+  }, [nota]) 
+
+  const actualizarNota = (nuevaData) => {
+    setNotaData((prevState) => ({
+      ...prevState,
+      ...nuevaData, 
+    }))
+  }
+
   if (loading) {
     return <Loading size={45} loading={1} />
   }
@@ -161,25 +174,25 @@ export function NotaDetalles(props) {
           <div className={styles.datos_1}>
             <div>
               <h1>Nota</h1>
-              <h2>{getValueOrDefault(nota?.nota)}</h2>
+              <h2>{getValueOrDefault(notaData?.nota)}</h2>
             </div>
             <div>
               <h1>Cliente</h1>
-              <h2>{getValueOrDefault(nota?.cliente_cliente)}</h2>
+              <h2>{getValueOrDefault(notaData?.cliente_cliente)}</h2>
             </div>
             <div>
               <h1>Atención a</h1>
-              <h2>{getValueOrDefault(nota?.cliente_contacto)}</h2>
+              <h2>{getValueOrDefault(notaData?.cliente_contacto)}</h2>
             </div>
           </div>
           <div className={styles.datos_2}>
             <div>
               <h1>Folio</h1>
-              <h2>{getValueOrDefault(nota?.folio)}</h2>
+              <h2>{getValueOrDefault(notaData?.folio)}</h2>
             </div>
             <div>
               <h1>Fecha</h1>
-              <h2>{getValueOrDefault(formatDateIncDet(nota?.createdAt))}</h2>
+              <h2>{getValueOrDefault(formatDateIncDet(notaData?.createdAt))}</h2>
             </div>
           </div>
         </div>
@@ -259,7 +272,7 @@ export function NotaDetalles(props) {
       </div>
 
       <BasicModal title='modificar la nota' show={showEditNota} onClose={onOpenEditNota}>
-        <NotaEditForm reload={reload} onReload={onReload} nota={nota} onOpenEditNota={onOpenEditNota} onToastSuccessMod={onToastSuccessMod} />
+        <NotaEditForm reload={reload} onReload={onReload} notaData={notaData} actualizarNota={actualizarNota} onOpenEditNota={onOpenEditNota} onToastSuccessMod={onToastSuccessMod} />
       </BasicModal>
 
       <BasicModal title='Agregar concepto' show={showConcep} onClose={onOpenCloseConcep}>

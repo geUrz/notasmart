@@ -151,7 +151,9 @@ export default async function handler(req, res) {
             res.status(500).json({ error: error.message });
         }
     } else if (req.method === 'PUT') {
-        // Actualizar un usuario existente
+        
+        const { id } = req.query;
+
         if (!id) {
             return res.status(400).json({ error: 'ID del usuario es necesario para actualizar' });
         }

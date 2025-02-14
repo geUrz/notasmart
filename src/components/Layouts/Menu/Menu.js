@@ -22,9 +22,11 @@ export function Menu() {
     <>
     
       <div className={styles.mainTop}>
+        <h1>Nota</h1>
         <Link href='/'>
           <Image src='img/logo.png' />
         </Link>
+        <h1>Smart</h1>
       </div>
     
     </>

@@ -6,15 +6,15 @@ import styles from './UsuarioEditForm.module.css'
 
 export function UsuarioEditForm(props) {
 
-  const { reload, onReload, usuario, onOpenCloseEdit, onToastSuccessMod } = props
+  const { reload, onReload, usuarioData, actualizarUsuario, onOpenCloseEdit, onToastSuccessMod } = props
 
   const [formData, setFormData] = useState({
-    nombre: usuario.nombre,
-    usuario: usuario.usuario,
-    email: usuario.email,
-    nivel: usuario.nivel,
-    folios: usuario.folios,
-    isactive: usuario.isactive
+    nombre: usuarioData.nombre,
+    usuario: usuarioData.usuario,
+    email: usuarioData.email,
+    nivel: usuarioData.nivel,
+    folios: usuarioData.folios,
+    isactive: usuarioData.isactive
   })
 
   const [errors, setErrors] = useState({})
@@ -62,10 +62,11 @@ export function UsuarioEditForm(props) {
     }
 
     try {
-      await axios.put(`/api/usuarios/usuarios?id=${usuario.id}`, {
+      await axios.put(`/api/usuarios/usuarios?id=${usuarioData.id}`, {
         ...formData
       })
       onReload()
+      actualizarUsuario(formData)
       onOpenCloseEdit()
       onToastSuccessMod()
     } catch (error) {

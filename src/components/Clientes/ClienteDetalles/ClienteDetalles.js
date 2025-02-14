@@ -1,6 +1,6 @@
 import { FaCheck, FaEdit, FaTimes, FaTrash } from 'react-icons/fa'
 import { IconClose, Confirm } from '@/components/Layouts'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { BasicModal } from '@/layouts'
 import { ClienteEditForm } from '../ClienteEditForm'
 import { useAuth } from '@/contexts/AuthContext'
@@ -37,6 +37,19 @@ export function ClienteDetalles(props) {
     }
   }
 
+  const [clienteData, setClienteData] = useState(cliente)
+  
+    useEffect(() => {
+      setClienteData(cliente) 
+    }, [cliente]) 
+  
+    const actualizarCliente = (nuevaData) => {
+      setClienteData((prevState) => ({
+        ...prevState,
+        ...nuevaData, 
+      }))
+    }
+
   return (
 
     <>
@@ -48,29 +61,29 @@ export function ClienteDetalles(props) {
           <div className={styles.box1_1}>
             <div>
               <h1>Cliente</h1>
-              <h2>{getValueOrDefault(cliente.cliente)}</h2>
+              <h2>{getValueOrDefault(clienteData?.cliente)}</h2>
             </div>
             <div>
               <h1>Contacto</h1>
-              <h2>{getValueOrDefault(cliente.contacto)}</h2>
+              <h2>{getValueOrDefault(clienteData?.contacto)}</h2>
             </div>
             <div>
               <h1>Dirección</h1>
-              <h2>{getValueOrDefault(cliente.direccion)}</h2>
+              <h2>{getValueOrDefault(clienteData?.direccion)}</h2>
             </div>
           </div>
           <div className={styles.box1_2}>
             <div>
               <h1>Folio</h1>
-              <h2>{getValueOrDefault(cliente.folio)}</h2>
+              <h2>{getValueOrDefault(clienteData?.folio)}</h2>
             </div>
             <div>
               <h1>Cel</h1>
-              <h2>{getValueOrDefault(cliente.cel)}</h2>
+              <h2>{getValueOrDefault(clienteData?.cel)}</h2>
             </div>
             <div>
               <h1>Email</h1>
-              <h2>{getValueOrDefault(cliente.email)}</h2>
+              <h2>{getValueOrDefault(clienteData?.email)}</h2>
             </div>
           </div>
         </div>
@@ -92,7 +105,7 @@ export function ClienteDetalles(props) {
       </div>
 
       <BasicModal title='modificar cliente' show={showEdit} onClose={onOpenCloseEdit}>
-        <ClienteEditForm reload={reload} onReload={onReload} cliente={cliente} onOpenCloseEdit={onOpenCloseEdit} onToastSuccessMod={onToastSuccessMod} />
+        <ClienteEditForm reload={reload} onReload={onReload} clienteData={clienteData} actualizarCliente={actualizarCliente} onOpenCloseEdit={onOpenCloseEdit} onToastSuccessMod={onToastSuccessMod} />
       </BasicModal>
 
       <Confirm

@@ -11,7 +11,7 @@ import styles from './NotaEditForm.module.css'
 
 export function NotaEditForm(props) {
 
-  const { reload, onReload, nota, onOpenEditNota, onToastSuccessMod } = props
+  const { reload, onReload, notaData, actualizarNota, onOpenEditNota, onToastSuccessMod } = props
 
   const {user} = useAuth()
 
@@ -20,8 +20,8 @@ export function NotaEditForm(props) {
   const onOpenCloseClienteForm = () => setShow((prevState) => !prevState)
 
   const [formData, setFormData] = useState({
-    nota: nota.nota,
-    cliente_id: nota.cliente_id
+    nota: notaData.nota,
+    cliente_id: notaData.cliente_id
   })
   
   const [errors, setErrors] = useState({})
@@ -78,10 +78,11 @@ export function NotaEditForm(props) {
     }
 
     try {
-      await axios.put(`/api/notas/notas?id=${nota.id}`, {
+      await axios.put(`/api/notas/notas?id=${notaData.id}`, {
         ...formData,
       })
       onReload()
+      actualizarNota(formData)
       onOpenEditNota()
       onToastSuccessMod()
     } catch (error) {

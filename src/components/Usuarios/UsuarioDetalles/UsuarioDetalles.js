@@ -1,6 +1,6 @@
 import { FaCheck, FaEdit, FaTimes, FaTrash } from 'react-icons/fa'
 import { IconClose, Confirm } from '@/components/Layouts'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { BasicModal } from '@/layouts'
 import { useAuth } from '@/contexts/AuthContext'
 import axios from 'axios'
@@ -45,6 +45,19 @@ export function UsuarioDetalles(props) {
       isActive = 'Inactivo'
   }
 
+  const [usuarioData, setUsuarioData] = useState(usuario)
+    
+      useEffect(() => {
+        setUsuarioData(usuario) 
+      }, [usuario]) 
+    
+      const actualizarUsuario = (nuevaData) => {
+        setUsuarioData((prevState) => ({
+          ...prevState,
+          ...nuevaData, 
+        }))
+      }
+
   return (
 
     <>
@@ -56,15 +69,15 @@ export function UsuarioDetalles(props) {
           <div className={styles.box1_1}>
             <div>
               <h1>Nombre</h1>
-              <h2>{getValueOrDefault(usuario?.nombre)}</h2>
+              <h2>{getValueOrDefault(usuarioData?.nombre)}</h2>
             </div>
             <div>
               <h1>Usuario</h1>
-              <h2>{getValueOrDefault(usuario?.usuario)}</h2>
+              <h2>{getValueOrDefault(usuarioData?.usuario)}</h2>
             </div>
             <div>
               <h1>Folios</h1>
-              <h2>{getValueOrDefault(usuario?.folios)}</h2>
+              <h2>{getValueOrDefault(usuarioData?.folios)}</h2>
             </div>
             <div>
               <h1>Activo</h1>
@@ -74,15 +87,15 @@ export function UsuarioDetalles(props) {
           <div className={styles.box1_2}>
             <div>
               <h1>Folio</h1>
-              <h2>{getValueOrDefault(usuario?.folio)}</h2>
+              <h2>{getValueOrDefault(usuarioData?.folio)}</h2>
             </div>
             <div>
               <h1>Correo</h1>
-              <h2>{getValueOrDefault(usuario?.email)}</h2>
+              <h2>{getValueOrDefault(usuarioData?.email)}</h2>
             </div>
             <div>
               <h1>Nivel</h1>
-              <h2>{getValueOrDefault(usuario?.nivel)}</h2>
+              <h2>{getValueOrDefault(usuarioData?.nivel)}</h2>
             </div>
           </div>
         </div>
@@ -104,7 +117,7 @@ export function UsuarioDetalles(props) {
       </div>
 
       <BasicModal title='modificar usuario' show={showEdit} onClose={onOpenCloseEdit}>
-        <UsuarioEditForm reload={reload} onReload={onReload} usuario={usuario} onOpenCloseEdit={onOpenCloseEdit} onToastSuccessMod={onToastSuccessMod} />
+        <UsuarioEditForm reload={reload} onReload={onReload} usuarioData={usuarioData} actualizarUsuario={actualizarUsuario} onOpenCloseEdit={onOpenCloseEdit} onToastSuccessMod={onToastSuccessMod} />
       </BasicModal>
 
       <Confirm

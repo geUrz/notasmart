@@ -6,7 +6,7 @@ import styles from './ClienteEditForm.module.css'
 
 export function ClienteEditForm(props) {
 
-  const { reload, onReload, cliente, onOpenCloseEdit, onToastSuccessMod } = props
+  const { reload, onReload, clienteData, actualizarCliente, onOpenCloseEdit, onToastSuccessMod } = props
 
   const [clientes, setClientes] = useState([])
 
@@ -24,11 +24,11 @@ export function ClienteEditForm(props) {
   }, [reload])
 
   const [formData, setFormData] = useState({
-    cliente: cliente.cliente,
-    contacto: cliente.contacto,
-    cel: cliente.cel,
-    direccion: cliente.direccion,
-    email: cliente.email
+    cliente: clienteData.cliente,
+    contacto: clienteData.contacto,
+    cel: clienteData.cel,
+    direccion: clienteData.direccion,
+    email: clienteData.email
   })
 
   const [errors, setErrors] = useState({})
@@ -68,10 +68,11 @@ export function ClienteEditForm(props) {
     }
 
     try {
-      await axios.put(`/api/clientes/clientes?id=${cliente.id}`, {
+      await axios.put(`/api/clientes/clientes?id=${clienteData.id}`, {
         ...formData
       })
       onReload()
+      actualizarCliente(formData)
       onOpenCloseEdit()
       onToastSuccessMod()
     } catch (error) {

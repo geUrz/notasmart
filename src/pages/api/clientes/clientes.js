@@ -81,6 +81,9 @@ export default async function handler(req, res) {
             res.status(500).json({ error: error.message })
         }
     } else if (req.method === 'PUT') {
+
+        const { id } = req.query;
+
         if (!id) {
             return res.status(400).json({ error: 'ID del cliente es obligatorio' })
         }
