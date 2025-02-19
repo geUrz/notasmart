@@ -1,47 +1,61 @@
-import { useState } from 'react'
-import { IconClose } from '@/components/Layouts'
-import { Button, Dropdown, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
-import axios from 'axios'
-import { FaTrash } from 'react-icons/fa'
-import styles from './NotaConceptosEditForm.module.css'
+import { useState, useEffect } from 'react';
+import { IconClose } from '@/components/Layouts';
+import { Button, Dropdown, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react';
+import axios from 'axios';
+import { FaTrash } from 'react-icons/fa';
+import styles from './NotaConceptosEditForm.module.css';
 
 export function NotaConceptosEditForm(props) {
 
-  const { reload, onReload, onOpenCloseEditConcep, onOpenCloseConfirm, conceptToEdit, onEditConcept } = props
+  const { reload, onReload, onOpenCloseEditConcep, onOpenCloseConfirm, conceptToEdit, onEditConcept } = props;
 
-  const [newConcept, setNewConcept] = useState(conceptToEdit || { tipo: '', concepto: '', precio: '', cantidad: '' })
-  const [errors, setErrors] = useState({})
+  const [newConcept, setNewConcept] = useState(conceptToEdit || { tipo: '', concepto: '', precio: '', cantidad: '' });
+  const [errors, setErrors] = useState({});
 
+  // Función para recalcular el total cuando cambian precio o cantidad
+  const calculateTotal = (precio, cantidad) => {
+    return parseFloat(precio || 0) * parseInt(cantidad || 0);
+  };
+
+  // Maneja los cambios en los campos del formulario
   const handleChange = (e, { name, value }) => {
-    setNewConcept((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }))
-  }
+    setNewConcept((prevState) => {
+      const updatedConcept = { ...prevState, [name]: value };
 
+      // Si el campo editado es precio o cantidad, recalculamos el total
+      if (name === 'precio' || name === 'cantidad') {
+        updatedConcept.total = calculateTotal(updatedConcept.precio, updatedConcept.cantidad);
+      }
+
+      return updatedConcept;
+    });
+  };
+
+  // Validación del formulario
   const validateForm = () => {
-    const newErrors = {}
+    const newErrors = {};
 
     if (!newConcept.tipo) {
-      newErrors.tipo = 'El campo es requerido'
+      newErrors.tipo = 'El campo es requerido';
     }
     if (!newConcept.concepto) {
-      newErrors.concepto = 'El campo es requerido'
+      newErrors.concepto = 'El campo es requerido';
     }
     if (!newConcept.cantidad || newConcept.cantidad <= 0) {
-      newErrors.cantidad = 'El campo es requerido'
+      newErrors.cantidad = 'El campo es requerido';
     }
     if (!newConcept.precio || newConcept.precio <= 0) {
-      newErrors.precio = 'El campo es requerido'
+      newErrors.precio = 'El campo es requerido';
     }
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
+  // Actualiza el concepto en el servidor
   const handleUpdateConcept = async () => {
     if (!validateForm()) {
-      return
+      return;
     }
 
     try {
@@ -50,24 +64,25 @@ export function NotaConceptosEditForm(props) {
         concepto: newConcept.concepto,
         precio: newConcept.precio,
         cantidad: newConcept.cantidad,
-      })
+        total: newConcept.total, // Enviar el total calculado
+      });
 
       if (response.status === 200 && response.data) {
-        onEditConcept(newConcept)
-        onReload()
-        onOpenCloseEditConcep()
+        onEditConcept(newConcept);
+        onReload();
+        onOpenCloseEditConcep();
       } else {
-        console.error('Error al actualizar el concepto: Respuesta del servidor no fue exitosa', response)
+        console.error('Error al actualizar el concepto: Respuesta del servidor no fue exitosa', response);
       }
     } catch (error) {
-      console.error('Error al actualizar el concepto:', error)
+      console.error('Error al actualizar el concepto:', error);
     }
-  }
+  };
 
   const opcionesSerprod = [
     { key: 1, text: 'Servicio', value: 'Servicio' },
     { key: 2, text: 'Producto', value: 'Producto' }
-  ]
+  ];
 
   return (
     <>
@@ -89,6 +104,7 @@ export function NotaConceptosEditForm(props) {
               />
               {errors.tipo && <Message negative>{errors.tipo}</Message>}
             </FormField>
+
             <FormField error={!!errors.concepto}>
               <Label>Concepto</Label>
               <Input
@@ -99,6 +115,7 @@ export function NotaConceptosEditForm(props) {
               />
               {errors.concepto && <Message negative>{errors.concepto}</Message>}
             </FormField>
+
             <FormField error={!!errors.precio}>
               <Label>Precio</Label>
               <Input
@@ -109,6 +126,7 @@ export function NotaConceptosEditForm(props) {
               />
               {errors.precio && <Message negative>{errors.precio}</Message>}
             </FormField>
+
             <FormField error={!!errors.cantidad}>
               <Label>Qty</Label>
               <Input
@@ -131,5 +149,5 @@ export function NotaConceptosEditForm(props) {
         </div>
       </div>
     </>
-  )
+  );
 }

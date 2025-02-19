@@ -25,7 +25,7 @@ export default function Notas() {
   const totalFolios = size(notas)
   
   useEffect(() => {
-    if(user) {
+    if(user && user.id) {
       if(user.nivel === 'usuario') {
         (async () => {
           try {

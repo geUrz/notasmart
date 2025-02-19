@@ -32,14 +32,7 @@ export function BottomMenu() {
                 <h1>Clientes</h1>
               </div>
             </Link>
-            <Link href='/usuario' className={styles.tab}>
-              <div>
-                <FaUser />
-                <h1>Usuario</h1>
-              </div>
-            </Link>
-
-            {user.nivel === 'admin'} {
+            {user && user.nivel === 'admin' &&
               <Link href='/usuarios' className={styles.tab}>
               <div>
                 <FaUsers />
@@ -47,6 +40,12 @@ export function BottomMenu() {
               </div>
             </Link>
             }
+            <Link href='/usuario' className={styles.tab}>
+              <div>
+                <FaUser />
+                <h1>Usuario</h1>
+              </div>
+            </Link>
 
           </> : null
         }

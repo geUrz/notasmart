@@ -12,7 +12,7 @@
 }
 
 .mainTop h1{
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 600 !important;
 }
 
@@ -20,5 +20,21 @@
   margin: 0 6px;
   height: 38px;
   cursor: pointer;
+}
+
+@media screen and (min-width:768px) {
+
+  .mainTop{
+    height: 80px;
+  }
+  
+  .mainTop h1{
+    font-size: 18px;
+  }
+  
+  .mainTop img{
+    height: 48px;
+  }
+
 }
 

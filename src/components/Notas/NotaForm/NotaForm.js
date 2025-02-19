@@ -4,129 +4,92 @@ import { formatCurrency, genNVId } from '@/helpers'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useAuth } from '@/contexts/AuthContext'
-import { FaCheck, FaPlus, FaTimes } from 'react-icons/fa'
+import { FaCheck, FaPlus, FaTimes, FaTrash } from 'react-icons/fa'
 import { RowHeadModal } from '../RowHead'
 import { BiSolidToggleLeft, BiSolidToggleRight } from 'react-icons/bi'
 import { ClienteForm } from '@/components/Clientes'
 import { BasicModal } from '@/layouts'
 import styles from './NotaForm.module.css'
+import { ConceptosForm } from '../ConceptosForm'
+import { ConceptosEditForm } from '../ConceptosEditForm'
 
 export function NotaForm(props) {
-
   const { reload, onReload, onOpenCloseForm, onToastSuccess } = props
-
   const { user } = useAuth()
 
   const [showConfirm, setShowConfirm] = useState(false)
-
   const [show, setShow] = useState(false)
-
-  const onOpenCloseClienteForm = () => setShow((prevState) => !prevState)
-
   const [toastSuccessCliente, setToastSuccessCliente] = useState(false)
-
-  const onToastSuccessCliente = () => {
-    setToastSuccessCliente(true)
-    setTimeout(() => {
-      setToastSuccessCliente(false)
-    }, 3000)
-  }
-
   const [clientes, setClientes] = useState([])
   const [cliente_id, setCliente] = useState('')
   const [nota, setNota] = useState('')
   const [conceptos, setConceptos] = useState([])
-  const [nuevoConcepto, setNuevoConcepto] = useState({
-    tipo: '',
-    concepto: '',
-    precio: '',
-    cantidad: ''
-  })
+  const [nuevoConcepto, setNuevoConcepto] = useState({ tipo: '', concepto: '', precio: '', cantidad: '' })
   const [toggleIVA, setToggleIVA] = useState(false)
   const [ivaValue, setIvaValue] = useState(16)
+  const [conceptoAEliminar, setConceptoAEliminar] = useState(null)
 
-  const onShowConfirm = (index) => {
+  const [errors, setErrors] = useState({})
+  const [showConcep, setShowForm] = useState(false)
+
+  const onOpenCloseClienteForm = () => setShow((prevState) => !prevState)
+
+  const onToastSuccessCliente = () => {
+    setToastSuccessCliente(true)
+    setTimeout(() => setToastSuccessCliente(false), 3000)
+  }
+
+  const onOpenCloseConcep = () => setShowForm((prevState) => !prevState)
+
+  const onOpenCloseConfirm = (index) => {
     setConceptoAEliminar(index)
     setShowConfirm(true)
   }
 
-  const onHideConfirm = () => {
-    setConceptoAEliminar(null)
-    setShowConfirm(false)
+  const [showEditConcep, setShowEditConcep] = useState(null)
+  const [conceptoEdit, setConceptoEdit] = useState(null)
+
+  const onOpenEditConcep = (index) => {
+    setConceptoEdit(conceptos[index])
+    setShowEditConcep(true)
   }
 
-  const [errors, setErrors] = useState({})
+  const onCloseEditConcep = () => {
+    setConceptoEdit(null)
+    setShowEditConcep(false)
+  }
+
+  const onHideConfirm = () => setShowConfirm(false)
 
   const validarForm = () => {
     const newErrors = {}
-
-    if (!cliente_id) {
-      newErrors.cliente_id = 'El campo es requerido'
-    }
-
-    if (!nota) {
-      newErrors.nota = 'El campo es requerido'
-    }
-
+    if (!cliente_id) newErrors.cliente_id = 'El campo es requerido'
+    if (!nota) newErrors.nota = 'El campo es requerido'
     setErrors(newErrors)
-
     return Object.keys(newErrors).length === 0
-
   }
 
-  const validarFormConceptos = () => {
-    const newErrors = {}
-
-    if (!nuevoConcepto.tipo) {
-      newErrors.tipo = 'El campo es requerido'
+  const fetchClientes = async () => {
+    if (user && user.id) {
+      try {
+        const res = await axios.get(`/api/clientes/clientes?usuario_id=${user.id}`)
+        setClientes(res.data)
+      } catch (error) {
+        console.error('Error al obtener los clientes:', error)
+      }
     }
-
-    if (!nuevoConcepto.concepto) {
-      newErrors.concepto = 'El campo es requerido'
-    }
-
-    if (!nuevoConcepto.precio) {
-      newErrors.precio = 'El campo es requerido'
-    } else if (nuevoConcepto.precio <= 0) {
-      newErrors.precio = 'El precio debe ser mayor a 0'
-    }
-
-    if (!nuevoConcepto.cantidad) {
-      newErrors.cantidad = 'El campo es requerido'
-    } else if (nuevoConcepto.cantidad <= 0) {
-      newErrors.cantidad = 'La cantidad debe ser mayor a 0'
-    }
-
-    setErrors(newErrors)
-
-    return Object.keys(newErrors).length === 0
-
   }
 
   useEffect(() => {
-    const fetchClientes = async () => {
-      if(user && user.id) {
-        try {
-          const res = await axios.get(`/api/clientes/clientes?usuario_id=${user.id}`)
-          setClientes(res.data)
-        } catch (error) {
-          console.error('Error al obtener los clientes:', error)
-        }
-      }
-    }
-
     fetchClientes()
   }, [reload, user])
 
   const crearRecibo = async (e) => {
     e.preventDefault()
 
-    if (!validarForm()) {
-      return
-    }
+    if (!validarForm()) return
 
     const folio = genNVId(4)
-
     try {
       const res = await axios.post('/api/notas/notas', {
         usuario_id: user.id,
@@ -137,12 +100,10 @@ export function NotaForm(props) {
       })
 
       const notaId = res.data.id
-      const usuarioId = user.id
-
       await Promise.all(conceptos.map(concepto =>
         axios.post('/api/notas/conceptos', {
           nota_id: notaId,
-          usuario_id: usuarioId,
+          usuario_id: user.id,
           tipo: concepto.tipo,
           concepto: concepto.concepto,
           precio: concepto.precio,
@@ -154,33 +115,23 @@ export function NotaForm(props) {
       setNota('')
       setCliente('')
       setConceptos([])
-
       onReload()
       onOpenCloseForm()
       onToastSuccess()
     } catch (error) {
-      console.error('Error al crear el nota:', error)
-
+      console.error('Error al crear la nota:', error)
     }
   }
 
-  const añadirConcepto = () => {
-    if (!validarFormConceptos()) {
-      return
-    }
-
-    const total = nuevoConcepto.precio * nuevoConcepto.cantidad
-
-    setConceptos([...conceptos, { ...nuevoConcepto, total }])
-    setNuevoConcepto({ tipo: '', concepto: '', precio: '', cantidad: '' })
+  const añadirConcepto = (concepto) => {
+    const total = concepto.precio * concepto.cantidad
+    setConceptos([...conceptos, { ...concepto, total }])
   }
-
-  const [conceptoAEliminar, setConceptoAEliminar] = useState(null)
 
   const eliminarConcepto = () => {
     const nuevosConceptos = conceptos.filter((_, i) => i !== conceptoAEliminar)
     setConceptos(nuevosConceptos)
-    onHideConfirm()
+    setShowConfirm(false)
   }
 
   const calcularTotales = () => {
@@ -194,40 +145,15 @@ export function NotaForm(props) {
   const { subtotal, iva, total } = calcularTotales()
 
   const handleIvaChange = (e) => {
-    let value = e.target.value;
-  
-    if (/^\d{0,2}$/.test(value)) {
-      setIvaValue(value);
-    }
-  }
-  
-
-  useEffect(() => {
-    const savedToggleIVA = localStorage.getItem('ontoggleIVA')
-    if (savedToggleIVA) {
-      setToggleIVA(JSON.parse(savedToggleIVA))
-    }
-  }, [])
-
-  useEffect(() => {
-    localStorage.setItem('ontoggleIVA', JSON.stringify(toggleIVA))
-  }, [toggleIVA])
-
-  const onIVA = () => {
-    setToggleIVA(prevState => (!prevState))
+    let value = e.target.value
+    if (/^\d{0,2}$/.test(value)) setIvaValue(value)
   }
 
-  const opcionesSerprod = [
-    { key: 1, text: 'Servicio', value: 'Servicio' },
-    { key: 2, text: 'Producto', value: 'Producto' }
-  ]
+  const onIVA = () => setToggleIVA(prevState => !prevState)
 
   return (
-
     <>
-
       <IconClose onOpenClose={onOpenCloseForm} />
-
       {toastSuccessCliente && <ToastSuccess contain='Creado exitosamente' onClose={() => setToastSuccessCliente(false)} />}
 
       <div className={styles.main}>
@@ -265,57 +191,10 @@ export function NotaForm(props) {
           </FormGroup>
         </Form>
 
-        <Form>
-          <FormGroup widths='equal'>
-            <FormField error={!!errors.tipo}>
-              <Label>Tipo</Label>
-              <Dropdown
-                placeholder='Selecciona una opción'
-                fluid
-                selection
-                options={opcionesSerprod}
-                value={nuevoConcepto.tipo}
-                onChange={(e, { value }) => setNuevoConcepto({ ...nuevoConcepto, tipo: value })}
-              />
-              {errors.tipo && <Message negative>{errors.tipo}</Message>}
-            </FormField>
-            <FormField error={!!errors.concepto}>
-              <Label>Concepto</Label>
-              <Input
-                type="text"
-                value={nuevoConcepto.concepto}
-                onChange={(e) => setNuevoConcepto({ ...nuevoConcepto, concepto: e.target.value })}
-              />
-              {errors.concepto && <Message negative>{errors.concepto}</Message>}
-            </FormField>
-            <FormField error={!!errors.precio}>
-              <Label>Precio</Label>
-              <Input
-                type="number"
-                value={nuevoConcepto.precio}
-                onChange={(e) => setNuevoConcepto({ ...nuevoConcepto, precio: e.target.value === '' ? '' : parseFloat(e.target.value) })}
-              />
-              {errors.precio && <Message negative>{errors.precio}</Message>}
-            </FormField>
-            <FormField error={!!errors.cantidad}>
-              <Label>Qty</Label>
-              <Input
-                type="number"
-                value={nuevoConcepto.cantidad}
-                onChange={(e) => setNuevoConcepto({ ...nuevoConcepto, cantidad: e.target.value === '' ? '' : parseInt(e.target.value) })}
-              />
-              {errors.cantidad && <Message negative>{errors.cantidad}</Message>}
-            </FormField>
-          </FormGroup>
-          <Button secondary onClick={añadirConcepto}>Añadir Concepto</Button>
-        </Form>
-
         <div className={styles.section}>
-
           <RowHeadModal rowMain />
-
           {conceptos.map((concepto, index) => (
-            <div key={index} className={styles.rowMap} onClick={() => onShowConfirm(index)}>
+            <div key={index} className={styles.rowMap} onClick={() => onOpenEditConcep(index)}>
               <h1>{concepto.tipo}</h1>
               <h1>{concepto.concepto}</h1>
               <h1>${formatCurrency(concepto.precio * 1)}</h1>
@@ -324,55 +203,52 @@ export function NotaForm(props) {
             </div>
           ))}
 
+          <div className={styles.iconPlus}>
+            <div onClick={onOpenCloseConcep}>
+              <FaPlus />
+            </div>
+          </div>
+
           <div className={styles.box3}>
             <div className={styles.box3_1}>
               <h1>Subtotal:</h1>
-
               {!toggleIVA ? (
-
                 <div className={styles.toggleOFF} onClick={onIVA}>
                   <BiSolidToggleLeft />
                   <h1>IVA:</h1>
                 </div>
-
               ) : (
-
-                <div className={styles.toggleON} >
-                   <Form>
+                <div className={styles.toggleON}>
+                  <Form>
                     <FormGroup>
-                    <FormField>
-                   <Input
-                      value={ivaValue}
-                      onChange={handleIvaChange}
-                      className={styles.ivaInput}
-                    />
-                   </FormField>
+                      <FormField>
+                        <Input
+                          value={ivaValue}
+                          onChange={handleIvaChange}
+                          className={styles.ivaInput}
+                        />
+                      </FormField>
                     </FormGroup>
-                   </Form>
+                  </Form>
+                  <h1>%</h1>
                   <BiSolidToggleRight onClick={onIVA} />
                   <h1>IVA:</h1>
                 </div>
-
               )}
 
               <h1>Total:</h1>
             </div>
 
             <div className={styles.box3_2}>
-
               {!toggleIVA ? (
                 <>
-
                   <h1>-</h1>
                   <h1>-</h1>
-
                 </>
               ) : (
                 <>
-
                   <h1>${formatCurrency(subtotal)}</h1>
                   <h1>${formatCurrency(iva)}</h1>
-
                 </>
               )}
 
@@ -381,19 +257,36 @@ export function NotaForm(props) {
               ) : (
                 <h1>${formatCurrency(total)}</h1>
               )}
-
             </div>
           </div>
-
         </div>
 
         <Button primary onClick={crearRecibo}>Crear</Button>
-
       </div>
 
       <BasicModal title='crear cliente' show={show} onClose={onOpenCloseClienteForm}>
         <ClienteForm reload={reload} onReload={onReload} onCloseForm={onOpenCloseClienteForm} onToastSuccess={onToastSuccessCliente} />
       </BasicModal>
+
+      <BasicModal title='Agregar concepto' show={showConcep} onClose={onOpenCloseConcep}>
+        <ConceptosForm añadirConcepto={añadirConcepto} onOpenCloseConcep={onOpenCloseConcep} />
+      </BasicModal>
+
+      <BasicModal title="Editar concepto" show={showEditConcep} onClose={onOpenEditConcep}>
+        <ConceptosEditForm
+          concepto={conceptoEdit}
+          onSave={(updatedConcepto) => {
+  
+            const updatedConceptos = conceptos.map((concepto) =>
+              concepto === conceptoEdit ? updatedConcepto : concepto
+            )
+            setConceptos(updatedConceptos)      
+          }}
+          onCloseEditConcep={onCloseEditConcep}
+          onOpenCloseConfirm={onOpenCloseConfirm}
+        />
+      </BasicModal>
+
 
       <Confirm
         open={showConfirm}
@@ -411,8 +304,6 @@ export function NotaForm(props) {
         onCancel={onHideConfirm}
         content='¿Estás seguro de eliminar el concepto?'
       />
-
     </>
-
   )
 }

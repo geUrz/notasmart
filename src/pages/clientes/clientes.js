@@ -22,7 +22,7 @@ export default function Clientes() {
   const [clientes, setClientes] = useState(null)
 
   useEffect(() => {
-    if(user) {
+    if(user && user.id) {
       if (user.nivel === 'admin') {
         (async () => {
           try {

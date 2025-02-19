@@ -152,27 +152,41 @@ export default async function handler(req, res) {
         }
     } else if (req.method === 'PUT') {
         
-        const { id } = req.query;
-
         if (!id) {
             return res.status(400).json({ error: 'ID del usuario es necesario para actualizar' });
         }
 
-        const { nombre, usuario, email, nivel, folios, isactive } = req.body;
+        const { nombre, usuario, email, nivel, folios, isactive, newPassword } = req.body;
+
+        let updateData = { nombre, usuario, email, nivel, folios, isactive };
+
+        if (newPassword) {
+            const hashedPassword = await bcrypt.hash(newPassword, 10);
+            updateData.password = hashedPassword;
+        }
 
         try {
             const [result] = await connection.query(
                 `UPDATE usuarios 
-                 SET nombre = ?, usuario = ?, email = ?, nivel = ?, folios = ?, isactive = ?
+                 SET nombre = ?, usuario = ?, email = ?, nivel = ?, folios = ?, isactive = ?, password = ?
                  WHERE id = ?`,
-                [nombre, usuario, email, nivel, folios, isactive, id]
+                [
+                    updateData.nombre, 
+                    updateData.usuario, 
+                    updateData.email, 
+                    updateData.nivel, 
+                    updateData.folios, 
+                    updateData.isactive, 
+                    updateData.password || null, 
+                    id
+                ]
             );
 
             if (result.affectedRows === 0) {
                 return res.status(404).json({ error: 'Usuario no encontrado' });
             }
 
-            res.status(200).json({ id, nombre, usuario, email, nivel, folios, isactive });
+            res.status(200).json({ id, ...updateData });
         } catch (error) {
             res.status(500).json({ error: error.message });
         }

@@ -11,10 +11,11 @@
 }
 
 .logo h1{
+  font-size: 24px;
   font-weight: 600 !important;
 }
 
 .logo img{
   margin: 0 10px;
-  height: 80px;
+  height: 60px;
 }

@@ -14,7 +14,9 @@ export function UsuarioEditForm(props) {
     email: usuarioData.email,
     nivel: usuarioData.nivel,
     folios: usuarioData.folios,
-    isactive: usuarioData.isactive
+    isactive: usuarioData.isactive,
+    newPassword: '',
+    confirmPassword: ''
   })
 
   const [errors, setErrors] = useState({})
@@ -61,10 +63,22 @@ export function UsuarioEditForm(props) {
       return
     }
 
+    if (formData.newPassword && formData.newPassword !== formData.confirmPassword) {
+      setError('Las contraseñas no coinciden')
+      return
+    }
+
     try {
       await axios.put(`/api/usuarios/usuarios?id=${usuarioData.id}`, {
-        ...formData
+        nombre: formData.nombre,
+        usuario: formData.usuario,
+        email: formData.email,
+        nivel: formData.nivel,
+        folios: usuarioData.folios,
+        isactive: formData.isactive,
+        newPassword: formData.newPassword
       })
+      
       onReload()
       actualizarUsuario(formData)
       onOpenCloseEdit()
@@ -166,6 +180,24 @@ export function UsuarioEditForm(props) {
               onChange={(e, { value }) => setFormData({ ...formData, isactive: Number(value) })}
             />
             {errors.isactive && <Message negative>{errors.isactive}</Message>}
+          </FormField>
+          <FormField>
+            <Label>Nueva contraseña</Label>
+            <Input
+              name='newPassword'
+              type='password'
+              value={formData.newPassword}
+              onChange={handleChange}
+            />
+          </FormField>
+          <FormField>
+            <Label>Confirmar nueva contraseña</Label>
+            <Input
+              name='confirmPassword'
+              type='password'
+              value={formData.confirmPassword}
+              onChange={handleChange}
+            />
           </FormField>
         </FormGroup>
         <Button primary onClick={handleSubmit}>
