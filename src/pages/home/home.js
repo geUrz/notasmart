@@ -44,7 +44,7 @@ export default function Home() {
         (async () => {
           try {
             const res = await axios.get(`/api/usuarios/usuarios?usuario_id=${user.id}`)
-            setNotas(res.data)
+            setUsers(res.data)
           } catch (error) {
             console.error(error)
           }
