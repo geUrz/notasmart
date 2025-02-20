@@ -2,7 +2,7 @@
   "name": "NotaSmart",
   "short_name": "NotaSmart",
   "description": "Una aplicación para crear notas de venta, registrar ingresos y generar archivos PDF para enviarlos o guardarlos. Ideal para pequeñas empresas y emprendedores que necesiten gestionar sus transacciones de manera fácil y eficiente.",
-  "start_url": "/notasmart",
+  "start_url": "/join/signin",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
