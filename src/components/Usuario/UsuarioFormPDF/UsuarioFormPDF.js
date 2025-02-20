@@ -125,6 +125,7 @@ export function UsuarioFormPDF(props) {
                 type="text"
                 value={facebook || ''}
                 onChange={(e) => setFacebook(e.target.value)}
+                placeholder='Ejemplo: https://www.facebook.com/miperfil'
               />
             </FormField>
             <FormField>
@@ -133,6 +134,7 @@ export function UsuarioFormPDF(props) {
                 type="text"
                 value={web || ''}
                 onChange={(e) => setWeb(e.target.value)}
+                placeholder='Ejemplo: https://www.mipagina.com'
               />
             </FormField>
           </FormGroup>

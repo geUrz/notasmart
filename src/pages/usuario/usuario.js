@@ -5,7 +5,7 @@ import { FaCheck, FaEdit, FaImage, FaTimes, FaUser } from 'react-icons/fa'
 import { Button, Image } from 'semantic-ui-react'
 import { useEffect, useState } from 'react'
 import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
-import { ModCuentaForm, UsuarioFormEditPDF, UsuarioFormPDF } from '@/components/Usuario'
+import { ModCuentaForm, UsuarioAddDatosImage, UsuarioFormEditPDF, UsuarioFormPDF } from '@/components/Usuario'
 import { BiSolidFilePdf } from 'react-icons/bi'
 import styles from './usuario.module.css'
 import axios from 'axios'
@@ -209,7 +209,7 @@ export default function Usuario() {
       </BasicModal>
 
       <BasicModal title="Subir imagen" show={showSubirImg} onClose={onCloseSubirImg}>
-        {datoPDF &&
+        {datoPDF ?
           <UploadImg
           reload={reload}
           onReload={onReload}
@@ -221,7 +221,8 @@ export default function Usuario() {
             onCloseSubirImg()
           }}
           selectedImageKey="logo"
-        />
+        /> :
+        <UsuarioAddDatosImage onCloseSubirImg={onCloseSubirImg} />
         }
       </BasicModal>
 

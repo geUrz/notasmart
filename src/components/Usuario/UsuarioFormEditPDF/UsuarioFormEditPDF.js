@@ -135,6 +135,7 @@ export function UsuarioFormEditPDF(props) {
               name="facebook"
               value={formData.facebook}
               onChange={handleChange}
+              placeholder='Ejemplo: https://www.facebook.com/miperfil'
             />
           </FormField>
           <FormField>
@@ -146,6 +147,7 @@ export function UsuarioFormEditPDF(props) {
               name="web"
               value={formData.web}
               onChange={handleChange}
+              placeholder='Ejemplo: https://www.mipagina.com'
             />
           </FormField>
         </FormGroup>
