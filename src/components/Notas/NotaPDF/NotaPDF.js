@@ -14,97 +14,95 @@ export function NotaPDF(props) {
 
     if (!nota) return
 
-    const toggleIVA = JSON.parse(localStorage.getItem('ontoggleIVA') || 'true')
+    const toggleIVA = JSON.parse(localStorage.getItem('ontoggleIVA') || 'false')
+    const activeToggle = JSON.parse(localStorage.getItem("activeToggle") || "1");
 
     const doc = new jsPDF(
       {
         orientation: 'p',
         unit: 'mm',
-        format: 'a4'
+        format: 'a5'
       }
     )
 
     const logoImg = getValueOrDefault(datoPDF?.logo)
     const logoImgDefault = 'img/logo.png'
-    const logoWidth = 68
-    const logoHeight = 18
-    const marginRightLogo = 12
+    const logoWidth = 32
+    const logoHeight = 32
+    const marginLeftLogo = 6
 
     const pageWidth = doc.internal.pageSize.getWidth()
 
-    const xPosition = pageWidth - logoWidth - marginRightLogo
+    const xPosition = marginLeftLogo
 
     if (logoImg && logoImg.startsWith('/api/')) {
       // Validamos si la URL de la imagen es válida (por ejemplo, comienza con 'http')
       try {
         // Intentamos agregar la imagen al PDF
-        doc.addImage(logoImg, 'PNG', xPosition, 18, logoWidth, logoHeight)
+        doc.addImage(logoImg, 'PNG', xPosition, 6, logoWidth, logoHeight)
       } catch (error) {
         console.error('Error al agregar la imagen:', error)
-        doc.addImage(logoImgDefault, 'PNG', xPosition, 18, logoWidth, logoHeight)
+        doc.addImage(logoImgDefault, 'PNG', xPosition, 6, logoWidth, logoHeight)
       }
     } else {
-      doc.addImage(logoImgDefault, 'PNG', xPosition, 18, logoWidth, logoHeight)
+      doc.addImage(logoImgDefault, 'PNG', xPosition, 6, logoWidth, logoHeight)
     }
 
     doc.setFont('helvetica')
 
-    const marginRight = 12
-    const font1 = 12
-    const font2 = 10
-    const font3 = 9
+    const marginRight = 6
+    const font1 = 10
+    const font2 = 9
+    const font3 = 8
 
     doc.setFontSize(font2)
     doc.setTextColor(0, 0, 0)
-    doc.text(getValueOrWhite(datoPDF?.fila1), 15, 23)
-    doc.setFontSize(font2)
+    doc.text(getValueOrWhite(datoPDF?.fila1), doc.internal.pageSize.width - 6 - doc.getTextWidth(getValueOrWhite(datoPDF?.fila1)), 10)
     doc.setTextColor(120, 120, 120)
-    doc.text(getValueOrWhite(datoPDF?.fila2), 15, 27)
-    doc.text(getValueOrWhite(datoPDF?.fila3), 15, 31)
-    doc.text(getValueOrWhite(datoPDF?.fila4), 15, 35)
-    doc.text(getValueOrWhite(datoPDF?.fila5), 15, 39)
-    doc.setFontSize(font3)
-    doc.text(getValueOrWhite(datoPDF?.fila6), 15, 43)
-    doc.text(getValueOrWhite(datoPDF?.fila7), 15, 47)
+    doc.text(getValueOrWhite(datoPDF?.fila2), doc.internal.pageSize.width - 6 - doc.getTextWidth(getValueOrWhite(datoPDF?.fila2)), 14)
+    doc.text(getValueOrWhite(datoPDF?.fila3), doc.internal.pageSize.width - 6 - doc.getTextWidth(getValueOrWhite(datoPDF?.fila3)), 18)
+    doc.text(getValueOrWhite(datoPDF?.fila4), doc.internal.pageSize.width - 6 - doc.getTextWidth(getValueOrWhite(datoPDF?.fila4)), 22)
+    doc.text(getValueOrWhite(datoPDF?.fila5), doc.internal.pageSize.width - 6 - doc.getTextWidth(getValueOrWhite(datoPDF?.fila5)), 26)
+    doc.text(getValueOrWhite(datoPDF?.fila7), doc.internal.pageSize.width - 6 - doc.getTextWidth(getValueOrWhite(datoPDF?.fila7)), 30)
 
     doc.setFontSize(font2)
     doc.setTextColor(0, 0, 0)
-    doc.text('Cliente', 15, 54)
+    doc.text('Cliente', 6, 45)
     doc.setFontSize(font2)
     doc.setTextColor(120, 120, 120)
-    doc.text(`${getValueOrDefault(nota.cliente_cliente)}`, 15, 58)
+    doc.text(`${getValueOrDefault(nota.cliente_cliente)}`, 6, 49)
     doc.setFontSize(font2)
     doc.setTextColor(0, 0, 0)
-    doc.text('Atención a', 15, 64)
+    doc.text('Atención a', 6, 55)
     doc.setFontSize(font2)
     doc.setTextColor(120, 120, 120)
-    doc.text(`${getValueOrDefault(nota.cliente_contacto)}`, 15, 68)
+    doc.text(`${getValueOrDefault(nota.cliente_contacto)}`, 6, 59)
 
     doc.setFontSize(font1)
     doc.setFont("helvetica", "bold")
     doc.setTextColor(0, 0, 0)
-    doc.text('NOTA DE VENTA', doc.internal.pageSize.width - marginRight - doc.getTextWidth('NOTA DE VENTA'), 44)
+    doc.text('NOTA DE VENTA', doc.internal.pageSize.width - 7.2 - doc.getTextWidth('NOTA DE VENTA'), 38)
     doc.setFontSize(font2)
     doc.setFont("helvetica", "normal")
     doc.setTextColor(0, 0, 0)
-    doc.text('Folio', doc.internal.pageSize.width - marginRight - doc.getTextWidth('Folio'), 50)
+    doc.text('Folio', doc.internal.pageSize.width - 6 - doc.getTextWidth('Folio'), 45)
     doc.setFontSize(font2)
     doc.setTextColor(120, 120, 120)
-    doc.text(`${getValueOrDefault(nota.folio)}`, doc.internal.pageSize.width - marginRight - doc.getTextWidth(`${getValueOrDefault(nota.folio)}`), 54)
+    doc.text(`${getValueOrDefault(nota.folio)}`, doc.internal.pageSize.width - marginRight - doc.getTextWidth(`${getValueOrDefault(nota.folio)}`), 49)
 
     doc.setFontSize(font2)
     doc.setTextColor(0, 0, 0)
-    doc.text('Fecha', doc.internal.pageSize.width - marginRight - doc.getTextWidth('Fecha'), 60)
+    doc.text('Fecha', doc.internal.pageSize.width - marginRight - doc.getTextWidth('Fecha'), 55)
     doc.setFontSize(font2)
     doc.setTextColor(120, 120, 120)
     doc.text(
       `${formatDateIncDet(getValueOrDefault(nota.createdAt))}`,
-      doc.internal.pageSize.width - 12 - doc.getTextWidth(`${formatDateIncDet(getValueOrDefault(nota.createdAt))}`),
-      64
+      doc.internal.pageSize.width - 6 - doc.getTextWidth(`${formatDateIncDet(getValueOrDefault(nota.createdAt))}`),
+      59
     )
 
     doc.autoTable({
-      startY: 75,
+      startY: 65,
       head: [
         [
           { content: 'Tipo', styles: { halign: 'center' } },
@@ -126,26 +124,29 @@ export function NotaPDF(props) {
         { content: `$${getValueOrDefault(formatCurrency(concepto.precio * concepto.cantidad))}`, styles: { halign: 'right' } },
       ]),
       headStyles: {
-        fillColor: [255, 255, 255],
+        fillColor : {
+          1: [100, 100, 100], 
+          2: [1, 121, 202],   
+          3: [151, 202, 53],   
+          4: [233, 77, 51],   
+        }[activeToggle] || [100, 100, 100],
         fontSize: `${font3}`,
         fontStyle: 'bold',
-        textColor: [0, 0, 0],
-        lineWidth: { bottom: 1 },
-        lineColor: [100, 100, 100] 
+        textColor: [255, 255, 255]
       },
       bodyStyles: { fontSize: `${font3}` },
       columnStyles: {
-        0: { cellWidth: 20 },
-        1: { cellWidth: 95 },
-        2: { cellWidth: 25 },
-        3: { cellWidth: 18 },
-        4: { cellWidth: 25 },
+        0: { cellWidth: 14 },
+        1: { cellWidth: 70 },
+        2: { cellWidth: 20 },
+        3: { cellWidth: 12 },
+        4: { cellWidth: 20 },
 
         cellPadding: 1.5,
         valign: 'middle'
       },
 
-      margin: { top: 0, left: 15, bottom: 0, right: 12 },
+      margin: { top: 0, left: 6, bottom: 0, right: 6 },
 
     })
 
@@ -158,12 +159,12 @@ export function NotaPDF(props) {
 
     const { subtotal, iva, total } = calcularTotales()
 
-    const top = 230
+    const top = 210
     const boxWidth = 130
     const boxHeight = 30
 
     doc.setDrawColor(255, 255, 255)
-    doc.rect(marginRight, top, boxWidth, boxHeight)
+    doc.rect(marginRight, top, boxWidth, boxHeight, 'F')
 
     const verticalData = [
       ...toggleIVA ? [
@@ -174,41 +175,46 @@ export function NotaPDF(props) {
     ];
 
     const pWidth = doc.internal.pageSize.getWidth()
-    const mRight = 12
+    const mRight = 6
     const tableWidth = 44
     const marginLeft = pWidth - mRight - tableWidth
 
     doc.autoTable({
-      startY: 230,
+      startY: 185,
       margin: { left: marginLeft, bottom: 0, right: marginRight },
       body: verticalData,
       styles: {
         cellPadding: 1,
         valign: 'middle',
-        fontSize: font2,
+        fontSize: font3,
+        textColor: [255, 255, 255 ]
       },
       columnStyles: {
-        0: { cellWidth: 20, fontStyle: 'bold', halign: 'right' },
-        1: { cellWidth: 24, halign: 'right' }
+        0: { cellWidth: 20, fontStyle: 'bold', halign: 'right', 
+          fillColor : {
+            1: [100, 100, 100], 
+            2: [1, 121, 202],   
+            3: [151, 202, 53],   
+            4: [233, 77, 51],   
+          }[activeToggle] || [100, 100, 100]},
+        1: { cellWidth: 24, halign: 'right',  textColor: [0, 0, 0 ], fillColor: [240, 240, 240] }
       }
     })
 
 
     doc.setFontSize(`${font3}`)
     doc.setTextColor(0, 0, 0)
-    doc.text('• Precio en pesos.', 50, 260)
-    doc.text('• Este documento no es un comprobante fiscal válido.', 50, 265)
-    doc.text('• Para efectos fiscales, se requiere una factura electrónica.', 50, 270)
-
-    const qrCodeText = datoPDF?.facebook || 'google.com'
-    const qrCodeDataUrl = await QRCode.toDataURL(qrCodeText)
-    doc.addImage(qrCodeDataUrl, 'PNG', 10, 248, 40, 40)
+    doc.text('• Precio en pesos.', 32.5, 187)
+    doc.text('• Este documento no es un comprobante', 32.5, 191)
+    doc.text('  fiscal válido.', 32.5, 194)
+    doc.text('• Para efectos fiscales, se requiere', 32.5, 198)
+    doc.text('  una factura electrónica.', 32.5, 201)
 
     const addFooterText = () => {
       const text = getValueOrWhite(datoPDF?.web)
       const textWidth = doc.getTextWidth(text)
       const x = (pageWidth - textWidth) / 2
-      const y = doc.internal.pageSize.height - 5 // Posición a 10 mm del borde inferior
+      const y = doc.internal.pageSize.height - 3 // Posición a 10 mm del borde inferior
       doc.setFontSize(8)
       doc.setTextColor(120, 120, 120)
       doc.text(text, x, y)
@@ -216,8 +222,45 @@ export function NotaPDF(props) {
 
     addFooterText()
 
-    doc.save(`nota_de_venta_${nota.folio}.pdf`)
+    const pdfUrl = `http://localhost:3003/api/download-pdf/nota_${nota.folio}.pdf`  // Asegúrate de que esta URL sea válida
+  const fileQRCode = await QRCode.toDataURL(pdfUrl);
+  doc.addImage(fileQRCode, 'PNG', 2.5, 180, 30, 30);  // Coloca el QR en la misma posición y tamaño
+
+  // Crear el archivo PDF
+  const pdfBlob = doc.output('blob');
+  const formData = new FormData();
+  formData.append('file', pdfBlob, `nota_${nota.folio}.pdf`);
+
+  try {
+    // Hacer la solicitud POST para subir el archivo
+    const res = await fetch('/api/upload-pdf/upload-pdf', {
+      method: 'POST',
+      body: formData,
+    });
+
+    // Verificar si la respuesta fue exitosa
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error('Error al subir el archivo:', errorText);
+      throw new Error('Error en la carga del archivo');
+    }
+
+    // Si la respuesta es exitosa, obtener la URL del archivo
+    const { fileUrl } = await res.json();
+
+    // Ya con la URL del archivo, puedes seguir procesando el documento
+    // Aquí ya no es necesario agregar otro QR ya que ya se añadió uno antes
+
+    // Guardar el PDF localmente para descarga inmediata
+    doc.save(`nota_${nota.folio}.pdf`);
+
+  } catch (error) {
+    console.error('Error subiendo el archivo:', error);
   }
+}
+
+    //doc.save(`nota_de_venta_${nota.folio}.pdf`)
+  
 
   return (
 

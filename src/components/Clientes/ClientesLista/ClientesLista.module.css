@@ -96,19 +96,13 @@
 .column2 h1{
   font-size: 14px;
   font-weight: 600 !important;
+  text-transform: capitalize;
   color: var(--clr1);
   cursor: pointer;
 }
 
 .column2 h2{
   font-size: 14px;
+  text-transform: capitalize;
   cursor: pointer;
-}
-
-@media screen and (min-width:768px) {
-
-  .section{
-    max-width: 800px;
-  }
-
 }

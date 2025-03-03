@@ -20,7 +20,6 @@ export default async function handler(req, res) {
                 fila6, 
                 fila7, 
                 logo, 
-                facebook, 
                 web,
                 createdAt
               FROM datos_pdf 
@@ -52,7 +51,6 @@ export default async function handler(req, res) {
             fila6, 
             fila7, 
             logo, 
-            facebook, 
             web,
             createdAt
           FROM datos_pdf 
@@ -63,14 +61,14 @@ export default async function handler(req, res) {
     }
   } else if (req.method === 'POST') {
     try {
-      const { usuario_id, fila1, fila2, fila3, fila4, fila5, fila6, fila7, facebook, web } = req.body;
+      const { usuario_id, fila1, fila2, fila3, fila4, fila5, fila6, fila7, web } = req.body;
       if ( !usuario_id ) {
         return res.status(400).json({ error: 'Todos los datos son obligatorios' })
       }
 
       const [result] = await connection.query(
-        'INSERT INTO datos_pdf (usuario_id, fila1, fila2, fila3, fila4, fila5, fila6, fila7, facebook, web) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [usuario_id, fila1, fila2, fila3, fila4, fila5, fila6, fila7, facebook, web]
+        'INSERT INTO datos_pdf (usuario_id, fila1, fila2, fila3, fila4, fila5, fila6, fila7, web) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [usuario_id, fila1, fila2, fila3, fila4, fila5, fila6, fila7, web]
       )
 
       const newClient = { id: result.insertId }
@@ -80,7 +78,7 @@ export default async function handler(req, res) {
     }
   } else if (req.method === 'PUT') {
 
-    const { fila1, fila2, fila3, fila4, fila5, fila6, fila7, facebook, web } = req.body;
+    const { fila1, fila2, fila3, fila4, fila5, fila6, fila7, web } = req.body;
 
     if (!id) {
       return res.status(400).json({ error: 'ID es obligatorio' })
@@ -88,8 +86,8 @@ export default async function handler(req, res) {
 
     try {
       const [result] = await connection.query(
-        'UPDATE datos_pdf SET fila1 = ?, fila2 = ?, fila3 = ?, fila4 = ?, fila5 = ?, fila6 = ?, fila7 = ?, facebook = ?, web = ? WHERE id = ?',
-        [fila1, fila2, fila3, fila4, fila5, fila6, fila7, facebook, web, id]
+        'UPDATE datos_pdf SET fila1 = ?, fila2 = ?, fila3 = ?, fila4 = ?, fila5 = ?, fila6 = ?, fila7 = ?, web = ? WHERE id = ?',
+        [fila1, fila2, fila3, fila4, fila5, fila6, fila7, web, id]
       )
 
         if (result.affectedRows === 0) {

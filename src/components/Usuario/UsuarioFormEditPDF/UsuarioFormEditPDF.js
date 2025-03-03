@@ -16,7 +16,6 @@ export function UsuarioFormEditPDF(props) {
     fila5: datoPDF.fila5,
     fila6: datoPDF.fila6,
     fila7: datoPDF.fila7,
-    facebook: datoPDF.facebook,
     web: datoPDF.web
   })
 
@@ -51,7 +50,7 @@ export function UsuarioFormEditPDF(props) {
         <FormGroup widths='equal'>
           <FormField>
             <Label>
-              Fila 1
+              Nombre de mi negocio
             </Label>
             <Input
               type="text"
@@ -62,7 +61,7 @@ export function UsuarioFormEditPDF(props) {
           </FormField>
           <FormField>
             <Label>
-              Fila 2
+             Calle / Numero
             </Label>
             <Input
               type="text"
@@ -73,7 +72,7 @@ export function UsuarioFormEditPDF(props) {
           </FormField>
           <FormField>
             <Label>
-              Fila 3
+              Colonia
             </Label>
             <Input
               type="text"
@@ -84,7 +83,7 @@ export function UsuarioFormEditPDF(props) {
           </FormField>
           <FormField>
             <Label>
-              Fila 4
+              Código postal
             </Label>
             <Input
               type="text"
@@ -95,7 +94,7 @@ export function UsuarioFormEditPDF(props) {
           </FormField>
           <FormField>
             <Label>
-              Fila 5
+              Ciudad / Estado
             </Label>
             <Input
               type="text"
@@ -106,7 +105,7 @@ export function UsuarioFormEditPDF(props) {
           </FormField>
           <FormField>
             <Label>
-              Fila 6
+              RFC
             </Label>
             <Input
               type="text"
@@ -117,25 +116,13 @@ export function UsuarioFormEditPDF(props) {
           </FormField>
           <FormField>
             <Label>
-              Fila 7
+              Teléfono
             </Label>
             <Input
               type="text"
               name="fila7"
               value={formData.fila7}
               onChange={handleChange}
-            />
-          </FormField>
-          <FormField>
-            <Label>
-              Facebook
-            </Label>
-            <Input
-              type="text"
-              name="facebook"
-              value={formData.facebook}
-              onChange={handleChange}
-              placeholder='Ejemplo: https://www.facebook.com/miperfil'
             />
           </FormField>
           <FormField>

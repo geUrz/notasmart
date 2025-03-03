@@ -18,6 +18,7 @@
 
 .section svg, .section path{
   font-size: 80px;
+  color: azure;
 }
 
 .datos_usuario{
@@ -37,11 +38,11 @@
 
 .datos_usuario h2{
   margin-top: 5px;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .iconEdit{
-  margin-top: 50px;
+  margin: 50px 0;
   width: 100%;
   height: auto;
   display: flex;
@@ -80,7 +81,6 @@
 
 .datos_pdf{
   padding: 0 10px;
-  margin-top: 50px;
   width: 100%;
   height: auto;
   display: flex;
@@ -110,7 +110,7 @@
 
 .datos_pdf div h2{
   margin: 2px 0 10px 0 !important;
-  font-size: 12.5px;
+  font-size: 14px;
   text-align: center;
 }
 
@@ -126,37 +126,80 @@
   cursor: pointer;
 }
 
-.iconPDF{
-  margin: 50px;
+.toggleMain{
+  margin-top: 50px;
+  width: 100%;
+  max-width: 250px;
+  height: auto;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
-.iconPDF div{
+.toggleMain h1{
+  font-size: 16px;
+  text-align: center;
+}
+
+.toggleMain > div{
+  width: 100%;
+  max-width: 150px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.toggleMain > div > div{
+  width: 100%;
+  height: auto;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+}
+
+.toggleMain > div:first-of-type{
+  margin-top: 10px;
+}
+
+.toggleMain h2{
+  margin-right: 10px !important;
+  font-size: 14px;
+}
+
+.toggleClr1ON, 
+.toggleClr2ON,
+.toggleClr3ON,
+.toggleClr4ON,
+.toggleClrOFF{
+  margin-top: 8px;
+}
+
+.toggleClr1ON svg, .toggleClr1ON path, 
+.toggleClr2ON svg, .toggleClr2ON path,
+.toggleClr3ON svg, .toggleClr3ON path,
+.toggleClr4ON svg, .toggleClr4ON path,
+.toggleClrOFF svg, .toggleClrOFF path{
+  font-size: 38px;
   cursor: pointer;
 }
 
-.iconPDF svg, .iconPDF path{
-  font-size: 48px;
-  cursor: pointer;
+.toggleClr2ON svg, .toggleClr2ON path{
+  color: var(--clr3);
 }
 
-.iconPDF div:hover svg, .iconPDF div:hover path{
-  color: var(--bg5);
+.toggleClr3ON svg, .toggleClr3ON path{
+  color: green;
 }
 
-.iconPDF div:active svg, .iconPDF div:active path{
-  color: var(--bg4);
+.toggleClr4ON svg, .toggleClr4ON path{
+  color: red;
 }
 
-.icon2 svg, .icon2 path{
-  margin: 0 0 -45px -45px;
-  font-size: 24px;
-  color: var(--clr1);
+.toggleClrOFF svg, .toggleClrOFF path{
+  color: gray;
 }
 
 .iconClose{

@@ -6,7 +6,7 @@ import { Button, Image } from 'semantic-ui-react'
 import { useEffect, useState } from 'react'
 import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
 import { ModCuentaForm, UsuarioAddDatosImage, UsuarioFormEditPDF, UsuarioFormPDF } from '@/components/Usuario'
-import { BiSolidFilePdf } from 'react-icons/bi'
+import { BiSolidFilePdf, BiSolidToggleLeft, BiSolidToggleRight } from 'react-icons/bi'
 import styles from './usuario.module.css'
 import axios from 'axios'
 import { getValueOrDefault } from '@/helpers'
@@ -89,6 +89,20 @@ export default function Usuario() {
     }
   }
 
+  const [activeToggle, setActiveToggle] = useState(() => {
+    return localStorage.getItem("activeToggle") 
+      ? parseInt(localStorage.getItem("activeToggle")) 
+      : 1;
+  })
+
+  useEffect(() => {
+    localStorage.setItem("activeToggle", activeToggle)
+  }, [activeToggle])
+
+  const onToggle = (index) => {
+    setActiveToggle(index)
+  }
+
   if (loading) {
     <Loading size={45} loading={0} />
   }
@@ -125,36 +139,32 @@ export default function Usuario() {
             <h1>Datos de mi negocio</h1>
             <div className={styles.datos}>
               <div>
-                <h1>Fila 1</h1>
+                <h1>Nombre de mi negocio</h1>
                 <h2>{getValueOrDefault(datoPDF?.fila1)}</h2>
               </div>
               <div>
-                <h1>Fila 2</h1>
+                <h1>Calle / Numero</h1>
                 <h2>{getValueOrDefault(datoPDF?.fila2)}</h2>
               </div>
               <div>
-                <h1>Fila 3</h1>
+                <h1>Colonia</h1>
                 <h2>{getValueOrDefault(datoPDF?.fila3)}</h2>
               </div>
               <div>
-                <h1>Fila 4</h1>
+                <h1>Código postal</h1>
                 <h2>{getValueOrDefault(datoPDF?.fila4)}</h2>
               </div>
               <div>
-                <h1>Fila 5</h1>
+                <h1>Ciudad / Estado</h1>
                 <h2>{getValueOrDefault(datoPDF?.fila5)}</h2>
               </div>
               <div>
-                <h1>Fila 6</h1>
+                <h1>RFC</h1>
                 <h2>{getValueOrDefault(datoPDF?.fila6)}</h2>
               </div>
               <div>
-                <h1>Fila 7</h1>
+                <h1>Teléfono</h1>
                 <h2>{getValueOrDefault(datoPDF?.fila7)}</h2>
-              </div>
-              <div>
-                <h1>Facebook</h1>
-                <h2>{getValueOrDefault(datoPDF?.facebook)}</h2>
               </div>
               <div>
                 <h1>Página web</h1>
@@ -178,14 +188,33 @@ export default function Usuario() {
 
           </div>
 
-          <div className={styles.iconPDF}>
+          <div className={styles.toggleMain}>
+            <h1>Selecciona la combinación de colores de la nota</h1>
+           
+            <div>
+      {[
+        { id: 1, label: "Gris / Negro", onClass: styles.toggleClr1ON },
+        { id: 2, label: "Gris / Azul", onClass: styles.toggleClr2ON },
+        { id: 3, label: "Gris / Verde", onClass: styles.toggleClr3ON },
+        { id: 4, label: "Gris / Rojo", onClass: styles.toggleClr4ON }
+      ].map(({ id, label, onClass }) => (
+        <div key={id}>
+          <h2>{label}</h2>
+          <div
+            className={activeToggle === id ? onClass : styles.toggleClrOFF}
+            onClick={() => onToggle(id)}
+          >
+            {activeToggle === id ? <BiSolidToggleRight /> : <BiSolidToggleLeft />}
+          </div>
+        </div>
+      ))}
+    </div>
+
+          </div>
+
+          <div className={styles.iconEdit}>
             <div onClick={onOpenCloseFormPDF}>
-              <div>
-                <BiSolidFilePdf />
-              </div>
-              <div className={styles.icon2}>
-                <FaEdit />
-              </div>
+              <FaEdit />
             </div>
           </div>
 
@@ -200,7 +229,7 @@ export default function Usuario() {
         <ModCuentaForm onOpenClose={onOpenClose} />
       </BasicModal>
 
-      <BasicModal title={datoPDF ? 'editar' : 'crear'} show={showFormPDF} onClose={onOpenCloseEditPDF}>
+      <BasicModal title={datoPDF ? 'editar negocio' : 'crear negocio'} show={showFormPDF} onClose={onOpenCloseEditPDF}>
         {datoPDF ? (
           <UsuarioFormEditPDF reload={reload} onReload={onReload} datoPDF={datoPDF} onOpenCloseFormPDF={onOpenCloseFormPDF} />
         ) : (

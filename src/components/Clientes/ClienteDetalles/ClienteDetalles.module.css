@@ -55,6 +55,10 @@
   white-space: pre-line;
 }
 
+.box1_1 h2{
+  text-transform: capitalize;
+}
+
 .box1_2{
   width: 35%;
   display: flex;

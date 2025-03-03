@@ -130,8 +130,6 @@ export function UploadImg(props) {
               />
               <span>{fileName}</span>
               {error && <Message negative>{error}</Message>}
-              <h1>Tamaño recomendado: 620 x 170</h1>
-              <h1>Formatos: jpg, jpeg, png y webp</h1>
               <Button
                 onClick={handleImageUpload}
                 primary

@@ -29,11 +29,11 @@
 }
 
 .tab:hover{
-  background-color: var(--clr0);
+  background-color: var(--bg4);
 }
 
 .tab:active{
-  background-color: var(--clr1);
+  background-color: var(--bg5);
 }
 
 .tab div{

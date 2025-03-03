@@ -16,7 +16,6 @@ export function UsuarioFormPDF(props) {
   const [fila5, setFila5] = useState('')
   const [fila6, setFila6] = useState('')
   const [fila7, setFila7] = useState('')
-  const [facebook, setFacebook] = useState('')
   const [web, setWeb] = useState('')
 
   const crearDatoPDF = async (e) => {
@@ -32,7 +31,6 @@ export function UsuarioFormPDF(props) {
         fila5,
         fila6,
         fila7,
-        facebook,
         web
       })
 
@@ -43,7 +41,6 @@ export function UsuarioFormPDF(props) {
       setFila5('')
       setFila6('')
       setFila7('')
-      setFacebook('')
       setWeb('')
 
       onReload()
@@ -64,7 +61,7 @@ export function UsuarioFormPDF(props) {
       <Form>
           <FormGroup widths='equal'>
             <FormField>
-              <Label>Fila 1</Label>
+              <Label>Nombre de mi negocio</Label>
               <Input
                 type="text"
                 value={fila1 || ''}
@@ -72,7 +69,7 @@ export function UsuarioFormPDF(props) {
               />
             </FormField>
             <FormField>
-              <Label>Fila 2</Label>
+              <Label>Calle / Numero</Label>
               <Input
                 type="text"
                 value={fila2 || ''}
@@ -80,7 +77,7 @@ export function UsuarioFormPDF(props) {
               />
             </FormField>
             <FormField>
-              <Label>Fila 3</Label>
+              <Label>Colonia</Label>
               <Input
                 type="text"
                 value={fila3 || ''}
@@ -88,7 +85,7 @@ export function UsuarioFormPDF(props) {
               />
             </FormField>
             <FormField>
-              <Label>Fila 4</Label>
+              <Label>Código postal</Label>
               <Input
                 type="text"
                 value={fila4 || ''}
@@ -96,7 +93,7 @@ export function UsuarioFormPDF(props) {
               />
             </FormField>
             <FormField>
-              <Label>Fila 5</Label>
+              <Label>Ciudad / Estado</Label>
               <Input
                 type="text"
                 value={fila5 || ''}
@@ -104,7 +101,7 @@ export function UsuarioFormPDF(props) {
               />
             </FormField>
             <FormField>
-              <Label>Fila 6</Label>
+              <Label>RFC</Label>
               <Input
                 type="text"
                 value={fila6 || ''}
@@ -112,20 +109,11 @@ export function UsuarioFormPDF(props) {
               />
             </FormField>
             <FormField>
-              <Label>Fila 7</Label>
+              <Label>Teléfono</Label>
               <Input
                 type="text"
                 value={fila7 || ''}
                 onChange={(e) => setFila7(e.target.value)}
-              />
-            </FormField>
-            <FormField>
-              <Label>Facebook</Label>
-              <Input
-                type="text"
-                value={facebook || ''}
-                onChange={(e) => setFacebook(e.target.value)}
-                placeholder='Ejemplo: https://www.facebook.com/miperfil'
               />
             </FormField>
             <FormField>
