@@ -6,7 +6,7 @@ import { Button, Image } from 'semantic-ui-react'
 import { useEffect, useState } from 'react'
 import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
 import { ModCuentaForm, UsuarioAddDatosImage, UsuarioFormEditPDF, UsuarioFormPDF } from '@/components/Usuario'
-import { BiSolidFilePdf, BiSolidToggleLeft, BiSolidToggleRight } from 'react-icons/bi'
+import { BiSolidToggleLeft, BiSolidToggleRight } from 'react-icons/bi'
 import styles from './usuario.module.css'
 import axios from 'axios'
 import { getValueOrDefault } from '@/helpers'
@@ -89,18 +89,28 @@ export default function Usuario() {
     }
   }
 
-  const [activeToggle, setActiveToggle] = useState(() => {
-    return localStorage.getItem("activeToggle") 
-      ? parseInt(localStorage.getItem("activeToggle")) 
-      : 1;
-  })
+  const [activeToggle, setActiveToggle] = useState(1);
 
+  // Usamos `useEffect` para manejar el acceso a localStorage
   useEffect(() => {
-    localStorage.setItem("activeToggle", activeToggle)
-  }, [activeToggle])
+    if (typeof window !== 'undefined') {
+      // Si estamos en el navegador, accedemos a localStorage
+      const savedToggle = localStorage.getItem('activeToggle');
+      if (savedToggle) {
+        setActiveToggle(parseInt(savedToggle));
+      }
+    }
+  }, []);
+
+  // Guardamos el estado del toggle cuando cambie
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('activeToggle', activeToggle);
+    }
+  }, [activeToggle]);
 
   const onToggle = (index) => {
-    setActiveToggle(index)
+    setActiveToggle(index);
   }
 
   if (loading) {
