@@ -16,6 +16,7 @@ export function NotaPDF(props) {
 
     const toggleIVA = JSON.parse(localStorage.getItem('ontoggleIVA') || 'false')
     const activeToggle = JSON.parse(localStorage.getItem("activeToggle") || "1");
+    const marginIMG = JSON.parse(localStorage.getItem("isSquare") || "true");
 
     const doc = new jsPDF(
       {
@@ -27,7 +28,7 @@ export function NotaPDF(props) {
 
     const logoImg = getValueOrDefault(datoPDF?.logo)
     const logoImgDefault = 'img/logo.png'
-    const logoWidth = 32
+    const logoWidth = marginIMG ? 32 : 74
     const logoHeight = 32
     const marginLeftLogo = 6
 

@@ -29,5 +29,47 @@
 }
 
 .main span{
+  text-align: center;
   color: var(--clrBL0);
+}
+
+.toggleMain{
+  margin-bottom: 30px;
+  width: 100%;
+  max-width: 150px;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggleMain > div{
+  margin: 0 10px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggleMain h2{
+  font-size: 12px;
+}
+
+.toggleON, .toggleOFF{
+  margin-left: 5px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggleON svg, .toggleON path, .toggleOFF svg, .toggleOFF path{
+  font-size: 32px;
+  cursor: pointer;
+}
+
+.toggleON svg, .toggleON path{
+  color: var(--clr3);
 }
