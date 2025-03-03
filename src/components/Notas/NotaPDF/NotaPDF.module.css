@@ -17,9 +17,9 @@
 }
 
 .iconPDF div:hover svg, .iconPDF div:hover path{
-  color: var(--bg5);
+  color: var(--clrGR2);
 }
 
 .iconPDF div:active svg, .iconPDF div:active path{
-  color: var(--bg4);
+  color: var(--clrGR3);
 }
