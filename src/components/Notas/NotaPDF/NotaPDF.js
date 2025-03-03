@@ -222,7 +222,7 @@ export function NotaPDF(props) {
 
     addFooterText()
 
-    const pdfUrl = `http://localhost:3003/api/download-pdf/nota_${nota.folio}.pdf`  // Asegúrate de que esta URL sea válida
+    const pdfUrl = `https://clicknetcontrol:8083/api/download-pdf/nota_${nota.folio}.pdf`  // Asegúrate de que esta URL sea válida
   const fileQRCode = await QRCode.toDataURL(pdfUrl);
   doc.addImage(fileQRCode, 'PNG', 2.5, 180, 30, 30);  // Coloca el QR en la misma posición y tamaño
 
