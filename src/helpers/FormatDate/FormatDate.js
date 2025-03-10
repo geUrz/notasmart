@@ -28,6 +28,25 @@ export const formatDateIncDet = (fecha) => {
   return `${day}/${month}/${year}`;
 }
 
+export const formatDateLong = (fecha) => {
+  const date = new Date(fecha);
+  
+  // Obtener los nombres de los días y meses en español
+  const diasSemana = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+  const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
+                 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
+  // Obtener los componentes de la fecha
+  const diaSemana = diasSemana[date.getDay()];
+  const dia = date.getDate();
+  const mes = meses[date.getMonth()];
+  const año = date.getFullYear();
+
+  // Formatear la fecha
+  return `${diaSemana} ${dia} de ${mes} del ${año}`;
+};
+
+
 export const formatDate = (dateString) => {
   const [year, month, day] = dateString.split('-');
   return `${day}/${month}/${year}`;

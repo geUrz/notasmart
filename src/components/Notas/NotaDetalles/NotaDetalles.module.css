@@ -94,22 +94,22 @@
 }
 
 .iconPlus div{
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background-color: var(--bg1);
+  background-color: var(--bg2);
   cursor: pointer;
 }
 
 .iconPlus div:hover{
-  background-color: var(--bg2);
+  background-color: var(--bg3);
 }
 
 .iconPlus div:active{
-  background-color: var(--bg3);
+  background-color: var(--bg4);
 }
 
 .iconPlus svg, .iconPlus path{
@@ -189,22 +189,6 @@
 
 .iconEdit svg, .iconEdit path{
   font-size: 20px;
-  color: var(--clr0);
-  cursor: pointer;
-}
-
-.iconDel{
-  margin-top: 20px;
-  width: 100%;
-  height: auto;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-}
-
-.iconDel svg, .iconDel path{
-  margin-right: 10px;
-  font-size: 20px;
   cursor: pointer;
 }
 
@@ -243,6 +227,23 @@
   cursor: pointer;
 }
 
+.qrMain{
+  margin: 50px 0;
+}
+
+.qrMain svg, .qrMain path{
+  font-size: 50px;
+  cursor: pointer;
+}
+
+.qrMain div:hover svg, .qrMain div:hover path{
+  color: var(--clr2);
+}
+
+.qrMain div:active svg, .qrMain div:active path{
+  color: var(--clr3);
+}
+
 .iconPDF{
   padding: 30px 0;
   width: 100%;
@@ -261,18 +262,18 @@
   cursor: pointer;
 }
 
-.iconPDF div:hover svg, .iconPDF div:hover path{
-  color: red;
-}
-
-.iconPDF div:active svg, .iconPDF div:active path{
-  color: var(--bg4);
-}
-
 @media screen and (min-width: 768px) {
 
   .datos_1 div, .datos_2 div{
     margin: 15px 0; 
+  }
+
+  .sectionTotal_1{
+    width: 100%;
+  }
+  
+  .sectionTotal_2{
+    width: 25%;
   }
 
   .sectionTotal_1 h1{

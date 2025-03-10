@@ -89,6 +89,7 @@ export default function Usuario() {
     }
   }
 
+  const [activeToggleBan, setActiveToggleBan] = useState(1);
   const [activeToggle, setActiveToggle] = useState(1);
 
   // Usamos `useEffect` para manejar el acceso a localStorage
@@ -99,15 +100,25 @@ export default function Usuario() {
       if (savedToggle) {
         setActiveToggle(parseInt(savedToggle));
       }
+
+      const savedToggleBan = localStorage.getItem('activeToggleBan');
+      if (savedToggleBan) {
+        setActiveToggleBan(parseInt(savedToggleBan));
+      }
     }
   }, []);
 
   // Guardamos el estado del toggle cuando cambie
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      localStorage.setItem('activeToggleBan', activeToggleBan);
       localStorage.setItem('activeToggle', activeToggle);
     }
-  }, [activeToggle]);
+  }, [activeToggle, activeToggleBan]);
+
+  const onToggleBan = (index) => {
+    setActiveToggleBan(index);
+  }
 
   const onToggle = (index) => {
     setActiveToggle(index);
@@ -169,17 +180,13 @@ export default function Usuario() {
                 <h2>{getValueOrDefault(datoPDF?.fila5)}</h2>
               </div>
               <div>
-                <h1>RFC</h1>
-                <h2>{getValueOrDefault(datoPDF?.fila6)}</h2>
-              </div>
-              <div>
                 <h1>Teléfono</h1>
                 <h2>{getValueOrDefault(datoPDF?.fila7)}</h2>
               </div>
-              <div>
+              {/* <div>
                 <h1>Página web</h1>
                 <h2>{getValueOrDefault(datoPDF?.web)}</h2>
-              </div>
+              </div> */}
               <div>
                 <h1>Logo</h1>
                 {!datoPDF?.logo ? (
@@ -200,25 +207,43 @@ export default function Usuario() {
 
           <div className={styles.toggleMain}>
             <h1>Selecciona la combinación de colores de la nota</h1>
-           
             <div>
-      {[
-        { id: 1, label: "Gris / Negro", onClass: styles.toggleClr1ON },
-        { id: 2, label: "Gris / Azul", onClass: styles.toggleClr2ON },
-        { id: 3, label: "Gris / Verde", onClass: styles.toggleClr3ON },
-        { id: 4, label: "Gris / Rojo", onClass: styles.toggleClr4ON }
-      ].map(({ id, label, onClass }) => (
-        <div key={id}>
-          <h2>{label}</h2>
-          <div
-            className={activeToggle === id ? onClass : styles.toggleClrOFF}
-            onClick={() => onToggle(id)}
-          >
-            {activeToggle === id ? <BiSolidToggleRight /> : <BiSolidToggleLeft />}
-          </div>
-        </div>
-      ))}
-    </div>
+              <h2>Encabezado</h2>
+              {[
+                { id: 1, label: "Blanco", onClass: styles.toggleClr1ONBan },
+                { id: 2, label: "Gris", onClass: styles.toggleClr2ONBan },
+              ].map(({ id, label, onClass }) => (
+                <div key={id}>
+                  <h3>{label}</h3>
+                  <div
+                    className={activeToggleBan === id ? onClass : styles.toggleClrOFF}
+                    onClick={() => onToggleBan(id)}
+                  >
+                    {activeToggleBan === id ? <BiSolidToggleRight /> : <BiSolidToggleLeft />}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div>
+              <h2>Datos generales</h2>
+              {[
+                { id: 1, label: "Gris / Negro", onClass: styles.toggleClr1ON },
+                { id: 2, label: "Gris / Azul", onClass: styles.toggleClr2ON },
+                { id: 3, label: "Gris / Verde", onClass: styles.toggleClr3ON },
+                { id: 4, label: "Gris / Rojo", onClass: styles.toggleClr4ON },
+                { id: 5, label: "Gris / Naranja", onClass: styles.toggleClr5ON }
+              ].map(({ id, label, onClass }) => (
+                <div key={id}>
+                  <h3>{label}</h3>
+                  <div
+                    className={activeToggle === id ? onClass : styles.toggleClrOFF}
+                    onClick={() => onToggle(id)}
+                  >
+                    {activeToggle === id ? <BiSolidToggleRight /> : <BiSolidToggleLeft />}
+                  </div>
+                </div>
+              ))}
+            </div>
 
           </div>
 
@@ -250,18 +275,18 @@ export default function Usuario() {
       <BasicModal title="Subir imagen" show={showSubirImg} onClose={onCloseSubirImg}>
         {datoPDF ?
           <UploadImg
-          reload={reload}
-          onReload={onReload}
-          itemId={datoPDF.id}
-          endpoint="usuarios"
-          onShowSubirImg={onCloseSubirImg} 
-          onSuccess={(key, url) => {
-            setDatoPDF({ ...datoPDF, logo: url }) 
-            onCloseSubirImg()
-          }}
-          selectedImageKey="logo"
-        /> :
-        <UsuarioAddDatosImage onCloseSubirImg={onCloseSubirImg} />
+            reload={reload}
+            onReload={onReload}
+            itemId={datoPDF.id}
+            endpoint="usuarios"
+            onShowSubirImg={onCloseSubirImg}
+            onSuccess={(key, url) => {
+              setDatoPDF({ ...datoPDF, logo: url })
+              onCloseSubirImg()
+            }}
+            selectedImageKey="logo"
+          /> :
+          <UsuarioAddDatosImage onCloseSubirImg={onCloseSubirImg} />
         }
       </BasicModal>
 

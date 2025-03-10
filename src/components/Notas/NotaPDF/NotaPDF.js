@@ -1,7 +1,6 @@
 import { BiSolidFilePdf } from 'react-icons/bi'
 import jsPDF from 'jspdf'
 import 'jspdf-autotable'
-import QRCode from 'qrcode'
 import { formatCurrency, formatDateIncDet, getValueOrDefault } from '@/helpers'
 import styles from './NotaPDF.module.css'
 import { getValueOrWhite } from '@/helpers/getValueOrWhite'
@@ -18,13 +17,21 @@ export function NotaPDF(props) {
     const activeToggle = JSON.parse(localStorage.getItem("activeToggle") || "1");
     const marginIMG = JSON.parse(localStorage.getItem("isSquare") || "true");
 
-    const doc = new jsPDF(
-      {
-        orientation: 'p',
-        unit: 'mm',
-        format: 'a5'
-      }
-    )
+    const doc = new jsPDF({
+      orientation: 'p',
+      unit: 'mm', 
+      format: [182, 325], 
+    })
+
+    const colorRect = {
+      1: [0, 0, 0], 
+      2: [0, 0, 0],   
+    }[activeToggle] || [0, 0, 0]
+
+    const topRectHeight = 35; 
+    doc.setFillColor(...colorRect); 
+    doc.rect(0, 0, 570, topRectHeight, 'F')
+    const topRectWidth = doc.internal.pageSize.width
 
     const logoImg = getValueOrDefault(datoPDF?.logo)
     const logoImgDefault = 'img/logo.png'
@@ -34,37 +41,27 @@ export function NotaPDF(props) {
 
     const pageWidth = doc.internal.pageSize.getWidth()
 
+    const yPosition = (topRectHeight - logoHeight) / 2
+
     const xPosition = marginLeftLogo
 
     if (logoImg && logoImg.startsWith('/api/')) {
-      // Validamos si la URL de la imagen es válida (por ejemplo, comienza con 'http')
       try {
-        // Intentamos agregar la imagen al PDF
-        doc.addImage(logoImg, 'PNG', xPosition, 6, logoWidth, logoHeight)
+        doc.addImage(logoImg, 'PNG', xPosition, yPosition, logoWidth, logoHeight);
       } catch (error) {
-        console.error('Error al agregar la imagen:', error)
-        doc.addImage(logoImgDefault, 'PNG', xPosition, 6, logoWidth, logoHeight)
+        console.error('Error al agregar la imagen:', error);
+        doc.addImage(logoImgDefault, 'PNG', xPosition, yPosition, logoWidth, logoHeight);
       }
     } else {
-      doc.addImage(logoImgDefault, 'PNG', xPosition, 6, logoWidth, logoHeight)
+      doc.addImage(logoImgDefault, 'PNG', xPosition, yPosition, logoWidth, logoHeight);
     }
 
-    doc.setFont('helvetica')
+    doc.setFont('Roboto')
 
     const marginRight = 6
     const font1 = 10
     const font2 = 9
     const font3 = 8
-
-    doc.setFontSize(font2)
-    doc.setTextColor(0, 0, 0)
-    doc.text(getValueOrWhite(datoPDF?.fila1), doc.internal.pageSize.width - 6 - doc.getTextWidth(getValueOrWhite(datoPDF?.fila1)), 10)
-    doc.setTextColor(120, 120, 120)
-    doc.text(getValueOrWhite(datoPDF?.fila2), doc.internal.pageSize.width - 6 - doc.getTextWidth(getValueOrWhite(datoPDF?.fila2)), 14)
-    doc.text(getValueOrWhite(datoPDF?.fila3), doc.internal.pageSize.width - 6 - doc.getTextWidth(getValueOrWhite(datoPDF?.fila3)), 18)
-    doc.text(getValueOrWhite(datoPDF?.fila4), doc.internal.pageSize.width - 6 - doc.getTextWidth(getValueOrWhite(datoPDF?.fila4)), 22)
-    doc.text(getValueOrWhite(datoPDF?.fila5), doc.internal.pageSize.width - 6 - doc.getTextWidth(getValueOrWhite(datoPDF?.fila5)), 26)
-    doc.text(getValueOrWhite(datoPDF?.fila7), doc.internal.pageSize.width - 6 - doc.getTextWidth(getValueOrWhite(datoPDF?.fila7)), 30)
 
     doc.setFontSize(font2)
     doc.setTextColor(0, 0, 0)
@@ -80,11 +77,11 @@ export function NotaPDF(props) {
     doc.text(`${getValueOrDefault(nota.cliente_contacto)}`, 6, 59)
 
     doc.setFontSize(font1)
-    doc.setFont("helvetica", "bold")
+    doc.setFont("Roboto")
     doc.setTextColor(0, 0, 0)
     doc.text('NOTA DE VENTA', doc.internal.pageSize.width - 7.2 - doc.getTextWidth('NOTA DE VENTA'), 38)
     doc.setFontSize(font2)
-    doc.setFont("helvetica", "normal")
+    doc.setFont("Roboto")
     doc.setTextColor(0, 0, 0)
     doc.text('Folio', doc.internal.pageSize.width - 6 - doc.getTextWidth('Folio'), 45)
     doc.setFontSize(font2)
@@ -131,16 +128,16 @@ export function NotaPDF(props) {
           3: [151, 202, 53],   
           4: [233, 77, 51],   
         }[activeToggle] || [100, 100, 100],
-        fontSize: `${font3}`,
-        fontStyle: 'bold',
+        fontSize: `${font2}`,
+        fontStyle,
         textColor: [255, 255, 255]
       },
-      bodyStyles: { fontSize: `${font3}` },
+      bodyStyles: { fontSize: `${font2}` },
       columnStyles: {
-        0: { cellWidth: 14 },
-        1: { cellWidth: 70 },
+        0: { cellWidth: 20 },
+        1: { cellWidth: 95 },
         2: { cellWidth: 20 },
-        3: { cellWidth: 12 },
+        3: { cellWidth: 15 },
         4: { cellWidth: 20 },
 
         cellPadding: 1.5,
@@ -160,13 +157,6 @@ export function NotaPDF(props) {
 
     const { subtotal, iva, total } = calcularTotales()
 
-    const top = 210
-    const boxWidth = 130
-    const boxHeight = 30
-
-    doc.setDrawColor(255, 255, 255)
-    doc.rect(marginRight, top, boxWidth, boxHeight, 'F')
-
     const verticalData = [
       ...toggleIVA ? [
         ['Subtotal:', `$${formatCurrency(subtotal)}`],
@@ -181,17 +171,17 @@ export function NotaPDF(props) {
     const marginLeft = pWidth - mRight - tableWidth
 
     doc.autoTable({
-      startY: 185,
+      startY: 240,
       margin: { left: marginLeft, bottom: 0, right: marginRight },
       body: verticalData,
       styles: {
         cellPadding: 1,
         valign: 'middle',
-        fontSize: font3,
+        fontSize: font2,
         textColor: [255, 255, 255 ]
       },
       columnStyles: {
-        0: { cellWidth: 20, fontStyle: 'bold', halign: 'right', 
+        0: { cellWidth: 20, fontStyle, halign: 'right', 
           fillColor : {
             1: [100, 100, 100], 
             2: [1, 121, 202],   
@@ -203,64 +193,28 @@ export function NotaPDF(props) {
     })
 
 
-    doc.setFontSize(`${font3}`)
+    doc.setFontSize(`${font2}`)
     doc.setTextColor(0, 0, 0)
-    doc.text('• Precio en pesos.', 32.5, 187)
-    doc.text('• Este documento no es un comprobante', 32.5, 191)
-    doc.text('  fiscal válido.', 32.5, 194)
-    doc.text('• Para efectos fiscales, se requiere', 32.5, 198)
-    doc.text('  una factura electrónica.', 32.5, 201)
+    doc.text('• Precio en pesos.', 6, 244)
+    doc.text('• Este documento no es un comprobante fiscal válido.', 6, 248)
+    doc.text('• Para efectos fiscales, se requiere una factura electrónica.', 6, 252)
 
-    const addFooterText = () => {
-      const text = getValueOrWhite(datoPDF?.web)
-      const textWidth = doc.getTextWidth(text)
-      const x = (pageWidth - textWidth) / 2
-      const y = doc.internal.pageSize.height - 3 // Posición a 10 mm del borde inferior
-      doc.setFontSize(8)
-      doc.setTextColor(120, 120, 120)
-      doc.text(text, x, y)
-    }
-
-    addFooterText()
-
-    const pdfUrl = `https://clicknetcontrol.com:8083/api/download-pdf/nota_${nota.folio}.pdf`  // Asegúrate de que esta URL sea válida
-  const fileQRCode = await QRCode.toDataURL(pdfUrl);
-  doc.addImage(fileQRCode, 'PNG', 2.5, 180, 30, 30);  // Coloca el QR en la misma posición y tamaño
-
-  // Crear el archivo PDF
-  const pdfBlob = doc.output('blob');
-  const formData = new FormData();
-  formData.append('file', pdfBlob, `nota_${nota.folio}.pdf`);
-
-  try {
-    // Hacer la solicitud POST para subir el archivo
-    const res = await fetch('/api/upload-pdf/upload-pdf', {
-      method: 'POST',
-      body: formData,
-    });
-
-    // Verificar si la respuesta fue exitosa
-    if (!res.ok) {
-      const errorText = await res.text();
-      console.error('Error al subir el archivo:', errorText);
-      throw new Error('Error en la carga del archivo');
-    }
-
-    // Si la respuesta es exitosa, obtener la URL del archivo
-    const { fileUrl } = await res.json();
-
-    // Ya con la URL del archivo, puedes seguir procesando el documento
-    // Aquí ya no es necesario agregar otro QR ya que ya se añadió uno antes
-
-    // Guardar el PDF localmente para descarga inmediata
-    doc.save(`nota_${nota.folio}.pdf`);
-
-  } catch (error) {
-    console.error('Error subiendo el archivo:', error);
+  const addFooterText = () => {
+    const text = getValueOrWhite(datoPDF?.web)
+    const textWidth = doc.getTextWidth(text)
+    const x = (pageWidth - textWidth) / 2
+    const y = doc.internal.pageSize.height - 3
+    doc.setFontSize(`${font2}`)
+    doc.setTextColor(180, 180, 180)
+    doc.text(text, x, y)
   }
+
+  addFooterText()
+  
+  doc.save(`nota_de_venta_${nota.folio}.pdf`)
+
 }
 
-    //doc.save(`nota_de_venta_${nota.folio}.pdf`)
   
 
   return (

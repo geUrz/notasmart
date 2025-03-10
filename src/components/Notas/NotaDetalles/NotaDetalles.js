@@ -1,8 +1,8 @@
-import { Confirm, IconClose, Loading, ToastSuccess } from '@/components/Layouts'
-import { FaCheck, FaEdit, FaPlus, FaTimes, FaTrash } from 'react-icons/fa'
+import { Confirm, IconClose, IconDel, Loading, ToastSuccess } from '@/components/Layouts'
+import { FaCheck, FaEdit, FaPlus, FaQrcode, FaTimes, FaTrash } from 'react-icons/fa'
 import { BasicModal } from '@/layouts'
 import { formatCurrency, formatDateIncDet, getValueOrDefault } from '@/helpers'
-import { BiSolidToggleLeft, BiSolidToggleRight } from 'react-icons/bi'
+import { BiQr, BiSolidToggleLeft, BiSolidToggleRight } from 'react-icons/bi'
 import { useEffect, useState } from 'react'
 import { NotaConceptos } from '../NotaConceptos'
 import { NotaPDF } from '../NotaPDF'
@@ -11,12 +11,16 @@ import axios from 'axios'
 import { RowHeadModal } from '../RowHead'
 import { NotaEditForm } from '../NotaEditForm'
 import { NotaConceptosEditForm } from '../NotaConceptosEditForm'
+import QRCode from 'qrcode'
 import styles from './NotaDetalles.module.css'
+import { Image } from 'semantic-ui-react'
+import { QRScan } from '../QRScan'
+import { DownloadPDF, generarPDF } from '../generarPDF'
 
 export function NotaDetalles(props) {
 
   const { user, loading, nota, notaId, reload, onReload, onOpenClose, onAddConcept, onDeleteConcept, onShowConfirm, onToastSuccess, onToastSuccessMod, onToastSuccessDel, notaSeleccionado } = props
-  
+
   const [showConcep, setShowForm] = useState(false)
   const [showEditConcep, setShowEditConcept] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -38,7 +42,6 @@ export function NotaDetalles(props) {
     setCurrentConcept(concepto.id)
   }
 
-
   const onOpenCloseConcep = (concepto) => {
     setShowForm((prevState) => !prevState)
     setCurrentConcept(concepto.id)
@@ -55,28 +58,44 @@ export function NotaDetalles(props) {
     setShowEditConcept(false)
   }
 
+  const [qrCode, setQrCode] = useState('')
+  const [showQR, setShowQR] = useState(false)
+
+  const onOpenCloseQR = async () => {
+    setShowQR((prevState) => !prevState);
+  
+    await generarPDF(nota, datoPDF, nota?.conceptos || []);
+  }
+
+  useEffect(() => {
+    if (nota?.folio) {
+      const pdfUrl = `https://clicknetcontrol.com:8083/api/download-pdf/nota_${nota.folio}.pdf`;
+      QRCode.toDataURL(pdfUrl).then(setQrCode).catch(console.error);
+    }
+  }, [nota])
+
   const [notaState, setNotaState] = useState(nota)
 
   useEffect(() => {
     setNotaState(nota)
   }, [nota])
-  
+
 
   const onEditConcept = (conceptoActualizado) => {
     if (!notaState) return;
-  
+
     setNotaState((prevNota) => {
       const conceptosActualizados = prevNota.conceptos.map((c) =>
         c.id === conceptoActualizado.id ? conceptoActualizado : c
       )
-  
+
       return {
         ...prevNota,
         conceptos: conceptosActualizados,
       }
     })
-  
-    onReload() 
+
+    onReload()
   }
 
   const [toggleIVA, setToggleIVA] = useState(false)
@@ -103,7 +122,7 @@ export function NotaDetalles(props) {
       setIvaValue(nota.iva)
     }
   }, [nota])
-  
+
 
   const subtotal = (notaState?.conceptos || []).reduce(
     (sum, concepto) => sum + concepto.precio * concepto.cantidad,
@@ -113,32 +132,32 @@ export function NotaDetalles(props) {
   const total = subtotal + iva
 
   const handleDelete = async () => {
-    if (!nota?.id) {
-      console.error("Nota o ID no disponible")
+    if (!nota?.id || !nota?.folio) {
+      console.error("Nota o ID no disponible");
       return;
     }
-
+  
     try {
-      await axios.delete(`/api/notas/notas?id=${nota.id}`)
-      onOpenClose()
-      notaSeleccionado(null)
-      onReload()
-      onToastSuccessDel()
+      await axios.delete(`/api/notas/notas?id=${nota.id}&folio=${nota.folio}`); 
+      onOpenClose();
+      notaSeleccionado(null);
+      onReload();
+      onToastSuccessDel();
     } catch (error) {
-      console.error("Error al eliminar la nota:", error)
+      console.error("Error al eliminar la nota:", error);
     }
-  }
+  };  
 
   const [datoPDF, setDatoPDF] = useState(null)
 
   useEffect(() => {
-    if(user && user.id) {
+    if (user && user.id) {
       (async () => {
         try {
           const res = await axios.get(`/api/usuarios/datos_pdf?usuario_id=${user.id}`)
           setDatoPDF(res.data)
         } catch (error) {
-            console.error(error)
+          console.error(error)
         }
       })()
     }
@@ -147,13 +166,13 @@ export function NotaDetalles(props) {
   const [notaData, setNotaData] = useState(nota)
 
   useEffect(() => {
-    setNotaData(nota) 
-  }, [nota]) 
+    setNotaData(nota)
+  }, [nota])
 
   const actualizarNota = (nuevaData) => {
     setNotaData((prevState) => ({
       ...prevState,
-      ...nuevaData, 
+      ...nuevaData,
     }))
   }
 
@@ -260,12 +279,16 @@ export function NotaDetalles(props) {
         <div className={styles.iconEdit}>
           <div onClick={onOpenEditNota}><FaEdit /></div>
         </div>
-        
+
         {user && user.nivel === 'admin' ?
-          <div className={styles.iconDel}>
-            <div><FaTrash onClick={() => setShowConfirmDel(true)} /></div>
-          </div> : null
+          <IconDel setShowConfirmDel={setShowConfirmDel} /> : null
         }
+
+        <div className={styles.qrMain}>
+          <div onClick={onOpenCloseQR}>
+            <BiQr/>
+          </div>
+        </div>
 
         <NotaPDF nota={nota} datoPDF={datoPDF} conceptos={nota?.conceptos || []} />
 
@@ -290,6 +313,12 @@ export function NotaDetalles(props) {
         />
       </BasicModal>
 
+      <BasicModal title='escanea para descargar el pdf' show={showQR} onClose={onOpenCloseQR}>
+        {qrCode && (
+          <QRScan qrCode={qrCode} onOpenCloseQR={onOpenCloseQR} />
+        )}
+      </BasicModal>
+
       {/* <BasicModal title='datos del cliente' show={showCliente} onClose={onOpenCloseCliente}>
         <DatosCliente
           folio={getValueOrDefault(nota?.cliente_folio)}
@@ -301,7 +330,7 @@ export function NotaDetalles(props) {
       </BasicModal> */}
 
       <BasicModal>
-        
+
       </BasicModal>
 
       <Confirm

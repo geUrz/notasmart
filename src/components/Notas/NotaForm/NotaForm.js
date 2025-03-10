@@ -84,7 +84,7 @@ export function NotaForm(props) {
     fetchClientes()
   }, [reload, user])
 
-  const crearRecibo = async (e) => {
+  const crearNota = async (e) => {
     e.preventDefault()
 
     if (!validarForm()) return
@@ -261,7 +261,7 @@ export function NotaForm(props) {
           </div>
         </div>
 
-        <Button primary onClick={crearRecibo}>Crear</Button>
+        <Button primary onClick={crearNota}>Crear</Button>
       </div>
 
       <BasicModal title='crear cliente' show={show} onClose={onOpenCloseClienteForm}>

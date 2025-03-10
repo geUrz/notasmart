@@ -13,10 +13,15 @@
   src: url('../../public/fonts/Bebas/BebasNeue-Regular.ttf');
 }
 
+@font-face {
+  font-family: 'Roboto';
+  src: url('../../public/fonts/Roboto//Roboto-Regular.ttf');
+}
+
 *{
   padding: 0;
   margin: 0;
-  font-family: 'Mulish' !important;
+  font-family: 'Roboto' !important;
   font-weight: 200 !important;
   color: rgb(175, 175, 175);
   cursor: default;

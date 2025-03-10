@@ -14,9 +14,7 @@ export function UsuarioFormEditPDF(props) {
     fila3: datoPDF.fila3,
     fila4: datoPDF.fila4,
     fila5: datoPDF.fila5,
-    fila6: datoPDF.fila6,
-    fila7: datoPDF.fila7,
-    web: datoPDF.web
+    fila7: datoPDF.fila7
   })
 
   const handleChange = (e) => {
@@ -105,17 +103,6 @@ export function UsuarioFormEditPDF(props) {
           </FormField>
           <FormField>
             <Label>
-              RFC
-            </Label>
-            <Input
-              type="text"
-              name="fila6"
-              value={formData.fila6}
-              onChange={handleChange}
-            />
-          </FormField>
-          <FormField>
-            <Label>
               Teléfono
             </Label>
             <Input
@@ -125,7 +112,7 @@ export function UsuarioFormEditPDF(props) {
               onChange={handleChange}
             />
           </FormField>
-          <FormField>
+{/*           <FormField>
             <Label>
               Página web
             </Label>
@@ -136,7 +123,7 @@ export function UsuarioFormEditPDF(props) {
               onChange={handleChange}
               placeholder='Ejemplo: https://www.mipagina.com'
             />
-          </FormField>
+          </FormField> */}
         </FormGroup>
         <Button primary onClick={handleSubmit}>
           Guardar

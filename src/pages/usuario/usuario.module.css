@@ -165,25 +165,40 @@
 }
 
 .toggleMain h2{
+  margin-top: 15px !important;
+  font-size: 14.5px;
+}
+
+.toggleMain h3{
   margin-right: 10px !important;
   font-size: 14px;
 }
 
+.toggleClr1ONBan,
+.toggleClr2ONBan,
 .toggleClr1ON, 
 .toggleClr2ON,
 .toggleClr3ON,
 .toggleClr4ON,
+.toggleClr5ON,
 .toggleClrOFF{
   margin-top: 8px;
 }
 
+.toggleClr1ONBan svg, .toggleClr1ONBan path, 
+.toggleClr2ONBan svg, .toggleClr2ONBan path, 
 .toggleClr1ON svg, .toggleClr1ON path, 
 .toggleClr2ON svg, .toggleClr2ON path,
 .toggleClr3ON svg, .toggleClr3ON path,
 .toggleClr4ON svg, .toggleClr4ON path,
+.toggleClr5ON svg, .toggleClr5ON path,
 .toggleClrOFF svg, .toggleClrOFF path{
   font-size: 38px;
   cursor: pointer;
+}
+
+.toggleClr2ONBan svg, .toggleClr2ONBan path{
+  color: rgb(100, 100, 100);
 }
 
 .toggleClr2ON svg, .toggleClr2ON path{
@@ -198,8 +213,12 @@
   color: red;
 }
 
+.toggleClr5ON svg, .toggleClr5ON path{
+  color: orange;
+}
+
 .toggleClrOFF svg, .toggleClrOFF path{
-  color: gray;
+  color: rgb(50, 50, 50);
 }
 
 .iconClose{

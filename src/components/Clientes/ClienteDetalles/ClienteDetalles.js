@@ -1,5 +1,5 @@
 import { FaCheck, FaEdit, FaTimes, FaTrash } from 'react-icons/fa'
-import { IconClose, Confirm } from '@/components/Layouts'
+import { IconClose, Confirm, IconDel } from '@/components/Layouts'
 import { useEffect, useState } from 'react'
 import { BasicModal } from '@/layouts'
 import { ClienteEditForm } from '../ClienteEditForm'
@@ -10,7 +10,7 @@ import styles from './ClienteDetalles.module.css'
 
 export function ClienteDetalles(props) {
 
-  const { reload, onReload, cliente, onCloseDetalles, onToastSuccessMod, toastSuccessDel } = props
+  const { reload, onReload, cliente, onCloseDetalles, onToastSuccessMod, onToastSuccessDel } = props
 
   const { user } = useAuth()
 
@@ -19,22 +19,23 @@ export function ClienteDetalles(props) {
   const onOpenCloseEdit = () => setShowEdit((prevState) => !prevState)
 
   const [showConfirmDel, setShowConfirmDel] = useState(false)
-
   const onOpenCloseConfirmDel = () => setShowConfirmDel((prevState) => !prevState)
 
   const handleDeleteCliente = async () => {
-    if (cliente?.id) {
+    
+    if (!cliente?.id) {
+      console.error("Cliente o ID no disponible");
+      return;
+    }
+
       try {
         await axios.delete(`/api/clientes/clientes?id=${cliente.id}`)
         onReload()
-        toastSuccessDel()
+        onToastSuccessDel()
         onCloseDetalles()
       } catch (error) {
         console.error('Error al eliminar la cliente:', error)
       }
-    } else {
-      console.error('Incidencia o ID no disponible')
-    }
   }
 
   const [clienteData, setClienteData] = useState(cliente)
@@ -95,11 +96,7 @@ export function ClienteDetalles(props) {
         </div>
 
         {user.nivel === 'admin' ?
-          <div className={styles.iconDel}>
-            <div>
-              <FaTrash onClick={onOpenCloseConfirmDel} />
-            </div>
-          </div> : null
+          <IconDel setShowConfirmDel={onOpenCloseConfirmDel} /> : null
         }
 
       </div>

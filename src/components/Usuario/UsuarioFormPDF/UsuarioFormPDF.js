@@ -14,9 +14,7 @@ export function UsuarioFormPDF(props) {
   const [fila3, setFila3] = useState('')
   const [fila4, setFila4] = useState('')
   const [fila5, setFila5] = useState('')
-  const [fila6, setFila6] = useState('')
   const [fila7, setFila7] = useState('')
-  const [web, setWeb] = useState('')
 
   const crearDatoPDF = async (e) => {
     e.preventDefault()
@@ -29,9 +27,7 @@ export function UsuarioFormPDF(props) {
         fila3,
         fila4,
         fila5,
-        fila6,
-        fila7,
-        web
+        fila7
       })
 
       setFila1('')
@@ -39,9 +35,7 @@ export function UsuarioFormPDF(props) {
       setFila3('')
       setFila4('')
       setFila5('')
-      setFila6('')
       setFila7('')
-      setWeb('')
 
       onReload()
       onOpenCloseFormPDF()
@@ -101,14 +95,6 @@ export function UsuarioFormPDF(props) {
               />
             </FormField>
             <FormField>
-              <Label>RFC</Label>
-              <Input
-                type="text"
-                value={fila6 || ''}
-                onChange={(e) => setFila6(e.target.value)}
-              />
-            </FormField>
-            <FormField>
               <Label>Teléfono</Label>
               <Input
                 type="text"
@@ -116,7 +102,7 @@ export function UsuarioFormPDF(props) {
                 onChange={(e) => setFila7(e.target.value)}
               />
             </FormField>
-            <FormField>
+            {/* <FormField>
               <Label>Página web</Label>
               <Input
                 type="text"
@@ -124,7 +110,7 @@ export function UsuarioFormPDF(props) {
                 onChange={(e) => setWeb(e.target.value)}
                 placeholder='Ejemplo: https://www.mipagina.com'
               />
-            </FormField>
+            </FormField> */}
           </FormGroup>
         </Form>
         <Button primary onClick={crearDatoPDF}>Guardar</Button>

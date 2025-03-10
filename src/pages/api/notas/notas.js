@@ -1,4 +1,6 @@
 import connection from "@/libs/db";
+import fs from 'fs';
+import path from 'path';
 
 export default async function handler(req, res) {
     const { id, usuario_id, search } = req.query; // Se añade `id` para la búsqueda por ID
@@ -134,23 +136,42 @@ export default async function handler(req, res) {
         }
 
     } else if (req.method === 'DELETE') {
-        // Maneja la solicitud DELETE
-        const { id } = req.query;
+        
+        const { id, folio } = req.query;
 
-        try {
-            const [result] = await connection.query(
-                'DELETE FROM notas WHERE id = ?',
-                [id]
-            );
+    if (!id || !folio) {
+        return res.status(400).json({ error: 'ID y folio de la nota son obligatorios' });
+    }
 
-            if (result.affectedRows > 0) {
-                res.status(200).json({ message: 'Nota eliminada correctamente' });
-            } else {
-                res.status(404).json({ message: 'Nota no encontrada' });
-            }
-        } catch (error) {
-            res.status(500).json({ error: error.message });
+    try {
+        // 1. Eliminar la nota de la base de datos
+        const [result] = await connection.query(
+            'DELETE FROM notas WHERE id = ?',
+            [id]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Nota no encontrada' });
         }
+
+        // 2. Construir la ruta del archivo PDF
+        const filePath = path.join(process.cwd(), 'public/uploads', `nota_${folio}.pdf`);
+
+        // 3. Verificar si el archivo existe antes de eliminarlo
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+            console.log(`Archivo eliminado: ${filePath}`);
+        } else {
+            console.log(`El archivo no existe: ${filePath}`);
+        }
+
+        res.status(200).json({ message: 'Nota y PDF eliminados correctamente' });
+
+    } catch (error) {
+        console.error("Error al eliminar la nota y su PDF:", error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+
     } else {
         res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
         res.status(405).end(`Method ${method} Not Allowed`);
