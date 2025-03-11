@@ -44,7 +44,7 @@ export async function generarPDF(nota, datoPDF, conceptos) {
     5: orange,
 }
 
-const color = fillColor[activeToggle] || gris;
+const color = fillColor[activeToggle] || gris
 
 
   const doc = new jsPDF({
@@ -284,18 +284,6 @@ doc.text(text, xCenter, 55)
   const colorTextFooter = activeToggleBan === 1 ?  gris : [190,190,190]
   doc.setTextColor(...colorTextFooter)
   doc.text(footerText, xFooter, yFooter)
-
-  const addFooterText = () => {
-    const text = getValueOrWhite(datoPDF?.web)
-    const textWidthFooter = doc.getTextWidth(text)
-    const x = (pageWidth - textWidthFooter) / 2
-    const y = doc.internal.pageSize.height - 3
-    doc.setFontSize(`${font2}`)
-    doc.setTextColor(180, 180, 180)
-    doc.text(text, x, y)
-  }
-
-  addFooterText()
 
   const pdfBlob = doc.output('blob');
   const formData = new FormData();

@@ -69,7 +69,7 @@ export function NotaDetalles(props) {
 
   useEffect(() => {
     if (nota?.folio) {
-      const pdfUrl = `https://clicknetcontrol.com:8083/api/download-pdf/nota_${nota.folio}.pdf`;
+      const pdfUrl = `https://notasmart.app:8083/api/download-pdf/nota_${nota.folio}.pdf`;
       QRCode.toDataURL(pdfUrl).then(setQrCode).catch(console.error);
     }
   }, [nota])
