@@ -18,7 +18,7 @@
 
 .section svg, .section path{
   font-size: 80px;
-  color: azure;
+  color: var(--clrGR0);
 }
 
 .datos_usuario{
@@ -30,15 +30,27 @@
   justify-content: center;
 }
 
+.datos_usuario div{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .datos_usuario h1{
   margin-top: 5px;
   font-size: 24px;
-  color: var(--clr2);
+  color: var(--clr0);
+}
+
+.datos_usuario h2, .datos_usuario h3{
+  margin-top: 5px;
+  font-size: 15px;
+  color: var(--clrGR0);
 }
 
 .datos_usuario h2{
-  margin-top: 5px;
-  font-size: 15px;
+  margin-right: 2px !important;
+  color: var(--clr0);
 }
 
 .iconEdit{
@@ -56,27 +68,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--bg2);
+  background-color: var(--clr0);
   border-radius: 50%;
   cursor: pointer;
 }
 
 .iconEdit svg, .iconEdit path{
-  color: var(--clr2);
+  font-size: 20px;
+  color: azure;
+  cursor: pointer;
 }
 
 .iconEdit div:hover{
-  background-color: var(--bg3);
+  background-color: var(--clr1);
 }
 
 .iconEdit div:active{
-  background-color: var(--bg4);
-}
-
-.iconEdit svg, .iconEdit path{
-  font-size: 20px;
-  color: var(--clr0);
-  cursor: pointer;
+  background-color: var(--clr2);
 }
 
 .datos_pdf{
@@ -91,6 +99,7 @@
 
 .datos_pdf h1{
   font-size: 24px;
+  color: var(--clrGR0);
 }
 
 .datos_pdf div{
@@ -105,13 +114,14 @@
 
 .datos_pdf div h1{
   font-size: 16px;
-  color: var(--clr2);
+  color: var(--clr0);
 }
 
 .datos_pdf div h2{
   margin: 2px 0 10px 0 !important;
   font-size: 14px;
   text-align: center;
+  color: var(--clrGR0);
 }
 
 .datos_pdf img{
@@ -140,6 +150,7 @@
 .toggleMain h1{
   font-size: 16px;
   text-align: center;
+  color: var(--clrGR0);
 }
 
 .toggleMain > div{
@@ -167,11 +178,13 @@
 .toggleMain h2{
   margin-top: 15px !important;
   font-size: 14.5px;
+  color: var(--clrGR0);
 }
 
 .toggleMain h3{
   margin-right: 10px !important;
   font-size: 14px;
+  color: var(--clr0);
 }
 
 .toggleClr1ONBan,
@@ -229,6 +242,7 @@
 
 .iconClose svg, .iconClose path{
   font-size: 20px;
+  color: var(--clrGR0);
   cursor: pointer;
 }
 
@@ -239,20 +253,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--bg2);
+  background-color: var(--clr0);
+  border-radius: 50%;
   cursor: pointer;
 }
 
 .iconCheck:hover{
-  background-color: var(--bg3);
+  background-color: var(--clr1);
 }
 
 .iconCheck:active{
-  background-color: var(--bg4);
+  background-color: var(--clr2);
 }
 
 .iconCheck svg, .iconCheck path{
-  font-size: 22px;
-  color: var(--clr1);
+  font-size: 20px;
+  color: azure;
   cursor: pointer;
 }

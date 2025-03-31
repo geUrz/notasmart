@@ -111,7 +111,7 @@ export default function Home() {
   }, [reload, user])
 
   if (loading) {
-    return <Loading size={45} loading={0} />
+    return <Loading size={45} loading={'L'} />
   }
 
   return (

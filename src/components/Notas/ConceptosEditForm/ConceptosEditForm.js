@@ -1,7 +1,7 @@
 import { Button, Dropdown, Form, FormField, Label, Input, Message } from 'semantic-ui-react';
 import { useState, useEffect } from 'react';
 import styles from './ConceptosEditForm.module.css';
-import { IconClose } from '@/components/Layouts';
+import { IconClose, IconDel } from '@/components/Layouts';
 import { FaTrash } from 'react-icons/fa';
 
 export function ConceptosEditForm(props) {
@@ -70,7 +70,7 @@ export function ConceptosEditForm(props) {
           <FormField error={!!errors.tipo}>
             <Label>Tipo</Label>
             <Dropdown
-              placeholder="Selecciona una opción"
+              placeholder="Seleccionar"
               fluid
               selection
               options={opcionesSerprod}
@@ -120,11 +120,8 @@ export function ConceptosEditForm(props) {
           </Button>
         </Form>
 
-        <div className={styles.iconDel}>
-          <div>
-            <FaTrash onClick={() => onOpenCloseConfirm(editedConcepto)} />
-          </div>
-        </div>
+        <IconDel setShowConfirmDel={() => onOpenCloseConfirm(editedConcepto)} />
+
       </div>
     </>
   );

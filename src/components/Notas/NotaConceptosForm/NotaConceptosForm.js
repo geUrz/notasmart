@@ -99,7 +99,7 @@ export function NotaConceptosForm(props) {
               <Label>Tipo</Label>
               <Dropdown
                 name="tipo"
-                placeholder='Selecciona una opción'
+                placeholder='Seleccionar'
                 fluid
                 selection
                 options={opcionesSerprod}

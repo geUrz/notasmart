@@ -1,5 +1,5 @@
-.user{
-  padding-bottom: 30px;
+.main{
+  margin: 200px 0 0 0;
   width: 100%;
   height: auto;
   display: flex;
@@ -8,13 +8,46 @@
   justify-content: center;
 }
 
-.user svg, .user path{
-  font-size: 80px;
+.boxForm{
+  padding: 160px 0 50px 0;
+  width: 320px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: rgba(80, 80, 80, 0.2) 0px 8px 24px;
+  position: relative;
 }
 
-.user h1{
-  margin-top: 10px;
-  font-size: 18px;
+.logo{
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: -70px;
+}
+
+.logo img{
+  height: 120px;
+}
+
+.h1{
+  padding: 20px 0;
+  margin-top: -90px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.h1 h1{
+  font-size: 20px;
+  text-align: center;
+  color: var(--clrGR0);
 }
 
 .link{
@@ -26,14 +59,44 @@
 }
 
 .link a{
-  margin-top: 10px;
   font-size: 14.5px;
-  color: var(--clrBL2);
+  color: var(--clr2);
   cursor: pointer;
 }
 
-.error{
-  margin: 5px 0 0 0 !important;
-  font-size: 12px;
-  color: red;
+.label{
+  color: var(--clrGR0) !important;
+  background-color: azure !important;
+}
+
+.footer{
+  margin-top: 50px;
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer div{
+  width: 100%;
+  max-width: 250px;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer h1{
+  font-size: 14px;
+  color: var(--clrGR0);
+  font-weight: 600 !important;
+}
+
+@media screen and (min-width: 768px) {
+
+  .boxForm{
+    width: 500px;
+  }
+
 }

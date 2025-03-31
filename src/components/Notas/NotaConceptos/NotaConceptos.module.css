@@ -13,12 +13,12 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  background-color: var(--bg1);
+  background-color: var(--clrGR0);
   cursor: pointer;
 }
 
 .rowMap:hover{
-  background-color: var(--bg2);
+  background-color: var(--clrGR1);
 }
 
 .rowMap h1{

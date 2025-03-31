@@ -41,12 +41,12 @@ const handler = async (req, res) => {
         const resizedImageBuffer = await sharp(req.file.buffer)
           .rotate()
           .resize(800, null)
-          .jpeg({ quality: 80 })
+          .png()
           .toBuffer()
 
         // Asegurar la extensión del archivo como .jpg
         const uploadFolder = path.join(process.cwd(), 'uploads')
-        const fileName = `${Date.now()}.jpg`
+        const fileName = `${Date.now()}.png`
         const filePath = path.join(uploadFolder, fileName);
         fs.writeFileSync(filePath, resizedImageBuffer); // Escribe la imagen en disco
 

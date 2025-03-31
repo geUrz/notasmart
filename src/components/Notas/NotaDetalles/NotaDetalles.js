@@ -1,5 +1,5 @@
 import { Confirm, IconClose, IconDel, Loading, ToastSuccess } from '@/components/Layouts'
-import { FaCheck, FaEdit, FaPlus, FaQrcode, FaTimes, FaTrash } from 'react-icons/fa'
+import { FaCheck, FaEdit, FaPlus, FaTimes } from 'react-icons/fa'
 import { BasicModal } from '@/layouts'
 import { formatCurrency, formatDateIncDet, getValueOrDefault } from '@/helpers'
 import { BiQr, BiSolidToggleLeft, BiSolidToggleRight } from 'react-icons/bi'
@@ -13,9 +13,8 @@ import { NotaEditForm } from '../NotaEditForm'
 import { NotaConceptosEditForm } from '../NotaConceptosEditForm'
 import QRCode from 'qrcode'
 import styles from './NotaDetalles.module.css'
-import { Image } from 'semantic-ui-react'
 import { QRScan } from '../QRScan'
-import { DownloadPDF, generarPDF } from '../generarPDF'
+import { generarPDF } from '../generarPDF'
 
 export function NotaDetalles(props) {
 
@@ -69,7 +68,7 @@ export function NotaDetalles(props) {
 
   useEffect(() => {
     if (nota?.folio) {
-      const pdfUrl = `https://notasmart.app:8083/api/download-pdf/nota_${nota.folio}.pdf`;
+      const pdfUrl = `https://notasmart.app/api/download-pdf/nota_${nota.folio}.pdf`;
       QRCode.toDataURL(pdfUrl).then(setQrCode).catch(console.error);
     }
   }, [nota])

@@ -9,13 +9,13 @@
   padding-left: 5px !important;
   width: 300px !important;
   font-size: 12.5px !important;
-  color: azure !important;
-  background-color: var(--bg2) !important;
+  color: var(--clrGR0) !important;
+  background-color: azure !important;
 }
 
 .ui.form input:focus, .ui.form textarea:focus, .ui.form select:focus{
-  border-color: var(--bg4) !important;
-  background-color: var(--bg4) !important;
+  border-color: var(--clr4) !important;
+  background-color: azure !important;
 }
 
 .ui.form .field.field input:-webkit-autofill{
@@ -75,7 +75,7 @@
   display: flex !important;
   align-items: center !important;
   justify-content: flex-start;
-  background-color: var(--bg0) !important;
+  background-color: azure !important;
 }
 
 .ui.page.modals{
@@ -86,9 +86,9 @@
   border: 1px solid azure !important;
 } 
 
-.ui.negative.message{
+.ui.message{
   text-align: center;
-  color: red;
+  color: var(--clrR0) !important;
 }
 
 .rbc-agenda-view table{
@@ -103,25 +103,25 @@
 
 .ui.selection.dropdown{
   width: 300px !important;
-  background-color: var(--bg2) !important;
+  background-color: azure !important;
 }
 
 .ui.dropdown .menu .item span, .ui.dropdown .text{
   cursor: pointer !important;
-  color: azure !important;
+  color: var(--clrGR0) !important;
 }
 
 .ui.dropdown{
-  border: 1px solid var(--bg2) !important;
+  border: 1px solid var(--clrGR3) !important;
 }
 
 .ui.dropdown .menu:focus, .ui.dropdown:focus, .ui.dropdown:active{
-  border: 1px solid var(--bg2) !important;
+  border: 1px solid var(--clr4) !important;
 }
 
 .ui.dropdown .menu{
-  border: 1px solid var(--bg2) !important;
-  background-color: var(--bg2) !important;
+  border: 1px solid var(--clrGR0) !important;
+  background-color: azure !important;
 }
 
 .ui.selection.dropdown .menu>.item{
@@ -129,7 +129,7 @@
 }
 
 .ui.selection.dropdown>.dropdown.icon{
-  color: var(--bg0) !important;
+  color: azure !important;
 }
 
 .ui.tabular.menu{
@@ -137,7 +137,7 @@
 }
 
 .ui.tabular.menu .item{
-  color: gray;
+  color: var(--clr4);
   background-color: var(--bg1) !important;
   border: none;
 }

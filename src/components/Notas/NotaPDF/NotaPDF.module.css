@@ -13,13 +13,14 @@
 
 .iconPDF svg, .iconPDF path{
   font-size: 48px;
+  color: var(--clr0);
   cursor: pointer;
 }
 
 .iconPDF div:hover svg, .iconPDF div:hover path{
-  color: var(--clr2);
+  color: var(--clr1);
 }
 
 .iconPDF div:active svg, .iconPDF div:active path{
-  color: var(--clr3);
+  color: var(--clr2);
 }

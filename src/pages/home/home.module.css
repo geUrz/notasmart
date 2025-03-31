@@ -16,7 +16,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: var(--bg1);
+  background-color: var(--clr0);
   border-radius: 5%;
 }
 
@@ -29,13 +29,13 @@
 
 .icon1 svg, .icon1 path{
   font-size: 30px;
-  color: var(--clr3);
+  color: var(--clr5);
 }
 
 .icon2 svg, .icon2 path{
   margin: 0 4px 10px -6px;
   font-size: 20px;
-  color: var(--clr3);
+  color: var(--clr5);
 }
 
 .icon h1{
@@ -55,14 +55,16 @@
 .folios h1{
   font-size: 40px;
   font-family: 'Bebas' !important;
+  color: var(--clr5);
 }
 
 .folios h1:nth-child(1){
-  color: var(--clr3);
+  color: azure;
 }
 
 .folios h1:nth-child(2){
   margin: 0 5px !important;
+  color: var(--clr5);
 }
 
 .count h1{

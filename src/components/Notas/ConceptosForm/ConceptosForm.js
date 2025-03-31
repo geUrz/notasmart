@@ -52,7 +52,7 @@ export function ConceptosForm(props) {
           <FormField error={!!errors.tipo}>
             <Label>Tipo</Label>
             <Dropdown
-              placeholder='Selecciona una opción'
+              placeholder='Seleccionar'
               fluid
               selection
               options={opcionesSerprod}

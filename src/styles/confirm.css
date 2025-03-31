@@ -1,14 +1,15 @@
 .ui.mini.modal{
   padding: 20px 0 25px 0;
   max-width: 350px !important;
-  background-color: var(--bg1) !important;
+  background-color: azure !important;
 }
 
 .content, .actions{
+  color: var(--clr2);
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  background-color: var(--bg1) !important;
+  background-color: azure !important;
 }
 
 .ui.button, .ui.button.primary{
@@ -36,23 +37,8 @@
   margin: 20px 0 !important;
   display: flex;
   align-items: center;
-  background-color: var(--bg1) !important;
+  background-color: var(--clrGR0) !important;
 }
-
-.ui.button.secondary svg, .ui.button.secondary path{
-  cursor: pointer;
-}
-
-.ui.button.secondary:hover{
-  color: azure !important;
-  background-color: var(--bg2) !important;
-}
-
-.ui.button.secondary:active, .ui.button.secondary:focus{
-  color: azure !important;
-  background-color: var(--bg3) !important;
-}
-
 
 .ui.button.negative svg, .ui.button.negative path{
   cursor: pointer;

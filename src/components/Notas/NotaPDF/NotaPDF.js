@@ -282,8 +282,6 @@ export function NotaPDF(props) {
 
   }
 
-
-
   return (
 
     <div className={styles.iconPDF}>

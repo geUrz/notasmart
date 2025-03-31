@@ -40,17 +40,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--bg1);
+  background-color: var(--clrGR0);
 }
 
 .rowMap:hover{
-  background-color: var(--bg2);
+  background-color: var(--clrGR1);
 }
 
 .rowMap h1{
   padding: 6.5px 0 !important;
   height: auto;
   font-size: 12px;
+  cursor: pointer;
 }
 
 .rowMap h1:nth-child(1){
@@ -101,16 +102,16 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background-color: var(--bg1);
+  background-color: var(--clrGR0);
   cursor: pointer;
 }
 
 .iconPlus div:hover{
-  background-color: var(--bg2);
+  background-color: var(--clrGR1);
 }
 
 .iconPlus div:active{
-  background-color: var(--bg3);
+  background-color: var(--clrGR3);
 }
 
 .iconPlus svg, .iconPlus path{
@@ -126,6 +127,7 @@
 
 .iconClose svg, .iconClose path{
   font-size: 20px;
+  color: var(--clrGR0);
   cursor: pointer;
 }
 
@@ -136,20 +138,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--clr1);
+  background-color: var(--clr0);
+  border-radius: 50%;
   cursor: pointer;
 }
 
 .iconCheck:hover{
-  background-color: var(--bg2);
+  background-color: var(--clr1);
 }
 
 .iconCheck:active{
-  background-color: var(--bg3);
+  background-color: var(--clr2);
 }
 
 .iconCheck svg, .iconCheck path{
-  font-size: 22px;
+  font-size: 20px;
   color: var(--clrBL0);
   cursor: pointer;
 }
@@ -178,11 +181,12 @@
 
 .toggleOFF svg, .toggleOff svg, .toggleON svg, .toggleOn svg, .toggleOFF path, .toggleOff path, .toggleON path, .toggleOn path{
   margin-right: 5px;
+  color: var(--clrGR0);
   cursor: pointer;
 }
 
 .toggleON svg, .toggleOn svg, .toggleON path, .toggleOn path{
-  color: var(--clr1);
+  color: var(--clr5);
   cursor: pointer;
 }
 
@@ -201,9 +205,9 @@
 }
 
 .box3 h1{
-  margin: 2.8px 0;
+  margin: 2.5px 0 !important;
   font-size: 11.5px;
-  color: azure;
+  color: var(--clrGR0);
 }
 
 .box3 h1:nth-child(3){
@@ -223,7 +227,7 @@
 }
 
 .box3_2 h1{
-  padding: 3.2px 0 !important;
+  padding: 4px 0 !important;
   font-size: 12.5px;
   text-align: right;
 }
@@ -235,21 +239,6 @@
   position: absolute;
   top: 10px;
   right: 10px;
-  cursor: pointer;
-}
-
-.iconDel{
-  margin-top: 20px;
-  width: 100%;
-  height: auto;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-}
-
-.iconDel svg, .iconDel path{
-  margin-right: 10px;
-  font-size: 20px;
   cursor: pointer;
 }
 

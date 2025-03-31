@@ -32,11 +32,13 @@
 .datos_1 h1, .datos_2 h1{
   font-size: 14px;
   font-weight: 600 !important;
-  color: var(--clr1);
+  color: var(--clr5);
 }
 
 .datos_1 h2, .datos_2 h2{
   font-size: 14px;
+  text-transform: capitalize;
+  color: var(--clrGR0);
 }
 
 .datos_2 h2{
@@ -44,7 +46,7 @@
 }
 
 .toggleOFF, .toggleON{
-  font-size: 30px;
+  font-size: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -52,11 +54,12 @@
 
 .toggleOFF svg, .toggleON svg, .toggleOFF path, .toggleON path{
   margin-right: 5px;
+  color: var(--clrGR0);
   cursor: pointer;
 }
 
 .toggleON svg, .toggleON path{
-  color: var(--clr1);
+  color: var(--clr5);
   cursor: pointer;
 }
 
@@ -72,7 +75,7 @@
 
 .toggleNota h1{
   font-size: 14px;
-  color: azure;
+  color: var(--clrGR0);
 }
 
 .formNota{
@@ -100,16 +103,16 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background-color: var(--bg2);
+  background-color: var(--clrGR0);
   cursor: pointer;
 }
 
 .iconPlus div:hover{
-  background-color: var(--bg3);
+  background-color: var(--clrGR1);
 }
 
 .iconPlus div:active{
-  background-color: var(--bg4);
+  background-color: var(--clrGR2);
 }
 
 .iconPlus svg, .iconPlus path{
@@ -128,7 +131,7 @@
 
 .sectionTotal h1{
   font-size: 12.5px;
-  color: azure;
+  color: var(--clrGR0);
 }
 
 .sectionTotal_1{
@@ -170,26 +173,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--bg2);
+  background-color: var(--clr0);
   border-radius: 50%;
   cursor: pointer;
 }
 
 .iconEdit svg, .iconEdit path{
-  color: var(--clr2);
+  font-size: 20px;
+  color: azure;
+  cursor: pointer;
 }
 
 .iconEdit div:hover{
-  background-color: var(--bg3);
+  background-color: var(--clr1);
 }
 
 .iconEdit div:active{
-  background-color: var(--bg4);
-}
-
-.iconEdit svg, .iconEdit path{
-  font-size: 20px;
-  cursor: pointer;
+  background-color: var(--clr2);
 }
 
 .iconClose svg, .iconClose path{
@@ -199,6 +199,7 @@
   position: absolute;
   top: 10px;
   right: 10px;
+  color: var(--clrGR0);
   cursor: pointer;
 }
 
@@ -209,20 +210,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--clr0);
+  color: azure;
+  background-color: var(--clr0);
+  border-radius: 50%;
   cursor: pointer;
 }
 
 .iconCheck:hover{
-  background-color: var(--bg2);
+  background-color: var(--clr1);
 }
 
 .iconCheck:active{
-  background-color: var(--bg3);
+  background-color: var(--clr2);
 }
 
 .iconCheck svg, .iconCheck path{
-  font-size: 22px;
+  font-size: 20px;
   color: var(--clrBL1);
   cursor: pointer;
 }
@@ -233,15 +236,16 @@
 
 .qrMain svg, .qrMain path{
   font-size: 50px;
+  color: var(--clr0);
   cursor: pointer;
 }
 
 .qrMain div:hover svg, .qrMain div:hover path{
-  color: var(--clr2);
+  color: var(--clr1);
 }
 
 .qrMain div:active svg, .qrMain div:active path{
-  color: var(--clr3);
+  color: var(--clr2);
 }
 
 .iconPDF{
@@ -251,15 +255,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.iconPDF div{
-  cursor: pointer;
-}
-
-.iconPDF svg, .iconPDF path{
-  font-size: 48px;
-  cursor: pointer;
 }
 
 @media screen and (min-width: 768px) {

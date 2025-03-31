@@ -23,17 +23,17 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: var(--clr0);
+  background-color: var(--clrGR0);
   border-radius: 50%;
   cursor: pointer;
 }
 
 .section div:hover{
-  background-color: var(--clr1);
+  background-color: var(--clrGR1);
 }
 
 .section div:active{
-  background-color: var(--clr2);
+  background-color: var(--clrGR2);
 }
 
 .section svg, .section path{

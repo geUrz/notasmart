@@ -125,7 +125,7 @@ export function NotaEditForm(props) {
           <FormField error={!!errors.cliente_id}>
             <Label>Cliente</Label>
             <Dropdown
-              placeholder='Selecciona un cliente'
+              placeholder='Seleccionar'
               fluid
               selection
               options={clientes.map(cliente => ({

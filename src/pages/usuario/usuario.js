@@ -125,7 +125,7 @@ export default function Usuario() {
   }
 
   if (loading) {
-    <Loading size={45} loading={0} />
+    <Loading size={45} loading={'L'} />
   }
 
   return (
@@ -139,14 +139,26 @@ export default function Usuario() {
           <FaUser />
 
           <div className={styles.datos_usuario}>
-            {user && user.usuario ?
+            {user && user.usuario &&
               <>
                 <h1>{user.usuario}</h1>
-                <h2>Nombre: {user.nombre}</h2>
-                <h2>Correo: {user.email}</h2>
-                <h2>Nivel: {user.nivel}</h2>
-                <h2>Folios: {user.folios}</h2>
-              </> : null
+                <div>
+                  <h2>Nombre:</h2>
+                  <h3>{user.nombre}</h3>
+                </div>
+                <div>
+                  <h2>Correo:</h2>
+                  <h3>{user.email}</h3>
+                </div>
+                <div>
+                  <h2>Nivel:</h2>
+                  <h3>{user.nivel}</h3>
+                </div>
+                <div>
+                  <h2>Folios:</h2>
+                  <h3>{user.folios}</h3>
+                </div>
+              </>
             }
           </div>
 

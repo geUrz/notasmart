@@ -1,6 +1,6 @@
 import { IconClose } from '@/components/Layouts'
 import styles from './ClickCount.module.css'
-import { FaInfo, FaInfoCircle } from 'react-icons/fa'
+import { FaInfoCircle } from 'react-icons/fa'
 
 export function ClickCount(props) {
 

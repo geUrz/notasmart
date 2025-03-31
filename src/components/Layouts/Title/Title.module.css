@@ -10,7 +10,7 @@
 .title h1{
   font-size: 28px;
   font-family: 'Bebas' !important;
-  color: azure;
+  color: var(--clrGR0);
 }
 
 .title svg, .title path{
@@ -20,15 +20,7 @@
   justify-content: center;
   position: absolute;
   left: 24px;
-  font-size: 40px;
-  border-radius: 50%;
+  font-size: 45px;
+  color: var(--clrGR0);
   cursor: pointer;
-}
-
-.title svg:hover, .title path:hover{
-  background-color: var(--bg2);
-}
-
-.title svg:active, .title path:active{
-  background-color: var(--bg3);
 }

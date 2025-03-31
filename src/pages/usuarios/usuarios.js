@@ -57,7 +57,7 @@ export default function Usuarios() {
   }
 
   if (loading) {
-    return <Loading size={45} loading={0} />
+    return <Loading size={45} loading={'L'} />
   }
 
   return (
