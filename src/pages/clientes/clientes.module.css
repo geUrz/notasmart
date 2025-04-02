@@ -12,21 +12,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
 } 
 
 .iconSearch h1{
   margin-right: 10px !important;
   font-size: 16px;
+  color: var(--clr3);
 } 
 
 .iconSearch svg, .iconSearch path{
   font-size: 24px;
+  color: var(--clr3);
   cursor: pointer;
 } 
 
 .searchMain {
-  padding: 20px;
+  padding-top: 20px;
   margin-top: 80px;
   width: 100%;
   height: 100vh;
@@ -36,6 +37,6 @@
   position: fixed;
   top: 0;
   left: 0;
-  background-color: var(--bg0);
+  background-color: rgba(240, 255, 255, .9);
   z-index: 1000;
 }

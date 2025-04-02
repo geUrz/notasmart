@@ -19,6 +19,7 @@ export default async function handler(req, res) {
                     clientes.contacto AS cliente_contacto, 
                     notas.nota,
                     notas.iva,
+                    notas.iva_total,
                     notas.createdAt
                 FROM notas
                 JOIN clientes ON notas.cliente_id = clientes.id 
@@ -46,6 +47,7 @@ export default async function handler(req, res) {
                         clientes.contacto AS cliente_contacto, 
                         notas.nota,
                         notas.iva,
+                        notas.iva_total,
                         conceptosnot.concepto AS concepto,
                         notas.createdAt
                     FROM notas
@@ -84,6 +86,7 @@ export default async function handler(req, res) {
                   clientes.contacto AS cliente_contacto, 
                   notas.nota,
                   notas.iva,
+                  notas.iva_total,
                   notas.createdAt
                 FROM notas
                 JOIN clientes ON notas.cliente_id = clientes.id
@@ -96,12 +99,12 @@ export default async function handler(req, res) {
         }
     } else if (req.method === 'POST') {
         // Maneja la solicitud POST
-        const { usuario_id, folio, cliente_id, nota, iva } = req.body;
+        const { usuario_id, folio, cliente_id, nota, iva, iva_total } = req.body;
 
         try {
             const [result] = await connection.query(
-                'INSERT INTO notas (usuario_id, folio, cliente_id, nota, iva) VALUES (?, ?, ?, ?, ?)',
-                [usuario_id, folio, cliente_id, nota, iva]
+                'INSERT INTO notas (usuario_id, folio, cliente_id, nota, iva, iva_total) VALUES (?, ?, ?, ?, ?, ?)',
+                [usuario_id, folio, cliente_id, nota, iva, iva_total]
             );
             res.status(201).json({ id: result.insertId });
         } catch (error) {

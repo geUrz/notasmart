@@ -34,13 +34,14 @@ export default async function handler(req, res) {
                     OR LOWER(folio) LIKE ? 
                     OR LOWER(usuario) LIKE ? 
                     OR LOWER(email) LIKE ? 
+                    OR LOWER(nivel) LIKE ? 
                     OR LOWER(CAST(isactive AS CHAR)) LIKE ?
                     ${isActiveQuery !== null ? "OR usuarios.isactive = ?" : ""}
                     ORDER BY updatedAt DESC`;
         
                 const params = [
                     searchQuery, searchQuery, searchQuery, searchQuery, 
-                    searchQuery
+                    searchQuery, searchQuery
                 ];
         
                 if (isActiveQuery !== null) {
@@ -77,7 +78,9 @@ export default async function handler(req, res) {
                         folios,
                         isactive
                         FROM usuarios 
-                        WHERE isadmin IN (?)`,
+                        WHERE isadmin IN (?)
+                        ORDER BY 
+                        usuarios.updatedAt DESC`,
                     [isadminValues]
                 );
 
@@ -156,19 +159,14 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'ID del usuario es necesario para actualizar' });
         }
 
-        const { nombre, usuario, email, nivel, folios, isactive, newPassword } = req.body;
+        const { nombre, usuario, email, nivel, folios, isactive } = req.body;
 
         let updateData = { nombre, usuario, email, nivel, folios, isactive };
-
-        if (newPassword) {
-            const hashedPassword = await bcrypt.hash(newPassword, 10);
-            updateData.password = hashedPassword;
-        }
 
         try {
             const [result] = await connection.query(
                 `UPDATE usuarios 
-                 SET nombre = ?, usuario = ?, email = ?, nivel = ?, folios = ?, isactive = ?, password = ?
+                 SET nombre = ?, usuario = ?, email = ?, nivel = ?, folios = ?, isactive = ?
                  WHERE id = ?`,
                 [
                     updateData.nombre, 
@@ -176,8 +174,7 @@ export default async function handler(req, res) {
                     updateData.email, 
                     updateData.nivel, 
                     updateData.folios, 
-                    updateData.isactive, 
-                    updateData.password || null, 
+                    updateData.isactive,
                     id
                 ]
             );

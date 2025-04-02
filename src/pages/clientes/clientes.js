@@ -4,8 +4,9 @@ import { useAuth } from '@/contexts/AuthContext'
 import { BasicLayout, BasicModal } from '@/layouts'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
-import { ClienteForm, ClientesLista } from '@/components/Clientes'
+import { ClienteForm, ClientesLista, ClientesListSearch, SearchClientes } from '@/components/Clientes'
 import styles from './clientes.module.css'
+import { FaSearch } from 'react-icons/fa'
 
 export default function Clientes() {
 
@@ -18,6 +19,12 @@ export default function Clientes() {
   const [openForm, setOpenForm] = useState(false)
 
   const onOpenCloseForm = () => setOpenForm((prevState) => !prevState)
+
+  const [search, setSearch] = useState(false)
+    
+  const onOpenCloseSearch = () => setSearch((prevState) => !prevState)
+    
+  const [resultados, setResultados] = useState([])
 
   const [clientes, setClientes] = useState(null)
 
@@ -88,9 +95,32 @@ export default function Clientes() {
 
         <Title title='clientes'  />
 
+        <Add onOpenClose={onOpenCloseForm} />
+
+        {!search ? (
+          ''
+        ) : (
+          <div className={styles.searchMain}>
+            <SearchClientes user={user} onResults={setResultados} reload={reload} onReload={onReload} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
+            {resultados.length > 0 && (
+              <ClientesListSearch visitas={resultados} reload={reload} onReload={onReload} />
+            )}
+          </div>
+        )}
+
+        {!search ? (
+          <div className={styles.iconSearchMain}>
+            <div className={styles.iconSearch} onClick={onOpenCloseSearch}>
+              <h1>Buscar clientes</h1>
+              <FaSearch />
+            </div>
+          </div>
+        ) : (
+          ''
+        )}
+        
         <ClientesLista reload={reload} onReload={onReload} clientes={clientes} onToastSuccessMod={onToastSuccessMod} onToastSuccessDel={onToastSuccessDel} />
 
-        <Add onOpenClose={onOpenCloseForm} />
 
       </BasicLayout>
 

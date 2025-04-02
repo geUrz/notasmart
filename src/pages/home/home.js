@@ -3,7 +3,7 @@ import { BasicLayout } from '@/layouts'
 import { Loading, Title } from '@/components/Layouts'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-import { size } from 'lodash'
+import { size, sum } from 'lodash'
 import { useAuth } from '@/contexts/AuthContext'
 import { FaArrowDown, FaDollarSign, FaFileAlt } from 'react-icons/fa'
 import { formatCurrency } from '@/helpers'
@@ -21,7 +21,8 @@ export default function Home() {
   const [notas, setNotas] = useState(null)
 
   const totalNotas = size(notas)
-
+  const totalIVA = notas ? sum(notas.map(nota => nota.iva_total || 0)) : 0
+  
   const sumTotalFolios = () => {
     if (user.nivel === 'admin') {
       return users.reduce((total, user) => total + (parseInt(user.folios) || 0), 0)
@@ -85,6 +86,7 @@ export default function Home() {
   }
 
   const totalPrice = sumTotalPrice()
+  const totalTotal = totalIVA + totalPrice || 0
 
   useEffect(() => {
     if (user) {
@@ -123,7 +125,7 @@ export default function Home() {
         <Title title='home' />
 
         <div className={styles.main}>
-          <div className={styles.section}>
+          <div className={styles.notas}>
             <div className={styles.icon}>
               <div className={styles.icon1}>
                 <FaFileAlt />
@@ -141,7 +143,7 @@ export default function Home() {
               }
             </div>
           </div>
-          <div className={styles.section}>
+          <div className={styles.entradas}>
             <div className={styles.icon}>
               <div className={styles.icon1}>
                 <FaDollarSign />
@@ -157,7 +159,18 @@ export default function Home() {
                 <h1>${formatCurrency(totalPrice)}</h1>
               }
             </div>
+            <div className={styles.iva}>
+              <div>
+                <h1>IVA</h1>
+                <h2>${formatCurrency(totalIVA)}</h2>
+              </div>
+              <div>
+                <h1>Total</h1>
+                <h2>${formatCurrency(totalTotal)}</h2>
+              </div>
           </div>
+          </div>
+          
         </div>
 
       </BasicLayout>

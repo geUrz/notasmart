@@ -14,9 +14,7 @@ export function UsuarioEditForm(props) {
     email: usuarioData.email,
     nivel: usuarioData.nivel,
     folios: usuarioData.folios,
-    isactive: usuarioData.isactive,
-    newPassword: '',
-    confirmPassword: ''
+    isactive: usuarioData.isactive
   })
 
   const [errors, setErrors] = useState({})
@@ -40,7 +38,7 @@ export function UsuarioEditForm(props) {
       newErrors.folios = 'El campo es requerido'
     }
 
-    if (!formData.isactive) {
+    if (formData.isactive === null || formData.isactive === undefined) {
       newErrors.isactive = 'El campo es requerido'
     }
 
@@ -63,20 +61,14 @@ export function UsuarioEditForm(props) {
       return
     }
 
-    if (formData.newPassword && formData.newPassword !== formData.confirmPassword) {
-      setError('Las contraseñas no coinciden')
-      return
-    }
-
     try {
       await axios.put(`/api/usuarios/usuarios?id=${usuarioData.id}`, {
         nombre: formData.nombre,
         usuario: formData.usuario,
         email: formData.email,
         nivel: formData.nivel,
-        folios: usuarioData.folios,
-        isactive: formData.isactive,
-        newPassword: formData.newPassword
+        folios: formData.folios,
+        isactive: formData.isactive
       })
       
       onReload()
@@ -146,7 +138,7 @@ export function UsuarioEditForm(props) {
               Nivel
             </Label>
             <Dropdown
-              placeholder='Selecciona una opción'
+              placeholder='Seleccionar'
               fluid
               selection
               options={opcionesNivel}
@@ -160,8 +152,8 @@ export function UsuarioEditForm(props) {
               Folios
             </Label>
             <Input
-              type="text"
               name="folios"
+              type="number"
               value={formData.folios}
               onChange={handleChange}
             />
@@ -172,7 +164,7 @@ export function UsuarioEditForm(props) {
               Activo
             </Label>
             <Dropdown
-              placeholder='Selecciona una opción'
+              placeholder='Seleccionar'
               fluid
               selection
               options={opcionesIsActive}
@@ -180,24 +172,6 @@ export function UsuarioEditForm(props) {
               onChange={(e, { value }) => setFormData({ ...formData, isactive: Number(value) })}
             />
             {errors.isactive && <Message negative>{errors.isactive}</Message>}
-          </FormField>
-          <FormField>
-            <Label>Nueva contraseña</Label>
-            <Input
-              name='newPassword'
-              type='password'
-              value={formData.newPassword}
-              onChange={handleChange}
-            />
-          </FormField>
-          <FormField>
-            <Label>Confirmar nueva contraseña</Label>
-            <Input
-              name='confirmPassword'
-              type='password'
-              value={formData.confirmPassword}
-              onChange={handleChange}
-            />
           </FormField>
         </FormGroup>
         <Button primary onClick={handleSubmit}>

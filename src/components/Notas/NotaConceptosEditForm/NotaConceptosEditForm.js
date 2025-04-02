@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { IconClose, IconDel } from '@/components/Layouts';
 import { Button, Dropdown, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react';
 import axios from 'axios';
@@ -7,7 +7,7 @@ import styles from './NotaConceptosEditForm.module.css';
 
 export function NotaConceptosEditForm(props) {
 
-  const { reload, onReload, onOpenCloseEditConcep, onOpenCloseConfirm, conceptToEdit, onEditConcept } = props;
+  const { user, reload, onReload, onOpenCloseEditConcep, onOpenCloseConfirm, conceptToEdit, onEditConcept } = props;
 
   const [newConcept, setNewConcept] = useState(conceptToEdit || { tipo: '', concepto: '', precio: '', cantidad: '' })
   const [errors, setErrors] = useState({})
@@ -77,7 +77,19 @@ export function NotaConceptosEditForm(props) {
   const opcionesSerprod = [
     { key: 1, text: 'Servicio', value: 'Servicio' },
     { key: 2, text: 'Producto', value: 'Producto' }
-  ];
+  ]
+
+  const permissions = useMemo(() => {
+
+    if(!user) return {}
+
+    return{
+
+      showAdmin: user.nivel === 'admin'
+
+    }
+
+  }, [user])
 
   return (
     <>
@@ -138,7 +150,9 @@ export function NotaConceptosEditForm(props) {
           </Button>
         </Form>
 
-        <IconDel setShowConfirmDel={() => onOpenCloseConfirm(newConcept)} />
+        {permissions.showAdmin &&
+          <IconDel setShowConfirmDel={() => onOpenCloseConfirm(newConcept)} />
+        }
 
       </div>
     </>

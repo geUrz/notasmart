@@ -166,7 +166,7 @@ export function UsuarioForm(props) {
               <FormField error={!!errors.nivel}>
                 <Label>Nivel</Label>
                 <Dropdown
-                  placeholder='Selecciona nivel'
+                  placeholder='Seleccionar'
                   fluid
                   selection
                   options={[

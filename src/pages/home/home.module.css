@@ -8,10 +8,10 @@
   justify-content: center;
 }
 
-.section{
+.notas, .entradas{
   margin: 5px;
   width: 250px;
-  height: 150px;
+  height: 160px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -70,4 +70,31 @@
 .count h1{
   font-size: 40px;
   font-family: 'Bebas' !important;
+}
+
+.iva{
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.iva div{
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.iva h1, .iva h2{
+  font-size: 18px;
+  font-family: 'Bebas' !important;
+}
+
+.iva h2{
+  margin-left: 5px !important;
+  font-size: 18px;
 }

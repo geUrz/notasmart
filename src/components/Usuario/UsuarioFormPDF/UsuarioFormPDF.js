@@ -63,7 +63,7 @@ export function UsuarioFormPDF(props) {
               />
             </FormField>
             <FormField>
-              <Label>Calle / Numero</Label>
+              <Label>Calle / Número</Label>
               <Input
                 type="text"
                 value={fila2 || ''}

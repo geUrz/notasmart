@@ -176,7 +176,7 @@ export default function Usuario() {
                 <h2>{getValueOrDefault(datoPDF?.fila1)}</h2>
               </div>
               <div>
-                <h1>Calle / Numero</h1>
+                <h1>Calle / Número</h1>
                 <h2>{getValueOrDefault(datoPDF?.fila2)}</h2>
               </div>
               <div>

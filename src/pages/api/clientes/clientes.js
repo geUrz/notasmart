@@ -28,6 +28,7 @@ export default async function handler(req, res) {
                         SELECT
                             id, 
                             folio, 
+                            usuario_id,
                             cliente,
                             contacto,
                             cel,
@@ -51,7 +52,7 @@ export default async function handler(req, res) {
                             LOWER(createdAt) LIKE ?
                         ORDER BY updatedAt DESC`, [searchQuery, searchQuery, searchQuery, searchQuery, searchQuery, searchQuery, searchQuery]);
     
-                    res.status(200).json(rows); // Devolver los recibos encontrados por búsqueda
+                    res.status(200).json(rows); 
     
                 } catch (error) {
                     res.status(500).json({ error: 'Error al realizar la búsqueda' });
@@ -61,7 +62,7 @@ export default async function handler(req, res) {
 
             // Obtener todos los clientes
             try {
-                const [rows] = await connection.query('SELECT id, folio, cliente, contacto, cel, direccion, email FROM clientes ORDER BY updatedAt DESC');
+                const [rows] = await connection.query('SELECT id, folio, usuario_id, cliente, contacto, cel, direccion, email FROM clientes ORDER BY updatedAt DESC');
                 res.status(200).json(rows)
             } catch (error) {
                 res.status(500).json({ error: error.message })

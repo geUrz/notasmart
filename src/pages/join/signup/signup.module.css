@@ -27,11 +27,11 @@
   align-items: center;
   justify-content: center;
   position: absolute;
-  top: -70px;
+  top: -50px;
 }
 
 .logo img{
-  height: 120px;
+  height: 100px;
 }
 
 .h1{

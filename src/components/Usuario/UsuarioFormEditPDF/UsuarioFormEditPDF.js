@@ -59,7 +59,7 @@ export function UsuarioFormEditPDF(props) {
           </FormField>
           <FormField>
             <Label>
-             Calle / Numero
+             Calle / Número
             </Label>
             <Input
               type="text"

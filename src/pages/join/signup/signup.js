@@ -119,7 +119,7 @@ export default function Signup() {
         setError(response.data?.error || "Ocurrió un error inesperado.");
       }
     } catch (error) {
-      console.error("🔥 Error inesperado:", error);
+      console.error("Error inesperado:", error);
       setError("Error de conexión con el servidor.");
     }
   }
@@ -132,7 +132,7 @@ export default function Signup() {
       <div className={styles.main}>
         <div className={styles.boxForm}>
           <div className={styles.logo}>
-            <Image src='/img/logo.png' />
+            <Image src='/img/logologin.jpg' />
           </div>
 
           <div className={styles.h1}>
@@ -173,7 +173,7 @@ export default function Signup() {
               <FormField error={!!errors.nivel}>
                 <Label>Nivel</Label>
                 <Dropdown
-                  placeholder='Selecciona nivel'
+                  placeholder='Seleccionar'
                   fluid
                   selection
                   options={[

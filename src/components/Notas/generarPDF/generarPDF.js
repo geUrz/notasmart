@@ -29,7 +29,7 @@ export async function generarPDF(nota, datoPDF, conceptos) {
   const blue = [1, 121, 202]
   const green = [151, 202, 53]
   const red = [233, 77, 51]
-  const orange = [243, 115, 53]
+  const orange = [236, 97, 55]
 
   const fillColorBan = {
     1: blanco,

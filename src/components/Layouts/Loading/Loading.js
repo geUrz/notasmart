@@ -21,7 +21,7 @@ export function Loading(props) {
     <div className={loadingClass}>
       <MoonLoader
         color= {
-          (loading === 'L' || loading === 1 ? 'blue' : 'azure') 
+          (loading === 'L' || loading === 1 ? 'gray' : 'azure') 
         }
         size={size}
         speedMultiplier={.8}

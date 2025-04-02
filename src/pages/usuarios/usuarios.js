@@ -1,10 +1,12 @@
 import { Add, Loading, Title, ToastDelete, ToastSuccess } from '@/components/Layouts'
 import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
-import { UsuarioForm, UsuariosLista } from '@/components/Usuarios'
+import { SearchUsuarios, UsuarioForm, UsuariosLista, UsuariosListSearch } from '@/components/Usuarios'
 import { useAuth } from '@/contexts/AuthContext'
 import { BasicLayout, BasicModal } from '@/layouts'
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
+import { FaSearch } from 'react-icons/fa'
+import styles from './usuarios.module.css'
 
 export default function Usuarios() {
 
@@ -17,6 +19,12 @@ export default function Usuarios() {
   const [openCloseForm, setOpenCloseForm] = useState(false)
 
   const onOpenCloseForm = () => setOpenCloseForm((prevState) => !prevState)
+
+  const [search, setSearch] = useState(false)
+  
+  const onOpenCloseSearch = () => setSearch((prevState) => !prevState)
+  
+  const [resultados, setResultados] = useState([])
 
   const [usuarios, setUsuarios] = useState(null)
 
@@ -75,6 +83,28 @@ export default function Usuarios() {
         <Title title='usuarios' />
 
         <Add onOpenClose={onOpenCloseForm} />
+
+        {!search ? (
+          ''
+        ) : (
+          <div className={styles.searchMain}>
+            <SearchUsuarios user={user} onResults={setResultados} reload={reload} onReload={onReload} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
+            {resultados.length > 0 && (
+              <UsuariosListSearch visitas={resultados} reload={reload} onReload={onReload} />
+            )}
+          </div>
+        )}
+
+        {!search ? (
+          <div className={styles.iconSearchMain}>
+            <div className={styles.iconSearch} onClick={onOpenCloseSearch}>
+              <h1>Buscar usuario</h1>
+              <FaSearch />
+            </div>
+          </div>
+        ) : (
+          ''
+        )}
 
         <UsuariosLista user={user} loading={loading} reload={reload} onReload={onReload} usuarios={usuarios} setUsuarios={setUsuarios} onToastSuccessMod={onToastSuccessMod} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
 

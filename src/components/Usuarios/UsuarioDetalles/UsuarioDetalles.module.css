@@ -68,53 +68,10 @@
   word-break: break-all;
 }
 
-.iconEdit{
-  margin-top: 50px;
-  width: 100%;
-  height: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.iconEdit div{
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--clr0);
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.iconEdit svg, .iconEdit path{
-  font-size: 20px;
-  color: azure;
-  cursor: pointer;
-}
-
-.iconEdit div:hover{
-  background-color: var(--clr1);
-}
-
-.iconEdit div:active{
-  background-color: var(--clr2);
-}
-
-.iconDel{
-  margin-top: 20px;
-  width: 100%;
-  height: auto;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-}
-
 .iconClose svg, .iconClose path{
   padding: 8px;
   font-size: 34px;
-  color: var(--clrGR00);
+  color: var(--clrGR0);
   border-radius: 50%;
   position: absolute;
   top: 10px;
@@ -129,20 +86,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: var(--clr0);
+  border-radius: 50%;
   cursor: pointer;
 }
 
 .iconCheck:hover{
-  background-color: var(--bg2);
+  background-color: var(--clr1);
 }
 
 .iconCheck:active{
-  background-color: var(--bg3);
+  background-color: var(--clr2);
 }
 
 .iconCheck svg, .iconCheck path{
   font-size: 22px;
-  color: var(--clr1);
+  color: azure;
   cursor: pointer;
 }
 

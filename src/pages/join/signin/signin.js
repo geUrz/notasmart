@@ -100,7 +100,7 @@ export default function Signin() {
         <div className={styles.boxForm}>
 
           <div className={styles.logo}>
-            <Image src='/img/logo.png' onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} />
+            <Image src='/img/logologin.jpg' onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} />
           </div>
 
           <div className={styles.h1}>

@@ -1,6 +1,6 @@
 import { FaCheck, FaEdit, FaTimes, FaTrash } from 'react-icons/fa'
-import { IconClose, Confirm } from '@/components/Layouts'
-import { useEffect, useState } from 'react'
+import { IconClose, Confirm, IconKey, EditPass, IconEdit } from '@/components/Layouts'
+import { useEffect, useMemo, useState } from 'react'
 import { BasicModal } from '@/layouts'
 import { useAuth } from '@/contexts/AuthContext'
 import axios from 'axios'
@@ -17,6 +17,10 @@ export function UsuarioDetalles(props) {
   const [showEdit, setShowEdit] = useState(false)
 
   const onOpenCloseEdit = () => setShowEdit((prevState) => !prevState)
+
+  const [showEditPass, setShowEditPass] = useState(false)
+
+  const onOpenCloseEditPass = () => setShowEditPass((prevState) => !prevState)
 
   const [showConfirmDel, setShowConfirmDel] = useState(false)
 
@@ -37,26 +41,38 @@ export function UsuarioDetalles(props) {
     }
   }
 
-  let isActive = ''
+  const [usuarioData, setUsuarioData] = useState(usuario)
 
-  if (usuario.isactive === 1) {
-      isActive = 'Activo'
-  } else {
-      isActive = 'Inactivo'
+  useEffect(() => {
+    setUsuarioData(usuario)
+  }, [usuario])
+
+  const actualizarUsuario = (nuevaData) => {
+    setUsuarioData((prevState) => ({
+      ...prevState,
+      ...nuevaData,
+    }))
   }
 
-  const [usuarioData, setUsuarioData] = useState(usuario)
-    
-      useEffect(() => {
-        setUsuarioData(usuario) 
-      }, [usuario]) 
-    
-      const actualizarUsuario = (nuevaData) => {
-        setUsuarioData((prevState) => ({
-          ...prevState,
-          ...nuevaData, 
-        }))
-      }
+  let isActive = ''
+
+  if (usuarioData.isactive === 1) {
+    isActive = 'Activo'
+  } else {
+    isActive = 'Inactivo'
+  }
+
+  const permissions = useMemo(() => {
+
+    if (!usuario) return {}
+
+    return {
+
+      showAdmin: ['admin'].includes(user.nivel),
+
+    }
+
+  }, [user])
 
   return (
 
@@ -100,24 +116,26 @@ export function UsuarioDetalles(props) {
           </div>
         </div>
 
-        <div className={styles.iconEdit}>
-          <div onClick={onOpenCloseEdit}>
-            <FaEdit />
-          </div>
-        </div>
+        {permissions.showAdmin &&
 
-        {user.nivel === 'admin' ?
-          <div className={styles.iconDel}>
-            <div>
-              <FaTrash onClick={onOpenCloseConfirmDel} />
-            </div>
-          </div> : null
+          <>
+
+            <IconKey usuario={usuario} onOpenCloseEditPass={onOpenCloseEditPass} />
+
+            <IconEdit onOpenEdit={onOpenCloseEdit} />
+
+          </>
+
         }
 
       </div>
 
       <BasicModal title='modificar usuario' show={showEdit} onClose={onOpenCloseEdit}>
         <UsuarioEditForm reload={reload} onReload={onReload} usuarioData={usuarioData} actualizarUsuario={actualizarUsuario} onOpenCloseEdit={onOpenCloseEdit} onToastSuccessMod={onToastSuccessMod} />
+      </BasicModal>
+
+      <BasicModal title='Modificar contraseña' show={showEditPass} onClose={onOpenCloseEditPass}>
+        <EditPass usuario={usuario} onOpenCloseEditPass={onOpenCloseEditPass} onToastSuccessUsuarioMod={onToastSuccessMod} />
       </BasicModal>
 
       <Confirm

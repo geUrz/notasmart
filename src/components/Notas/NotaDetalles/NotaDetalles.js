@@ -3,7 +3,7 @@ import { FaCheck, FaEdit, FaPlus, FaTimes } from 'react-icons/fa'
 import { BasicModal } from '@/layouts'
 import { formatCurrency, formatDateIncDet, getValueOrDefault } from '@/helpers'
 import { BiQr, BiSolidToggleLeft, BiSolidToggleRight } from 'react-icons/bi'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { NotaConceptos } from '../NotaConceptos'
 import { NotaPDF } from '../NotaPDF'
 import { NotaConceptosForm } from '../NotaConceptosForm'
@@ -175,9 +175,17 @@ export function NotaDetalles(props) {
     }))
   }
 
-  if (loading) {
-    return <Loading size={45} loading={1} />
-  }
+  const permissions = useMemo(() => {
+  
+      if(!user) return {}
+  
+      return{
+  
+        showAdmin: user.nivel === 'admin'
+  
+      }
+  
+    }, [user])
 
   return (
 
@@ -279,10 +287,7 @@ export function NotaDetalles(props) {
           <div onClick={onOpenEditNota}><FaEdit /></div>
         </div>
 
-        {user && user.nivel === 'admin' ?
-          <IconDel setShowConfirmDel={setShowConfirmDel} /> : null
-        }
-
+        <div className={styles.mainQRPDF}>
         <div className={styles.qrMain}>
           <div onClick={onOpenCloseQR}>
             <BiQr/>
@@ -290,6 +295,11 @@ export function NotaDetalles(props) {
         </div>
 
         <NotaPDF nota={nota} datoPDF={datoPDF} conceptos={nota?.conceptos || []} />
+        </div>
+
+        {permissions.showAdmin &&
+          <IconDel setShowConfirmDel={setShowConfirmDel} />
+        }
 
       </div>
 
@@ -303,6 +313,7 @@ export function NotaDetalles(props) {
 
       <BasicModal title='Modificar concepto' show={showEditConcep} onClose={onOpenCloseEditConcep}>
         <NotaConceptosEditForm
+          user={user}
           reload={reload}
           onReload={onReload}
           onEditConcept={onEditConcept}

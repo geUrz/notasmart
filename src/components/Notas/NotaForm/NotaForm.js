@@ -90,14 +90,25 @@ export function NotaForm(props) {
     if (!validarForm()) return
 
     const folio = genNVId(4)
+
+    const { subtotal, iva, total } = calcularTotales()
+
     try {
-      const res = await axios.post('/api/notas/notas', {
+      const payload = {
         usuario_id: user.id,
         folio,
         cliente_id,
         nota,
-        iva: ivaValue
-      })
+        iva: ivaValue,
+      }
+
+      if (toggleIVA) {
+        const ivaDecimal = ivaValue / 100
+        const iva_total = subtotal * ivaDecimal
+        payload.iva_total = iva_total
+      }
+  
+      const res = await axios.post('/api/notas/notas', payload)
 
       const notaId = res.data.id
       await Promise.all(conceptos.map(concepto =>
