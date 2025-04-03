@@ -63,28 +63,19 @@
   cursor: pointer;
 }
 
-.toggleNota{
-  margin-top: 30px;
-  width: 100%;
-  max-width: 300px;
-  height: auto;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
+.toggleON svg, .toggleOn svg, .toggleON path, .toggleOn path{
+  color: var(--clr5);
+  cursor: pointer;
 }
 
-.toggleNota h1{
+.toggleON h2{
+  margin: 0 2px !important;
   font-size: 14px;
   color: var(--clrGR0);
 }
 
-.formNota{
-  margin-top: 10px;
-}
-
-.charCount{
-  margin-top: 20px;
-  font-size: 12px;
+.ivaInput{
+  width: 38px !important;
 }
 
 .iconPlus{
@@ -151,7 +142,7 @@
 }
 
 .sectionTotal_2 h1{
-  margin: 3.5px 0 !important;
+  margin: 4px 0 !important;
 }
 
 .sectionTotal_1 h1:nth-child(3), .sectionTotal_2 h1:nth-child(3){

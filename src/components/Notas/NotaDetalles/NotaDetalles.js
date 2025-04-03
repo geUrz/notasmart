@@ -15,10 +15,10 @@ import QRCode from 'qrcode'
 import styles from './NotaDetalles.module.css'
 import { QRScan } from '../QRScan'
 import { generarPDF } from '../generarPDF'
+import { Form, FormField, FormGroup, Input } from 'semantic-ui-react'
 
 export function NotaDetalles(props) {
-
-  const { user, loading, nota, notaId, reload, onReload, onOpenClose, onAddConcept, onDeleteConcept, onShowConfirm, onToastSuccess, onToastSuccessMod, onToastSuccessDel, notaSeleccionado } = props
+  const { user, nota, notaId, reload, onReload, onOpenClose, onAddConcept, onDeleteConcept, onToastSuccess, onToastSuccessMod, onToastSuccessDel, notaSeleccionado } = props
 
   const [showConcep, setShowForm] = useState(false)
   const [showEditConcep, setShowEditConcept] = useState(false)
@@ -61,15 +61,15 @@ export function NotaDetalles(props) {
   const [showQR, setShowQR] = useState(false)
 
   const onOpenCloseQR = async () => {
-    setShowQR((prevState) => !prevState);
+    setShowQR((prevState) => !prevState)
   
-    await generarPDF(nota, datoPDF, nota?.conceptos || []);
+    await generarPDF(nota, datoPDF, nota?.conceptos || [])
   }
 
   useEffect(() => {
     if (nota?.folio) {
       const pdfUrl = `https://notasmart.app/api/download-pdf/nota_${nota.folio}.pdf`;
-      QRCode.toDataURL(pdfUrl).then(setQrCode).catch(console.error);
+      QRCode.toDataURL(pdfUrl).then(setQrCode).catch(console.error)
     }
   }, [nota])
 
@@ -78,7 +78,6 @@ export function NotaDetalles(props) {
   useEffect(() => {
     setNotaState(nota)
   }, [nota])
-
 
   const onEditConcept = (conceptoActualizado) => {
     if (!notaState) return;
@@ -101,6 +100,34 @@ export function NotaDetalles(props) {
 
   const onIVA = () => {
     setToggleIVA((prevState) => !prevState)
+  
+    const updatedIvaValue = toggleIVA ? 0 : (subtotal * ivaValue) / 100;
+  
+    addIVA(ivaValue, updatedIvaValue) 
+  }
+
+  const addIVA = async (ivaPercentage, ivaTotalValue) => {
+    try {
+      const res = await axios.put(`/api/notas/ivaTotal?id=${nota.id}`, {
+        iva: ivaPercentage,     
+        iva_total: ivaTotalValue, 
+      })
+  
+    } catch (error) {
+      console.error("Error al actualizar IVA:", error)
+    }
+  }
+
+  const updateIVA = async (ivaPercentage, ivaTotalValue) => {
+    try {
+      const res = await axios.put(`/api/notas/ivaTotal?id=${nota.id}`, {
+        iva: ivaPercentage,   
+        iva_total: ivaTotalValue,  
+      })
+  
+    } catch (error) {
+      console.error("Error al actualizar IVA:", error)
+    }
   }
 
   useEffect(() => {
@@ -122,30 +149,49 @@ export function NotaDetalles(props) {
     }
   }, [nota])
 
-
   const subtotal = (notaState?.conceptos || []).reduce(
     (sum, concepto) => sum + concepto.precio * concepto.cantidad,
     0
   )
-  const iva = subtotal * ivaValue / 100
+
+  const iva = ivaValue ? (subtotal * ivaValue) / 100 : 0
   const total = subtotal + iva
+
+  const handleIvaChange = async (e) => {
+    let value = e.target.value;
+  
+    if (/^\d{0,2}$/.test(value)) {
+      setIvaValue(value)
+  
+      const updatedIvaValue = value ? (subtotal * value) / 100 : 0;
+
+      await updateIVA(value, updatedIvaValue)
+    }
+  }  
+
+  useEffect(() => {
+    if (nota && nota.iva) {
+      setIvaValue(nota.iva)
+    }
+  }, [nota])
+  
 
   const handleDelete = async () => {
     if (!nota?.id || !nota?.folio) {
-      console.error("Nota o ID no disponible");
+      console.error("Nota o ID no disponible")
       return;
     }
   
     try {
-      await axios.delete(`/api/notas/notas?id=${nota.id}&folio=${nota.folio}`); 
-      onOpenClose();
-      notaSeleccionado(null);
-      onReload();
-      onToastSuccessDel();
+      await axios.delete(`/api/notas/notas?id=${nota.id}&folio=${nota.folio}`) 
+      onOpenClose()
+      notaSeleccionado(null)
+      onReload()
+      onToastSuccessDel()
     } catch (error) {
-      console.error("Error al eliminar la nota:", error);
+      console.error("Error al eliminar la nota:", error)
     }
-  };  
+  }
 
   const [datoPDF, setDatoPDF] = useState(null)
 
@@ -176,21 +222,15 @@ export function NotaDetalles(props) {
   }
 
   const permissions = useMemo(() => {
+    if(!user) return {}
   
-      if(!user) return {}
-  
-      return{
-  
-        showAdmin: user.nivel === 'admin'
-  
-      }
-  
-    }, [user])
+    return{
+      showAdmin: user.nivel === 'admin'
+    }
+  }, [user])
 
   return (
-
     <>
-
       <IconClose onOpenClose={onOpenClose} />
 
       {toastSuccess && <ToastSuccess contain='Concepto agregado exitosamente' onClose={() => setToastSuccess(false)} />}
@@ -238,39 +278,42 @@ export function NotaDetalles(props) {
             <h1>Subtotal:</h1>
 
             {!toggleIVA ? (
-
-              <div className={styles.toggleOFF}>
-                <BiSolidToggleLeft onClick={onIVA} />
-                <h1>IVA:</h1>
-              </div>
-
-            ) : (
-
-              <div className={styles.toggleON}>
-                <BiSolidToggleRight onClick={onIVA} />
-                <h1>IVA:</h1>
-              </div>
-
-            )}
+                <div className={styles.toggleOFF} onClick={onIVA}>
+                  <BiSolidToggleLeft />
+                  <h1>IVA:</h1>
+                </div>
+              ) : (
+                <div className={styles.toggleON}>
+                  <Form>
+                    <FormGroup>
+                      <FormField>
+                        <Input
+                          value={ivaValue}
+                          onChange={handleIvaChange}
+                          className={styles.ivaInput}
+                        />
+                      </FormField>
+                    </FormGroup>
+                  </Form>
+                  <h2>%</h2>
+                  <BiSolidToggleRight onClick={onIVA} />
+                  <h1>IVA:</h1>
+                </div>
+              )}
 
             <h1>Total:</h1>
           </div>
 
           <div className={styles.sectionTotal_2}>
-
             {!toggleIVA ? (
               <>
-
                 <h1>-</h1>
                 <h1>-</h1>
-
               </>
             ) : (
               <>
-
                 <h1>${formatCurrency(subtotal)}</h1>
                 <h1>${formatCurrency(iva)}</h1>
-
               </>
             )}
 
@@ -279,7 +322,6 @@ export function NotaDetalles(props) {
             ) : (
               <h1>${formatCurrency(total)}</h1>
             )}
-
           </div>
         </div>
 
@@ -288,13 +330,13 @@ export function NotaDetalles(props) {
         </div>
 
         <div className={styles.mainQRPDF}>
-        <div className={styles.qrMain}>
-          <div onClick={onOpenCloseQR}>
-            <BiQr/>
+          <div className={styles.qrMain}>
+            <div onClick={onOpenCloseQR}>
+              <BiQr/>
+            </div>
           </div>
-        </div>
 
-        <NotaPDF nota={nota} datoPDF={datoPDF} conceptos={nota?.conceptos || []} />
+          <NotaPDF nota={notaData} datoPDF={datoPDF} conceptos={notaState?.conceptos || []} ivaValue={ivaValue} />
         </div>
 
         {permissions.showAdmin &&
@@ -329,20 +371,6 @@ export function NotaDetalles(props) {
         )}
       </BasicModal>
 
-      {/* <BasicModal title='datos del cliente' show={showCliente} onClose={onOpenCloseCliente}>
-        <DatosCliente
-          folio={getValueOrDefault(nota?.cliente_folio)}
-          nombre={getValueOrDefault(nota?.cliente_nombre)}
-          cel={getValueOrDefault(nota?.cliente_cel)}
-          direccion={getValueOrDefault(nota?.cliente_direccion)}
-          email={getValueOrDefault(nota?.cliente_email)}
-          onOpenCloseCliente={onOpenCloseCliente} />
-      </BasicModal> */}
-
-      <BasicModal>
-
-      </BasicModal>
-
       <Confirm
         open={showConfirm}
         cancelButton={
@@ -357,7 +385,6 @@ export function NotaDetalles(props) {
         }
         onConfirm={handleDeleteConcept}
         onCancel={() => setShowConfirm(false)}
-        onClick={() => onOpenCloseConfirm}
         content='¿ Estas seguro de eliminar el concepto ?'
       />
 
@@ -377,8 +404,6 @@ export function NotaDetalles(props) {
         onCancel={onOpenCloseConfirmDel}
         content='¿ Estas seguro de eliminar la nota ?'
       />
-
     </>
-
   )
 }

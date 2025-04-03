@@ -231,7 +231,7 @@ export default function Signup() {
 
         <div className={styles.footer}>
           <div className={styles.section}>
-            <h1>2025 © Copyright | ClickNet</h1>
+            <h1>© 2025 NotaSmart</h1>
           </div>
         </div>
 

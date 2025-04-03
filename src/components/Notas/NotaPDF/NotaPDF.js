@@ -7,7 +7,7 @@ import { getValueOrWhite } from '@/helpers/getValueOrWhite'
 
 export function NotaPDF(props) {
 
-  const { nota, datoPDF, conceptos } = props
+  const { nota, datoPDF, conceptos, ivaValue } = props
 
   const generarPDF = async () => {
 
@@ -209,12 +209,13 @@ export function NotaPDF(props) {
 
     const calcularTotales = () => {
       const subtotal = conceptos.reduce((acc, curr) => acc + curr.cantidad * curr.precio, 0)
-      const iva = subtotal * 0.16
+      const iva = subtotal * (ivaValue / 100)
       const total = toggleIVA ? subtotal + iva : subtotal
-      return { subtotal, iva, total };
-    };
-
+      return { subtotal, iva, total }
+    }
+    
     const { subtotal, iva, total } = calcularTotales()
+    
 
     const verticalData = [
       ...toggleIVA ? [

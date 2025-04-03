@@ -112,7 +112,7 @@ export function NotaEditForm(props) {
         <FormGroup widths='equal'>
           <FormField error={!!errors.nota}>
             <Label>
-              Recibo
+              Nota
             </Label>
             <Input
               type="text"

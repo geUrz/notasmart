@@ -150,7 +150,7 @@ export default function Signin() {
 
         <div className={styles.footer}>
           <div className={styles.section}>
-            <h1>2025 © Copyright | NotaSmart</h1>
+            <h1>© 2025 NotaSmart</h1>
           </div>
         </div>
 

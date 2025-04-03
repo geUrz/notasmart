@@ -25,8 +25,6 @@ export function NotaForm(props) {
   const [nota, setNota] = useState('')
   const [conceptos, setConceptos] = useState([])
   const [nuevoConcepto, setNuevoConcepto] = useState({ tipo: '', concepto: '', precio: '', cantidad: '' })
-  const [toggleIVA, setToggleIVA] = useState(false)
-  const [ivaValue, setIvaValue] = useState(16)
   const [conceptoAEliminar, setConceptoAEliminar] = useState(null)
 
   const [errors, setErrors] = useState({})
@@ -71,11 +69,20 @@ export function NotaForm(props) {
 
   const fetchClientes = async () => {
     if (user && user.id) {
-      try {
-        const res = await axios.get(`/api/clientes/clientes?usuario_id=${user.id}`)
-        setClientes(res.data)
-      } catch (error) {
-        console.error('Error al obtener los clientes:', error)
+      if(user.nivel == 'admin'){
+        try {
+          const res = await axios.get(`/api/clientes/clientes`)
+          setClientes(res.data)
+        } catch (error) {
+          console.error('Error al obtener los clientes:', error)
+        }
+      }else if(user.nivel == 'usuario'){
+        try {
+          const res = await axios.get(`/api/clientes/clientes?usuario_id=${user.id}`)
+          setClientes(res.data)
+        } catch (error) {
+          console.error('Error al obtener los clientes:', error)
+        }
       }
     }
   }
@@ -91,24 +98,13 @@ export function NotaForm(props) {
 
     const folio = genNVId(4)
 
-    const { subtotal, iva, total } = calcularTotales()
-
     try {
-      const payload = {
+      const res = await axios.post('/api/notas/notas', {
         usuario_id: user.id,
         folio,
         cliente_id,
-        nota,
-        iva: ivaValue,
-      }
-
-      if (toggleIVA) {
-        const ivaDecimal = ivaValue / 100
-        const iva_total = subtotal * ivaDecimal
-        payload.iva_total = iva_total
-      }
-  
-      const res = await axios.post('/api/notas/notas', payload)
+        nota
+      })
 
       const notaId = res.data.id
       await Promise.all(conceptos.map(concepto =>
@@ -146,21 +142,11 @@ export function NotaForm(props) {
   }
 
   const calcularTotales = () => {
-    const subtotal = conceptos.reduce((acc, curr) => acc + curr.cantidad * curr.precio, 0)
-    const ivaDecimal = ivaValue / 100
-    const iva = subtotal * ivaDecimal
-    const total = subtotal + iva
-    return { subtotal, iva, total }
+    const total = conceptos.reduce((acc, curr) => acc + curr.cantidad * curr.precio, 0)
+    return { total }
   }
 
-  const { subtotal, iva, total } = calcularTotales()
-
-  const handleIvaChange = (e) => {
-    let value = e.target.value
-    if (/^\d{0,2}$/.test(value)) setIvaValue(value)
-  }
-
-  const onIVA = () => setToggleIVA(prevState => !prevState)
+  const { total } = calcularTotales()
 
   return (
     <>
@@ -222,52 +208,11 @@ export function NotaForm(props) {
 
           <div className={styles.box3}>
             <div className={styles.box3_1}>
-              <h1>Subtotal:</h1>
-              {!toggleIVA ? (
-                <div className={styles.toggleOFF} onClick={onIVA}>
-                  <BiSolidToggleLeft />
-                  <h1>IVA:</h1>
-                </div>
-              ) : (
-                <div className={styles.toggleON}>
-                  <Form>
-                    <FormGroup>
-                      <FormField>
-                        <Input
-                          value={ivaValue}
-                          onChange={handleIvaChange}
-                          className={styles.ivaInput}
-                        />
-                      </FormField>
-                    </FormGroup>
-                  </Form>
-                  <h1>%</h1>
-                  <BiSolidToggleRight onClick={onIVA} />
-                  <h1>IVA:</h1>
-                </div>
-              )}
-
               <h1>Total:</h1>
             </div>
 
             <div className={styles.box3_2}>
-              {!toggleIVA ? (
-                <>
-                  <h1>-</h1>
-                  <h1>-</h1>
-                </>
-              ) : (
-                <>
-                  <h1>${formatCurrency(subtotal)}</h1>
-                  <h1>${formatCurrency(iva)}</h1>
-                </>
-              )}
-
-              {!toggleIVA ? (
-                <h1>${formatCurrency(subtotal)}</h1>
-              ) : (
-                <h1>${formatCurrency(total)}</h1>
-              )}
+              <h1>${formatCurrency(total)}</h1>
             </div>
           </div>
         </div>

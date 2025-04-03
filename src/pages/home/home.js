@@ -1,5 +1,5 @@
 import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
-import { BasicLayout } from '@/layouts'
+import { BasicLayout, BasicModal } from '@/layouts'
 import { Loading, Title } from '@/components/Layouts'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
@@ -120,7 +120,7 @@ export default function Home() {
 
     <ProtectedRoute>
 
-      <BasicLayout relative onReload={onReload}>
+      <BasicLayout relative onReload={onReload} totalNotas={totalNotas}>
 
         <Title title='home' />
 
