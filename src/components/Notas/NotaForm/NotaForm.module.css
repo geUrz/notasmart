@@ -40,11 +40,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--clrGR0);
+  background-color: var(--bgListConcep0);
 }
 
 .rowMap:hover{
-  background-color: var(--clrGR1);
+  background-color: var(--bgListConcep1);
+}
+
+.rowMap:active{
+  background-color: var(--bgListConcep2);
 }
 
 .rowMap h1{
@@ -116,44 +120,7 @@
 
 .iconPlus svg, .iconPlus path{
   font-size: 18px;
-  cursor: pointer;
-}
-
-.iconClose{
-  position: absolute;
-  top: 10px;
-  right: 10px;
-}
-
-.iconClose svg, .iconClose path{
-  font-size: 20px;
-  color: var(--clrGR0);
-  cursor: pointer;
-}
-
-.iconCheck{
-  margin-bottom: 20px;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--clr0);
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.iconCheck:hover{
-  background-color: var(--clr1);
-}
-
-.iconCheck:active{
-  background-color: var(--clr2);
-}
-
-.iconCheck svg, .iconCheck path{
-  font-size: 20px;
-  color: var(--clrBL0);
+  color: var(--bgBody);
   cursor: pointer;
 }
 

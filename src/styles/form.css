@@ -10,22 +10,23 @@
   width: 300px !important;
   font-size: 12.5px !important;
   color: var(--clrGR0) !important;
-  background-color: azure !important;
+  background-color: var(--bgInput) !important;
+  border-color: var(--bgBody) !important;
 }
 
 .ui.form input:focus, .ui.form textarea:focus, .ui.form select:focus{
-  border-color: var(--clr4) !important;
-  background-color: azure !important;
+  border-color: var(--bgBody) !important;
+  background-color: var(--bgInputFocus) !important;
 }
 
 .ui.form .field.field input:-webkit-autofill{
-  box-shadow: 0 0 0 100px azure inset !important;
-  border-color: var(--clrGR3)  !important;
+  box-shadow: 0 0 0 100px var(--bgBody) inset !important;
+  border-color: var(--bgInput)  !important;
 }
 
 .ui.form .field.field input:-webkit-autofill:focus{
-  box-shadow: 0 0 0 100px azure inset !important;
-  border-color: var(--clr4)  !important;
+  box-shadow: 0 0 0 100px var(--bgBody) inset !important;
+  border-color: var(--bgInput)  !important;
 }
 
 .ui.form select{
@@ -33,12 +34,12 @@
   width: 300px !important;
   font-size: 12.5px;
   text-transform: capitalize;
-  color: azure !important;
-  background-color: var(--bg2) !important;
+  color: var(--clrFont) !important;
+  background-color: var(--bgInput) !important;
 } 
 
 .ui.form option{
-  color: var(--clrGR40) !important;
+  color: var(--bgInput) !important;
 }
 
 .fields{
@@ -60,7 +61,7 @@
 }
 
 .ui.circular.label{
-  color: azure;
+  color: var(--bgBody);
   font-size: 6.5px;
   cursor: pointer;
 }
@@ -75,20 +76,43 @@
   display: flex !important;
   align-items: center !important;
   justify-content: flex-start;
-  background-color: azure !important;
+  background-color: var(--bgBody) !important;
 }
 
 .ui.page.modals{
   background-color: rgba(0, 0, 0, .85 );
 }
 
-.field.error input, .field.error select, .field.error textarea{
-  border: 1px solid var(--clrR0) !important;
+.field.error input, .field.error select, .field.error textarea, .ui.form .field.error .ui.dropdown{
+  border: none !important;
+} 
+
+.ui.form .field.error .ui.dropdown:hover{
+  border: none !important;
+}
+
+.ui.form .field.error .ui.dropdown .menu .item{
+  background-color: var(--bgInput) !important;
+}
+
+.ui.form .field.error .ui.dropdown .menu .active.item{
+  background-color: var(--bgInput) !important;
+}
+
+.ui.form .field.error .ui.dropdown .menu .item:hover, .ui.form .field.error .ui.dropdown .item:hover .text{
+  background-color: var(--bgInputFocus) !important;
+}
+
+.ui.form .field.error .ui.dropdown .text{
+  border: none !important;
+  background-color: var(--bgInput) !important;
 } 
 
 .ui.message{
   text-align: center;
-  color: var(--clrR0) !important;
+  color: var(--clrError) !important;
+  background-color: var(--bgInput) !important;
+  box-shadow: none !important;
 }
 
 .rbc-agenda-view table{
@@ -103,7 +127,7 @@
 
 .ui.selection.dropdown{
   width: 300px !important;
-  background-color: azure !important;
+  background-color: var(--bgInput) !important;
 }
 
 .ui.dropdown .menu .item span, .ui.dropdown .text{
@@ -112,16 +136,21 @@
 }
 
 .ui.dropdown{
-  border: 1px solid var(--clrGR3) !important;
+  border: none !important;
 }
 
 .ui.dropdown .menu:focus, .ui.dropdown:focus, .ui.dropdown:active{
-  border: 1px solid var(--clr4) !important;
+  background-color: var(--bgInputFocus) !important;
+  border: none !important;
 }
 
 .ui.dropdown .menu{
-  border: 1px solid var(--clrGR0) !important;
-  background-color: azure !important;
+  border: none !important;
+  background-color: var(--bgInput) !important;
+}
+
+.ui.selection.dropdown .menu>.item:hover{
+  background-color: var(--bgInputFocus) !important;
 }
 
 .ui.selection.dropdown .menu>.item{
@@ -129,7 +158,7 @@
 }
 
 .ui.selection.dropdown>.dropdown.icon{
-  color: azure !important;
+  color: var(--bgInput) !important;
 }
 
 .ui.tabular.menu{
@@ -143,13 +172,13 @@
 }
 
 .ui.tabular.menu .active.item{
-  color: azure;
+  color: var(--bgBody);
   background-color: var(--bg2) !important;
   border: none;
 }
 
 .ui.tabular.menu .item:hover{
-  color: azure;
+  color: var(--bgBody);
   background-color: var(--bg3) !important;
 }
 

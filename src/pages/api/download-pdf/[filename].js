@@ -3,7 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const uploadDir = path.join(process.cwd(), '/public/uploads'); // Ruta donde se guardan los archivos
+const uploadDir = path.join(process.cwd(), 'uploadPDF'); // Ruta donde se guardan los archivos
 
 export default function handler(req, res) {
   const { filename } = req.query; // Obtener el nombre del archivo desde la URL

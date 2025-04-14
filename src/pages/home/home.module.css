@@ -16,7 +16,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: var(--clr0);
+  background-color: var(--bgBoxHome);
   border-radius: 5%;
 }
 
@@ -29,18 +29,19 @@
 
 .icon1 svg, .icon1 path{
   font-size: 30px;
-  color: var(--clr5);
+  color: var(--clrFolioPrice);
 }
 
 .icon2 svg, .icon2 path{
   margin: 0 4px 10px -6px;
   font-size: 20px;
-  color: var(--clr5);
+  color: var(--clrFolioPrice);
 }
 
 .icon h1{
   font-size: 18px;
   font-family: 'Bebas' !important;
+  color: var(--clrFolioPrice);
 }
 
 .count, .folios{
@@ -53,23 +54,24 @@
 }
 
 .folios h1{
-  font-size: 40px;
+  font-size: 34px;
+  color: var(--clrFolioPrice);
   font-family: 'Bebas' !important;
-  color: var(--clr5);
 }
 
 .folios h1:nth-child(1){
-  color: azure;
+  font-size: 45PX;
+  color: var(--clrPrice);
 }
 
 .folios h1:nth-child(2){
   margin: 0 5px !important;
-  color: var(--clr5);
 }
 
 .count h1{
   font-size: 40px;
   font-family: 'Bebas' !important;
+  color: var(--clrPrice);
 }
 
 .iva{
@@ -92,9 +94,11 @@
 .iva h1, .iva h2{
   font-size: 18px;
   font-family: 'Bebas' !important;
+  color: var(--clrFolioPrice);
 }
 
 .iva h2{
   margin-left: 5px !important;
   font-size: 18px;
+  color: var(--clrFolioPrice);
 }

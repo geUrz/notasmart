@@ -7,13 +7,12 @@
   position: fixed;
   top: 0;
   left: 0;
-  background-color: var(--clr0);
+  background-color: var(--bg0);
   z-index: 1000;
 }
 
 .mainTop h1{
   font-size: 16px;
-  font-weight: 600 !important;
 }
 
 .mainTop img{

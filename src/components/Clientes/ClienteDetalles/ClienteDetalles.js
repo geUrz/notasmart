@@ -1,6 +1,6 @@
 import { FaCheck, FaEdit, FaTimes, FaTrash } from 'react-icons/fa'
-import { IconClose, Confirm, IconDel } from '@/components/Layouts'
-import { useEffect, useState } from 'react'
+import { IconClose, Confirm, IconDel, IconEdit } from '@/components/Layouts'
+import { useEffect, useMemo, useState } from 'react'
 import { BasicModal } from '@/layouts'
 import { ClienteEditForm } from '../ClienteEditForm'
 import { useAuth } from '@/contexts/AuthContext'
@@ -51,6 +51,16 @@ export function ClienteDetalles(props) {
       }))
     }
 
+    const permissions = useMemo(() =>{
+
+      if(!user) return {}
+
+      return{
+        showAdmin: ['admin'].includes(user?.nivel)
+      }
+
+    }, [user])
+
   return (
 
     <>
@@ -89,14 +99,10 @@ export function ClienteDetalles(props) {
           </div>
         </div>
 
-        <div className={styles.iconEdit}>
-          <div onClick={onOpenCloseEdit}>
-            <FaEdit />
-          </div>
-        </div>
+        <IconEdit onOpenEdit={onOpenCloseEdit} />
 
-        {user.nivel === 'admin' ?
-          <IconDel setShowConfirmDel={onOpenCloseConfirmDel} /> : null
+        {permissions.showAdmin &&
+          <IconDel setShowConfirmDel={onOpenCloseConfirmDel} />
         }
 
       </div>
@@ -107,16 +113,6 @@ export function ClienteDetalles(props) {
 
       <Confirm
         open={showConfirmDel}
-        cancelButton={
-          <div className={styles.iconClose}>
-            <FaTimes />
-          </div>
-        }
-        confirmButton={
-          <div className={styles.iconCheck}>
-            <FaCheck />
-          </div>
-        }
         onConfirm={handleDeleteCliente}
         onCancel={onOpenCloseConfirmDel}
         content='¿ Estas seguro de eliminar el cliente ?'

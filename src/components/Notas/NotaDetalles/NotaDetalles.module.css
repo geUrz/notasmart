@@ -59,12 +59,12 @@
 }
 
 .toggleON svg, .toggleON path{
-  color: var(--clr5);
+  color: var(--clr2);
   cursor: pointer;
 }
 
 .toggleON svg, .toggleOn svg, .toggleON path, .toggleOn path{
-  color: var(--clr5);
+  color: var(--clr2);
   cursor: pointer;
 }
 
@@ -108,6 +108,7 @@
 
 .iconPlus svg, .iconPlus path{
   font-size: 18px;
+  color: var(--bgBody);
   cursor: pointer;
 }
 
@@ -147,78 +148,6 @@
 
 .sectionTotal_1 h1:nth-child(3), .sectionTotal_2 h1:nth-child(3){
   font-weight: 600 !important;
-}
-
-.iconEdit{
-  margin-top: 50px;
-  width: 100%;
-  height: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.iconEdit div{
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--clr0);
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.iconEdit svg, .iconEdit path{
-  font-size: 20px;
-  color: azure;
-  cursor: pointer;
-}
-
-.iconEdit div:hover{
-  background-color: var(--clr1);
-}
-
-.iconEdit div:active{
-  background-color: var(--clr2);
-}
-
-.iconClose svg, .iconClose path{
-  padding: 8px;
-  font-size: 34px;
-  border-radius: 50%;
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  color: var(--clrGR0);
-  cursor: pointer;
-}
-
-.iconCheck{
-  margin-bottom: 20px;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: azure;
-  background-color: var(--clr0);
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.iconCheck:hover{
-  background-color: var(--clr1);
-}
-
-.iconCheck:active{
-  background-color: var(--clr2);
-}
-
-.iconCheck svg, .iconCheck path{
-  font-size: 20px;
-  color: var(--clrBL1);
-  cursor: pointer;
 }
 
 .mainQRPDF{

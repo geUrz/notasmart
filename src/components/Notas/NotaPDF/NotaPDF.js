@@ -153,7 +153,7 @@ export function NotaPDF(props) {
       38
     )
 
-    const text = `${getValueOrWhite(datoPDF?.fila1)} - ${getValueOrWhite(datoPDF?.fila2)} ${getValueOrWhite(datoPDF?.fila3)} ${getValueOrWhite(datoPDF?.fila4)} ${getValueOrWhite(datoPDF?.fila5)} - Tel. ${getValueOrWhite(datoPDF?.fila7)}`.trim();
+    const text = `${getValueOrWhite(datoPDF?.fila1 + ' -')} ${getValueOrWhite(datoPDF?.fila2)} ${getValueOrWhite(datoPDF?.fila3)} ${getValueOrWhite(datoPDF?.fila4)} ${getValueOrWhite(datoPDF?.fila5 + ' -')} ${getValueOrWhite(datoPDF?.fila7)}`.trim();
 
     doc.setFontSize(font3)
     doc.setTextColor(100, 100, 100)
@@ -269,7 +269,7 @@ export function NotaPDF(props) {
     doc.rect(0, pageHeight - footerHeight, pageWidth, footerHeight, 'F');
 
     // Obtener el texto
-    const footerText = getValueOrDefault(datoPDF?.fila1);
+    const footerText = getValueOrWhite(datoPDF?.fila1);
     const textWidthFooter = doc.getTextWidth(footerText);
     const xFooter = (pageWidth - textWidthFooter) / 2
     const yFooter = pageHeight - (footerHeight / 2) + 3

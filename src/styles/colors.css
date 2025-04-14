@@ -1,31 +1,96 @@
 :root{
-  --bg0:rgb(0, 0, 10);
-  --bg1:rgb(0, 0, 18);
-  --bg2: rgb(0, 0, 26);
-  --bg3: rgb(0, 0, 34);
-  --bg4: rgb(0, 0, 42);
-  --bg5: rgb(0, 0, 50);
-  --bg6: rgb(0, 0, 58);
-  --bg7: rgb(0, 0, 66);
-  --bg8: rgb(0, 0, 72);
-  --bg9: rgb(0, 0, 80);
-  --bg10: rgb(0, 0, 88);
+  --bg0: rgb(0, 102, 204);
+  --bg1: rgb(0, 112, 224);
+  --bg2: rgb(0, 122, 244);
+  --bg3: rgb(0, 132, 255);
+  --bg4: rgb(51, 153, 255);
+  --bg5: rgb(102, 178, 255);
+
+  --bgBoxHome: rgb(217, 236, 255);
+  --clrPrice: rgb(0, 132, 255);
+  --clrFolioPrice: rgb(165, 165, 165);
+
+  --bgList0: rgb(217, 236, 255);
+  --bgList1: rgb(200, 228, 255);
+  --bgList2: rgb(190, 220, 255);
+
+  --bgListConcep0: rgb(180, 180, 180);
+  --bgListConcep1: rgb(200, 200, 200);
+  --bgListConcep2: rgb(210, 210, 210);
+
+  --bgInput: rgb(217, 236, 255);
+  --bgInputFocus: rgb(200, 228, 255);
   
-  --clr0: rgb(8, 86, 131);
-  --clr1: rgb(9, 98, 150);
-  --clr2: rgb(12, 108, 163);
-  --clr3: rgb(15, 119, 179);
-  --clr4: rgb(18, 131, 197);
-  --clr5: rgb(20, 145, 218);
+  --clr0: rgb(0, 102, 204);
+  --clr1: rgb(0, 112, 224);
+  --clr2: rgb(0, 122, 244);
+  --clr3: rgb(0, 132, 255);
+  --clr4: rgb(51, 153, 255);
+  --clr5: rgb(102, 178, 255);
 
 
   --clrGR0: rgb(165, 165, 165);
   --clrGR1: rgb(184, 184, 184);
   --clrGR2: rgb(202, 202, 202);
   --clrGR3: rgb(216, 216, 216);
+  --clrGR4: rgb(233, 233, 233);
+
+  --bgBody: rgb(240, 255, 255);
+  --clrFont: rgb(240, 255, 255);
 
   --clrR0: rgb(233, 0, 0);
   --clrR1: rgb(255, 12, 12);
   --clrR2: rgb(255, 46, 46);
 
+  --clrError: rgb(233, 0, 0);
+
+}
+
+[data-theme="dark"] {
+  --bg0:rgb(22, 22, 22);
+  --bg1: rgb(63, 63, 63);
+  --bg2: rgb(83, 83, 83);
+  --bg3: rgb(103, 103, 103);
+  --bg4: rgb(123, 123, 123);
+  --bg5: rgb(143, 143, 143);
+  --bg6: rgb(163, 163, 163);
+  --bg7: rgb(183, 183, 183);
+  --bg8: rgb(203, 203, 203);
+  --bg9: rgb(223, 223, 223);
+
+  --bgBoxHome: rgb(63, 63, 63);
+  --clrPrice: rgb(0, 132, 255);
+  --clrFolioPrice: rgb(165, 165, 165);
+
+  --bgList0: rgb(63, 63, 63);
+  --bgList1: rgb(83, 83, 83);
+  --bgList2: rgb(103, 103, 103);
+
+  --bgListConcep0: rgb(63, 63, 63);
+  --bgListConcep1: rgb(83, 83, 83);
+  --bgListConcep2: rgb(103, 103, 103);
+
+  --bgInput: rgb(30, 30, 30);
+  --bgInputFocus: rgb(36, 36, 36);
+
+  --clr0: rgb(0, 102, 204);
+  --clr1: rgb(0, 112, 224);
+  --clr5: rgb(0, 122, 244);
+  --clr3: rgb(0, 132, 255);
+  --clr2: rgb(51, 153, 255);
+
+  --clrGR0: rgb(165, 165, 165);
+  --clrGR1: rgb(184, 184, 184);
+  --clrGR2: rgb(202, 202, 202);
+  --clrGR3: rgb(216, 216, 216);
+  --clrGR4: rgb(233, 233, 233);
+  
+  --bgBody: rgb(43, 43, 43);
+  --clrFont: rgb(165, 165, 165);
+
+  --clrR0: rgb(200, 0, 0);
+  --clrR1: rgb(220, 20, 20);
+  --clrR2: rgb(240, 50, 50);
+
+  --clrError: rgb(220, 20, 20);
 }

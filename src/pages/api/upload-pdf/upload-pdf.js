@@ -14,7 +14,7 @@ export const config = {
 export default function handler(req, res) {
   const form = new IncomingForm();
 
-  form.uploadDir = path.join(process.cwd(), '/public/uploads'); // Asegúrate de que esta carpeta exista
+  form.uploadDir = path.join(process.cwd(), 'uploadPDF') // Asegúrate de que esta carpeta exista
   form.keepExtensions = true; // Mantener la extensión original
   form.parse(req, (err, fields, files) => {
     if (err) {

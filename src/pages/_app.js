@@ -1,4 +1,5 @@
-import { AuthProvider } from '@/contexts/AuthContext'
+
+import { AuthProvider, ThemeProvider } from '@/contexts'
 import 'semantic-ui-css/semantic.min.css'
 import '@/styles/globals.css'
 
@@ -9,7 +10,9 @@ export default function App(props) {
   return(
   
     <AuthProvider>
-      <Component {...pageProps} />
+      <ThemeProvider>
+        <Component {...pageProps} />
+      </ThemeProvider>
     </AuthProvider>
 
   ) 

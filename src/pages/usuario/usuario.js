@@ -1,19 +1,22 @@
 import { BasicModal } from '@/layouts'
 import { Confirm, Loading, Title, UploadImg } from '@/components/Layouts'
 import { useAuth } from '@/contexts/AuthContext'
-import { FaCheck, FaEdit, FaImage, FaTimes, FaUser } from 'react-icons/fa'
+import { FaCheck, FaEdit, FaImage, FaMoon, FaSun, FaTimes, FaUser } from 'react-icons/fa'
 import { Button, Image } from 'semantic-ui-react'
 import { useEffect, useState } from 'react'
 import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
 import { ModCuentaForm, UsuarioAddDatosImage, UsuarioFormEditPDF, UsuarioFormPDF } from '@/components/Usuario'
 import { BiSolidToggleLeft, BiSolidToggleRight } from 'react-icons/bi'
 import styles from './usuario.module.css'
-import axios from 'axios'
 import { getValueOrDefault } from '@/helpers'
+import { useTheme } from '@/contexts/ThemeContext'
+import axios from 'axios'
 
 export default function Usuario() {
 
   const { user, logout, loading } = useAuth()
+
+  const { theme, toggleTheme } = useTheme()
 
   const [reload, setReload] = useState(false)
 
@@ -195,10 +198,6 @@ export default function Usuario() {
                 <h1>Teléfono</h1>
                 <h2>{getValueOrDefault(datoPDF?.fila7)}</h2>
               </div>
-              {/* <div>
-                <h1>Página web</h1>
-                <h2>{getValueOrDefault(datoPDF?.web)}</h2>
-              </div> */}
               <div>
                 <h1>Logo</h1>
                 {!datoPDF?.logo ? (
@@ -214,7 +213,12 @@ export default function Usuario() {
                 )}
               </div>
             </div>
+          </div>
 
+          <div className={styles.iconEdit}>
+            <div onClick={onOpenCloseFormPDF}>
+              <FaEdit />
+            </div>
           </div>
 
           <div className={styles.toggleMain}>
@@ -258,17 +262,42 @@ export default function Usuario() {
             </div>
 
           </div>
-
-          <div className={styles.iconEdit}>
-            <div onClick={onOpenCloseFormPDF}>
-              <FaEdit />
-            </div>
+          
+          <div className={styles.toggleTheme}>
+            {theme != 'dark' ?
+              <div>
+                <h1>Modo claro</h1>
+                <BiSolidToggleLeft onClick={toggleTheme} />
+              </div> : 
+              <div className={styles.toggleMoon}>
+                <h1>Modo oscuro</h1>
+                <BiSolidToggleRight onClick={toggleTheme} />
+              </div>
+            }
+            {theme != 'dark' ?
+              <div className={styles.iconThemeSun}>
+                <FaSun onClick={toggleTheme} />
+              </div> :
+              <div className={styles.iconThemeMoon}>
+                <FaMoon onClick={toggleTheme} />
+              </div>
+            }
           </div>
+
+          
 
           <Button negative onClick={logout}>
             Cerrar sesión
           </Button>
+
+          <div className={styles.footer}>
+            <div>
+              <h1>© 2025 NotaSmart</h1>
+            </div>
+          </div>
+
         </div>
+
       </div>
 
 
@@ -304,8 +333,6 @@ export default function Usuario() {
 
       <Confirm
         open={showConfirmDelImg}
-        cancelButton={<div className={styles.iconClose}><FaTimes /></div>}
-        confirmButton={<div className={styles.iconCheck}><FaCheck /></div>}
         onConfirm={handleDeleteImage}
         onCancel={() => setShowConfirmDelImg(false)}
         content="¿Estás seguro de eliminar el logo?"

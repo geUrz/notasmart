@@ -1,7 +1,7 @@
 .ui.mini.modal{
   padding: 20px 0 25px 0;
   max-width: 350px !important;
-  background-color: azure !important;
+  background-color: var(--bgBody) !important;
 }
 
 .content, .actions{
@@ -9,7 +9,7 @@
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  background-color: azure !important;
+  background-color: var(--bgBody) !important;
 }
 
 .ui.button, .ui.button.primary{

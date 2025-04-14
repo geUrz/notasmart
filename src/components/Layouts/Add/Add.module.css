@@ -38,6 +38,7 @@
 
 .section svg, .section path{
   font-size: 20px;
+  color: var(--bgBody);
   cursor: pointer;
 }
 

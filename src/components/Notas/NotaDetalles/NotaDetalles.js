@@ -1,4 +1,4 @@
-import { Confirm, IconClose, IconDel, Loading, ToastSuccess } from '@/components/Layouts'
+import { Confirm, IconClose, IconDel, IconEdit, Loading, ToastSuccess } from '@/components/Layouts'
 import { FaCheck, FaEdit, FaPlus, FaTimes } from 'react-icons/fa'
 import { BasicModal } from '@/layouts'
 import { formatCurrency, formatDateIncDet, getValueOrDefault } from '@/helpers'
@@ -325,9 +325,7 @@ export function NotaDetalles(props) {
           </div>
         </div>
 
-        <div className={styles.iconEdit}>
-          <div onClick={onOpenEditNota}><FaEdit /></div>
-        </div>
+        <IconEdit onOpenEdit={onOpenEditNota} />
 
         <div className={styles.mainQRPDF}>
           <div className={styles.qrMain}>
@@ -373,16 +371,6 @@ export function NotaDetalles(props) {
 
       <Confirm
         open={showConfirm}
-        cancelButton={
-          <div className={styles.iconClose}>
-            <FaTimes />
-          </div>
-        }
-        confirmButton={
-          <div className={styles.iconCheck}>
-            <FaCheck />
-          </div>
-        }
         onConfirm={handleDeleteConcept}
         onCancel={() => setShowConfirm(false)}
         content='¿ Estas seguro de eliminar el concepto ?'
@@ -390,16 +378,6 @@ export function NotaDetalles(props) {
 
       <Confirm
         open={showConfirmDel}
-        cancelButton={
-          <div className={styles.iconClose}>
-            <FaTimes />
-          </div>
-        }
-        confirmButton={
-          <div className={styles.iconCheck}>
-            <FaCheck />
-          </div>
-        }
         onConfirm={handleDelete}
         onCancel={onOpenCloseConfirmDel}
         content='¿ Estas seguro de eliminar la nota ?'

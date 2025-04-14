@@ -246,16 +246,6 @@ export function NotaForm(props) {
 
       <Confirm
         open={showConfirm}
-        cancelButton={
-          <div className={styles.iconClose}>
-            <FaTimes />
-          </div>
-        }
-        confirmButton={
-          <div className={styles.iconCheck}>
-            <FaCheck />
-          </div>
-        }
         onConfirm={eliminarConcepto}
         onCancel={onHideConfirm}
         content='¿Estás seguro de eliminar el concepto?'

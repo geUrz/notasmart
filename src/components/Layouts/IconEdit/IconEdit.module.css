@@ -28,5 +28,6 @@
 
 .iconEdit svg, .iconEdit path{
   font-size: 20px;
+  color: var(--bgBody);
   cursor: pointer;
 }
