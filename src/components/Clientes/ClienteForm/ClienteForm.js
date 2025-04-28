@@ -12,6 +12,8 @@ export function ClienteForm(props) {
 
   const {user} = useAuth()
 
+  const [isLoading, setIsLoading] = useState(false)
+
   const [cliente, setCliente] = useState('')
   const [contacto, setContacto] = useState('')
   const [cel, setCel] = useState('')
@@ -27,10 +29,6 @@ export function ClienteForm(props) {
       newErrors.cliente = 'El campo es requerido'
     }
 
-    if (!contacto) {
-      newErrors.contacto = 'El campo es requerido'
-    }
-
     setErrors(newErrors)
 
     return Object.keys(newErrors).length === 0
@@ -42,6 +40,8 @@ export function ClienteForm(props) {
     if(!validarForm()){
       return
     }
+
+    setIsLoading(true)
 
     const folio = genCLId(4)
 
@@ -68,6 +68,8 @@ export function ClienteForm(props) {
 
     } catch (error) {
         console.error('Error al crear el cliente:', error)
+    } finally {
+        setIsLoading(false)
     }
 
   }
@@ -87,25 +89,23 @@ export function ClienteForm(props) {
               value={cliente}
               onChange={(e) => setCliente(e.target.value)}
             />
-            {errors.cliente && <Message negative>{errors.cliente}</Message>}
+            {errors.cliente && <Message>{errors.cliente}</Message>}
           </FormField>
-          <FormField error={!!errors.contacto}>
+          <FormField>
             <Label>Contacto</Label>
             <Input
               type="text"
               value={contacto}
               onChange={(e) => setContacto(e.target.value)}
             />
-            {errors.contacto && <Message negative>{errors.contacto}</Message>}
           </FormField>
-          <FormField error={!!errors.cel}>
+          <FormField>
             <Label>Celular</Label>
             <Input
               type="number"
               value={cel}
               onChange={(e) => setCel(e.target.value)}
             />
-            {errors.cel && <Message negative>{errors.cel}</Message>}
           </FormField>
           <FormField>
             <Label>Correo</Label>
@@ -124,7 +124,7 @@ export function ClienteForm(props) {
             />
           </FormField>
         </FormGroup>
-        <Button primary onClick={crearCliente}>Crear</Button>
+        <Button primary loading={isLoading} onClick={crearCliente}>Crear</Button>
       </Form>
 
     </>

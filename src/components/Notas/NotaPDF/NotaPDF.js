@@ -153,7 +153,7 @@ export function NotaPDF(props) {
       38
     )
 
-    const text = `${getValueOrWhite(datoPDF?.fila1 + ' -')} ${getValueOrWhite(datoPDF?.fila2)} ${getValueOrWhite(datoPDF?.fila3)} ${getValueOrWhite(datoPDF?.fila4)} ${getValueOrWhite(datoPDF?.fila5 + ' -')} ${getValueOrWhite(datoPDF?.fila7)}`.trim();
+    const text = `${datoPDF?.fila1 ? datoPDF.fila1 + ' - ' : ''}${getValueOrWhite(datoPDF?.fila2)} ${getValueOrWhite(datoPDF?.fila3)} ${getValueOrWhite(datoPDF?.fila4)} ${datoPDF?.fila5 ? datoPDF.fila5 + ' - ' : ''}${getValueOrWhite(datoPDF?.fila7)}`.trim()
 
     doc.setFontSize(font3)
     doc.setTextColor(100, 100, 100)
@@ -182,9 +182,9 @@ export function NotaPDF(props) {
       body: conceptos.map(concepto => [
         { content: `${getValueOrDefault(concepto.tipo)}`, styles: { halign: 'center' } },
         { content: `${getValueOrDefault(concepto.concepto)}`, styles: { halign: 'left' } },
-        { content: `$${getValueOrDefault(formatCurrency(concepto.precio))}`, styles: { halign: 'right' } },
+        { content: `${getValueOrDefault(formatCurrency(concepto.precio))}`, styles: { halign: 'right' } },
         { content: `${getValueOrDefault(concepto.cantidad)}`, styles: { halign: 'center' } },
-        { content: `$${getValueOrDefault(formatCurrency(concepto.precio * concepto.cantidad))}`, styles: { halign: 'right' } },
+        { content: `${getValueOrDefault(formatCurrency(concepto.precio * concepto.cantidad))}`, styles: { halign: 'right' } },
       ]),
       headStyles: {
         fillColor: gris,
@@ -219,19 +219,19 @@ export function NotaPDF(props) {
 
     const verticalData = [
       ...toggleIVA ? [
-        ['Subtotal:', `$${formatCurrency(subtotal)}`],
-        ['IVA:', `$${formatCurrency(iva)}`],
+        ['Subtotal:', `${formatCurrency(subtotal)}`],
+        ['IVA:', `${formatCurrency(iva)}`],
       ] : [],
-      ['Total:', `$${formatCurrency(total)}`]
+      ['Total:', `${formatCurrency(total)}`]
     ];
 
     const pWidth = doc.internal.pageSize.getWidth()
-    const mRight = 6
+    const mRight = 10
     const tableWidth = 44
     const marginLeft = pWidth - mRight - tableWidth
 
     doc.autoTable({
-      startY: 260,
+      startY: 275,
       margin: { left: marginLeft, bottom: 0, right: marginRight },
       body: verticalData,
       styles: {
@@ -242,7 +242,7 @@ export function NotaPDF(props) {
       },
       columnStyles: {
         0: {
-          cellWidth: 20, fontStyle: 'bold', halign: 'right',
+          cellWidth: 24, fontStyle: 'bold', halign: 'right',
           fillColor: {
             1: gris,
             2: blue,
@@ -258,9 +258,9 @@ export function NotaPDF(props) {
     doc.setFontSize(`${font3}`)
     //doc.setFont("Roboto", "normal")
     doc.setTextColor(0, 0, 0)
-    doc.text('• Precio en pesos.', 6, 264)
-    doc.text('• Este documento no es un comprobante fiscal válido.', 6, 269)
-    doc.text('• Para efectos fiscales, se requiere una factura electrónica.', 6, 274)
+    doc.text('• Precio en pesos.', 6, 279)
+    doc.text('• Este documento no es un comprobante fiscal válido.', 6, 284)
+    doc.text('• Para efectos fiscales, se requiere una factura electrónica.', 6, 289)
 
     const pageHeight = doc.internal.pageSize.getHeight(); // Altura de la página
     const footerHeight = 20; // Altura del rectángulo del footer
@@ -279,7 +279,7 @@ export function NotaPDF(props) {
     doc.setTextColor(...colorTextFooter)
     doc.text(footerText, xFooter, yFooter)
 
-    doc.save(`nota_de_venta_${nota.folio}.pdf`)
+    doc.save(`nota_${nota.folio}.pdf`)
 
   }
 

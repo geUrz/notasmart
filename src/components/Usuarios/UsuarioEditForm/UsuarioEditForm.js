@@ -3,16 +3,24 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Button, Dropdown, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
 import styles from './UsuarioEditForm.module.css'
+import { BasicModal } from '@/layouts'
+import { NegocioForm } from '@/components/Negocios'
+import { FaPlus } from 'react-icons/fa'
 
 export function UsuarioEditForm(props) {
 
-  const { reload, onReload, usuarioData, actualizarUsuario, onOpenCloseEdit, onToastSuccessMod } = props
+  const { user, reload, onReload, usuarioData, actualizarUsuario, onToastSuccess, onOpenCloseEdit, onToastSuccessMod } = props
+
+  const [isLoading, setIsLoading] = useState(false)
 
   const [formData, setFormData] = useState({
     nombre: usuarioData.nombre,
     usuario: usuarioData.usuario,
     email: usuarioData.email,
     nivel: usuarioData.nivel,
+    negocio_id: usuarioData.negocio_id,
+    negocio_nombre: usuarioData.negocio_nombre,
+    plan: usuarioData.plan,
     folios: usuarioData.folios,
     isactive: usuarioData.isactive
   })
@@ -34,6 +42,10 @@ export function UsuarioEditForm(props) {
       newErrors.nivel = 'El campo es requerido'
     }
 
+    if (!formData.plan) {
+      newErrors.plan = 'El campo es requerido'
+    }
+
     if (!formData.folios) {
       newErrors.folios = 'El campo es requerido'
     }
@@ -48,10 +60,44 @@ export function UsuarioEditForm(props) {
 
   }
 
+  const [negocios, setNegocios] = useState([])
+  const [showNegocioForm, setShowNegocioForm] = useState(false)
+  const onOpenCloseNegocioForm = () => setShowNegocioForm((prevState) => !prevState)
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await axios.get('/api/negocios/negocios')
+        setNegocios(res.data)
+      } catch (error) {
+        console.error(error)
+      }
+    })()
+  }, [reload])
+
+  const foliosPorPlan = {
+    prueba: 3,
+    basico: 50,
+    emprendedor: 150,
+    negocio: 250,
+    empresarial: 500,
+    premium: 0
+  }
+
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData({ ...formData, [name]: value })
   }
+
+  const handleDropdownChange = (e, { value }) => {
+    const negocioSeleccionado = negocios.find((negocio) => negocio.id === value);
+  
+    setFormData({
+      ...formData,
+      negocio_id: value,
+      negocio_nombre: negocioSeleccionado ? negocioSeleccionado.negocio : ''
+    })
+  }  
 
   const handleSubmit = async (e) => {
 
@@ -61,28 +107,40 @@ export function UsuarioEditForm(props) {
       return
     }
 
+    setIsLoading(true)
+
     try {
       await axios.put(`/api/usuarios/usuarios?id=${usuarioData.id}`, {
-        nombre: formData.nombre,
-        usuario: formData.usuario,
-        email: formData.email,
-        nivel: formData.nivel,
-        folios: formData.folios,
-        isactive: formData.isactive
+        ...formData,
       })
+
+      actualizarUsuario({
+        ...formData,
+        negocio_nombre: formData.negocio_nombre
+      })      
       
       onReload()
-      actualizarUsuario(formData)
       onOpenCloseEdit()
       onToastSuccessMod()
     } catch (error) {
       console.error('Error actualizando el usuario:', error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
   const opcionesNivel = [
     { key: 1, text: 'Admin', value: 'admin' },
     { key: 2, text: 'Usuario', value: 'usuario' }
+  ]
+
+  const opcionesPlan = [
+    { key: 1, text: 'Prueba', value: 'prueba' },
+    { key: 2, text: 'Básico', value: 'basico' },
+    { key: 3, text: 'Emprendedor', value: 'emprendedor' },
+    { key: 4, text: 'Negocio', value: 'negocio' },
+    { key: 5, text: 'Empresarial', value: 'empresarial' },
+    { key: 6, text: 'Premium', value: 'premium' }
   ]
 
   const opcionesIsActive = [
@@ -108,7 +166,7 @@ export function UsuarioEditForm(props) {
               value={formData.nombre}
               onChange={handleChange}
             />
-            {errors.nombre && <Message negative>{errors.nombre}</Message>}
+            {errors.nombre && <Message>{errors.nombre}</Message>}
           </FormField>
           <FormField error={!!errors.usuario}>
             <Label>
@@ -120,7 +178,7 @@ export function UsuarioEditForm(props) {
               value={formData.usuario}
               onChange={handleChange}
             />
-            {errors.usuario && <Message negative>{errors.usuario}</Message>}
+            {errors.usuario && <Message>{errors.usuario}</Message>}
           </FormField>
           <FormField>
             <Label>
@@ -143,9 +201,48 @@ export function UsuarioEditForm(props) {
               selection
               options={opcionesNivel}
               value={formData.nivel}
-              onChange={(e, { value }) => setFormData({ ...formData, nivel: value })}
+              onChange={handleChange}
             />
-            {errors.nivel && <Message negative>{errors.nivel}</Message>}
+            {errors.nivel && <Message>{errors.nivel}</Message>}
+          </FormField>
+          <FormField>
+                <Label>Negocio</Label>
+                <Dropdown
+                  placeholder='Seleccionar'
+                  fluid
+                  selection
+                  options={negocios.map(negocio => ({
+                    key: negocio.id,
+                    text: negocio.negocio,
+                    value: negocio.id
+                  }))}
+                  value={formData.negocio_id}
+                  onChange={handleDropdownChange}
+                />
+                <div className={styles.addNegocio}>
+                  <h1>Crear negocio</h1>
+                  <FaPlus onClick={onOpenCloseNegocioForm} />
+                </div>
+              </FormField>
+          <FormField error={!!errors.plan}>
+            <Label>
+              Plan
+            </Label>
+            <Dropdown
+              placeholder='Seleccionar'
+              fluid
+              selection
+              options={opcionesPlan}
+              value={formData.plan}
+              onChange={(e, { value }) => {
+                setFormData({
+                  ...formData,
+                  plan: value,
+                  folios: foliosPorPlan[value] || ''
+                })
+              }}
+            />
+            {errors.plan && <Message>{errors.plan}</Message>}
           </FormField>
           <FormField error={!!errors.folios}>
             <Label>
@@ -155,9 +252,9 @@ export function UsuarioEditForm(props) {
               name="folios"
               type="number"
               value={formData.folios}
-              onChange={handleChange}
+              readOnly
             />
-            {errors.folios && <Message negative>{errors.folios}</Message>}
+            {errors.folios && <Message>{errors.folios}</Message>}
           </FormField>
           <FormField error={!!errors.isactive}>
             <Label>
@@ -171,13 +268,17 @@ export function UsuarioEditForm(props) {
               value={formData.isactive}
               onChange={(e, { value }) => setFormData({ ...formData, isactive: Number(value) })}
             />
-            {errors.isactive && <Message negative>{errors.isactive}</Message>}
+            {errors.isactive && <Message>{errors.isactive}</Message>}
           </FormField>
         </FormGroup>
-        <Button primary onClick={handleSubmit}>
+        <Button primary loading={isLoading} onClick={handleSubmit}>
           Guardar
         </Button>
       </Form>
+
+      <BasicModal title='crear negocio' show={showNegocioForm} onClose= {onOpenCloseNegocioForm}>
+        <NegocioForm user={user} reload={reload} onReload={onReload} onCloseForm={onOpenCloseNegocioForm} onToastSuccess={onToastSuccess} />
+      </BasicModal>
 
     </>
 

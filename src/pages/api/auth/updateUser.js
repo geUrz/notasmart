@@ -2,7 +2,7 @@ import connection from '@/libs/db'
 import bcrypt from 'bcrypt'
 
 export default async function updateUserHandler(req, res) {
-  const { userId, newNombre, newUsuario, newEmail, newNivel, newFolios, newPassword } = req.body;
+  const { userId, newNombre, newUsuario, newEmail, newNivel, newFolios, newPlan, newPassword } = req.body;
 
   try {
     // Verificar si el nuevo email o el nuevo nombre de usuario ya están registrados por otro usuario
@@ -40,12 +40,13 @@ export default async function updateUserHandler(req, res) {
     const updatedEmail = newEmail || currentUser[0].email;
     const updatedNivel = newNivel || currentUser[0].nivel;
     const updatedFolios = newFolios || currentUser[0].folios;
+    const updatedPlan = newPlan || currentUser[0].plan;
     const updatedPassword = hashedPassword || currentUser[0].password;
 
     // Actualizar el usuario en la base de datos
     await connection.query(
-      'UPDATE usuarios SET nombre = ?, usuario = ?, email = ?, nivel = ?, folios = ?, password = ? WHERE id = ?',
-      [updatedNombre, updatedUsuario, updatedEmail, updatedNivel, updatedFolios, updatedPassword, userId]
+      'UPDATE usuarios SET nombre = ?, usuario = ?, email = ?, nivel = ?, folios = ?, plan = ?, password = ? WHERE id = ?',
+      [updatedNombre, updatedUsuario, updatedEmail, updatedNivel, updatedFolios, updatedPlan, updatedPassword, userId]
     );
 
     // Devolver una respuesta exitosa

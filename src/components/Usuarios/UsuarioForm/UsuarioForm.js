@@ -1,12 +1,17 @@
 import { Button, Dropdown, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { IconClose } from '@/components/Layouts'
 import { genUserId } from '@/helpers'
 import styles from './UsuarioForm.module.css'
+import { BasicModal } from '@/layouts'
+import { FaPlus } from 'react-icons/fa'
+import { NegocioForm } from '@/components/Negocios'
 
 export function UsuarioForm(props) {
-  const { reload, onReload, onOpenCloseForm, onToastSuccess } = props;
+  const { user, reload, onReload, onOpenCloseForm, onToastSuccess } = props;
+
+  const [isLoading, setIsLoading] = useState(false)
 
   const [errors, setErrors] = useState({});
   const [credentials, setCredentials] = useState({
@@ -57,7 +62,23 @@ export function UsuarioForm(props) {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }
+
+  const [negocios, setNegocios] = useState([])
+  const [cliente_id, setCliente] = useState('')
+  const [showNegocioForm, setShowNegocioForm] = useState(false)
+  const onOpenCloseNegocioForm = () => setShowNegocioForm((prevState) => !prevState)
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await axios.get('/api/negocios/negocios')
+        setNegocios(res.data)
+      } catch (error) {
+        console.error(error)
+      }
+    })()
+  }, [reload, user])
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -65,6 +86,8 @@ export function UsuarioForm(props) {
     if (!validarFormSignUp()) {
       return;
     }
+
+    setIsLoading(true)
     setError(null);
 
     if (credentials.password !== credentials.confirmarPassword) {
@@ -112,6 +135,8 @@ export function UsuarioForm(props) {
       } else {
         setError('¡ Ocurrió un error inesperado !');
       }
+    } finally {
+        setIsLoading(false)
     }
   };
 
@@ -131,7 +156,7 @@ export function UsuarioForm(props) {
                   value={credentials.nombre}
                   onChange={handleChange}
                 />
-                {errors.nombre && <Message negative>{errors.nombre}</Message>}
+                {errors.nombre && <Message>{errors.nombre}</Message>}
               </FormField>
               <FormField error={!!errors.usuario}>
                 <Label>Usuario</Label>
@@ -141,7 +166,7 @@ export function UsuarioForm(props) {
                   value={credentials.usuario}
                   onChange={handleChange}
                 />
-                {errors.usuario && <Message negative>{errors.usuario}</Message>}
+                {errors.usuario && <Message>{errors.usuario}</Message>}
               </FormField>
               <FormField error={!!errors.email}>
                 <Label>Correo</Label>
@@ -151,7 +176,7 @@ export function UsuarioForm(props) {
                   value={credentials.email}
                   onChange={handleChange}
                 />
-                {errors.email && <Message negative>{errors.email}</Message>}
+                {errors.email && <Message>{errors.email}</Message>}
               </FormField>
               <FormField>
                 <Label>Folios</Label>
@@ -161,7 +186,7 @@ export function UsuarioForm(props) {
                   value={credentials.folios}
                   onChange={handleChange}
                 />
-                {errors.folios && <Message negative>{errors.folios}</Message>}
+                {errors.folios && <Message>{errors.folios}</Message>}
               </FormField>
               <FormField error={!!errors.nivel}>
                 <Label>Nivel</Label>
@@ -177,7 +202,26 @@ export function UsuarioForm(props) {
                   value={credentials.nivel}
                   onChange={handleChange}
                 />
-                {errors.nivel && <Message negative>{errors.nivel}</Message>}
+                {errors.nivel && <Message>{errors.nivel}</Message>}
+              </FormField>
+              <FormField>
+                <Label>Negocio</Label>
+                <Dropdown
+                  placeholder='Seleccionar'
+                  fluid
+                  selection
+                  options={negocios.map(negocio => ({
+                    key: negocio.id,
+                    text: negocio.nombre,
+                    value: negocio.id
+                  }))}
+                  value={cliente_id}
+                  onChange={(e, { value }) => setCliente(value)}
+                />
+                <div className={styles.addNegocio}>
+                  <h1>Crear negocio</h1>
+                  <FaPlus onClick={onOpenCloseNegocioForm} />
+                </div>
               </FormField>
               <FormField error={!!errors.password}>
                 <Label>Contraseña</Label>
@@ -187,7 +231,7 @@ export function UsuarioForm(props) {
                   value={credentials.password}
                   onChange={handleChange}
                 />
-                {errors.password && <Message negative>{errors.password}</Message>}
+                {errors.password && <Message>{errors.password}</Message>}
               </FormField>
               <FormField error={!!errors.confirmarPassword}>
                 <Label>Confirmar contraseña</Label>
@@ -197,16 +241,21 @@ export function UsuarioForm(props) {
                   value={credentials.confirmarPassword}
                   onChange={handleChange}
                 />
-                {errors.confirmarPassword && <Message negative>{errors.confirmarPassword}</Message>}
+                {errors.confirmarPassword && <Message>{errors.confirmarPassword}</Message>}
               </FormField>
             </FormGroup>
-            {error && <p className={styles.error}>{error}</p>}
-            <Button primary type='submit'>
+            {error && <Message>{error}</Message>}
+            <Button primary loading={isLoading} type='submit'>
               Crear
             </Button>
           </Form>
         </div>
       </div>
+
+      <BasicModal title='crear negocio' show={showNegocioForm} onClose={onOpenCloseNegocioForm}>
+        <NegocioForm reload={reload} onReload={onReload} onCloseForm={onOpenCloseNegocioForm} onToastSuccess={onToastSuccess} />
+      </BasicModal>
+
     </>
-  );
+  )
 }

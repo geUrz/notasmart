@@ -21,8 +21,11 @@
 }
 
 .toast svg, .toast path{
+  padding: 8px;
   font-size: 50px;
-  color: var(--clr5);
+  color: var(--bgBody);
+  background-color: var(--clr5);
+  border-radius: 50%;
 }
 
 .toast h1{

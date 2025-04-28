@@ -8,6 +8,8 @@ export function UsuarioFormEditPDF(props) {
 
   const{datoPDF, reload, onReload, onOpenCloseFormPDF} = props
 
+  const [isLoading, setIsLoading] = useState(false)
+
   const [formData, setFormData] = useState({
     fila1: datoPDF.fila1,
     fila2: datoPDF.fila2,
@@ -26,6 +28,8 @@ export function UsuarioFormEditPDF(props) {
 
     e.preventDefault()
 
+    setIsLoading(true)
+
     try {
       await axios.put(`/api/usuarios/datos_pdf?id=${datoPDF.id}`, {
         ...formData,
@@ -34,6 +38,8 @@ export function UsuarioFormEditPDF(props) {
       onOpenCloseFormPDF()
     } catch (error) {
       console.error('Error actualizando el datoPDF:', error)
+    } finally {
+        setIsLoading(false)
     }
   }
 
@@ -125,7 +131,7 @@ export function UsuarioFormEditPDF(props) {
             />
           </FormField> */}
         </FormGroup>
-        <Button primary onClick={handleSubmit}>
+        <Button primary loading={isLoading} onClick={handleSubmit}>
           Guardar
         </Button>
       </Form>

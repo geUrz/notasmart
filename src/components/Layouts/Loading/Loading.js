@@ -27,7 +27,7 @@ export function Loading(props) {
         speedMultiplier={.8}
       />
       {loading === 'L' &&
-        <Image src='/icons/notasmart-192x192.png' />
+        <Image src='/img/logologin.webp' />
       }
     </div>
 

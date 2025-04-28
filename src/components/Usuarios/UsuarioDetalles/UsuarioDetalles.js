@@ -1,8 +1,6 @@
-import { FaCheck, FaEdit, FaTimes, FaTrash } from 'react-icons/fa'
-import { IconClose, Confirm, IconKey, EditPass, IconEdit } from '@/components/Layouts'
+import { IconClose, Confirm, IconKey, EditPass, IconEdit, IconDel } from '@/components/Layouts'
 import { useEffect, useMemo, useState } from 'react'
 import { BasicModal } from '@/layouts'
-import { useAuth } from '@/contexts/AuthContext'
 import axios from 'axios'
 import { getValueOrDefault } from '@/helpers'
 import styles from './UsuarioDetalles.module.css'
@@ -10,10 +8,8 @@ import { UsuarioEditForm } from '../UsuarioEditForm'
 
 export function UsuarioDetalles(props) {
 
-  const { reload, onReload, usuario, onCloseDetalles, onToastSuccessMod, toastSuccessDel } = props
-
-  const { user } = useAuth()
-
+  const { user, reload, onReload, usuario, onCloseDetalles, onToastSuccess, onToastSuccessMod, toastSuccessDel } = props
+  
   const [showEdit, setShowEdit] = useState(false)
 
   const onOpenCloseEdit = () => setShowEdit((prevState) => !prevState)
@@ -92,8 +88,12 @@ export function UsuarioDetalles(props) {
               <h2>{getValueOrDefault(usuarioData?.usuario)}</h2>
             </div>
             <div>
-              <h1>Folios</h1>
-              <h2>{getValueOrDefault(usuarioData?.folios)}</h2>
+              <h1>Nivel</h1>
+              <h2>{getValueOrDefault(usuarioData?.nivel)}</h2>
+            </div>
+            <div>
+              <h1>Plan</h1>
+              <h2>{getValueOrDefault(usuarioData?.plan)}</h2>
             </div>
             <div>
               <h1>Activo</h1>
@@ -110,8 +110,12 @@ export function UsuarioDetalles(props) {
               <h2>{getValueOrDefault(usuarioData?.email)}</h2>
             </div>
             <div>
-              <h1>Nivel</h1>
-              <h2>{getValueOrDefault(usuarioData?.nivel)}</h2>
+              <h1>Negocio</h1>
+              <h2>{getValueOrDefault(usuarioData?.negocio_nombre)}</h2>
+            </div>
+            <div>
+              <h1>Folios</h1>
+              <h2>{getValueOrDefault(usuarioData?.folios)}</h2>
             </div>
           </div>
         </div>
@@ -120,9 +124,11 @@ export function UsuarioDetalles(props) {
 
           <>
 
-            <IconKey usuario={usuario} onOpenCloseEditPass={onOpenCloseEditPass} />
+            <IconKey onOpenCloseEditPass={onOpenCloseEditPass} />
 
             <IconEdit onOpenEdit={onOpenCloseEdit} />
+
+            <IconDel setShowConfirmDel={onOpenCloseConfirmDel} />
 
           </>
 
@@ -131,7 +137,7 @@ export function UsuarioDetalles(props) {
       </div>
 
       <BasicModal title='modificar usuario' show={showEdit} onClose={onOpenCloseEdit}>
-        <UsuarioEditForm reload={reload} onReload={onReload} usuarioData={usuarioData} actualizarUsuario={actualizarUsuario} onOpenCloseEdit={onOpenCloseEdit} onToastSuccessMod={onToastSuccessMod} />
+        <UsuarioEditForm user={user} reload={reload} onReload={onReload} usuarioData={usuarioData} actualizarUsuario={actualizarUsuario} onOpenCloseEdit={onOpenCloseEdit} onToastSuccess={onToastSuccess} onToastSuccessMod={onToastSuccessMod} />
       </BasicModal>
 
       <BasicModal title='Modificar contraseña' show={showEditPass} onClose={onOpenCloseEditPass}>
@@ -140,16 +146,6 @@ export function UsuarioDetalles(props) {
 
       <Confirm
         open={showConfirmDel}
-        cancelButton={
-          <div className={styles.iconClose}>
-            <FaTimes />
-          </div>
-        }
-        confirmButton={
-          <div className={styles.iconCheck}>
-            <FaCheck />
-          </div>
-        }
         onConfirm={handleDeleteUsuario}
         onCancel={onOpenCloseConfirmDel}
         content='¿ Estas seguro de eliminar el usuario ?'

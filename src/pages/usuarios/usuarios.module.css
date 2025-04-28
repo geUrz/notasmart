@@ -27,16 +27,22 @@
 } 
 
 .searchMain {
-  padding-top: 20px;
-  margin-top: 80px;
   width: 100%;
   height: 100vh;
   display: flex;
   align-items: flex-start;
   justify-content: center;
   position: fixed;
-  top: 0;
+  top: 60px;
   left: 0;
-  background-color: rgba(240, 255, 255, .9);
+  background-color: var(--bgBody);
   z-index: 1000;
+}
+
+@media screen and (min-width: 768px) {
+
+  .searchMain {
+    top: 80px;
+  }
+
 }

@@ -1,14 +1,20 @@
 import { useState } from 'react'
 import axios from 'axios'
 import { useAuth } from '@/contexts/AuthContext'
-import { Form, Button, Input, Label, FormGroup, FormField } from 'semantic-ui-react'
-import { Confirm, IconClose } from '@/components/Layouts'
-import { FaCheck, FaTimes } from 'react-icons/fa'
+import { Form, Button, Input, Label, FormGroup, FormField, Message } from 'semantic-ui-react'
+import { EditPass, IconClose, IconKey, ToastSuccess } from '@/components/Layouts'
 import styles from './ModCuentaForm.module.css'
+import { BasicModal } from '@/layouts'
 
 export function ModCuentaForm(props) {
 
-  const {onOpenClose} = props
+  const { onOpenClose } = props
+
+  const [isLoading, setIsLoading] = useState(false)
+
+  const [showEditPass, setShowEditPass] = useState(false)
+
+  const onOpenCloseEditPass = () => setShowEditPass((prevState) => !prevState)
 
   const { user, logout } = useAuth()
 
@@ -16,8 +22,7 @@ export function ModCuentaForm(props) {
     newNombre: user.nombre || '',
     newUsuario: user.usuario || '',
     newEmail: user.email || '',
-    newPassword: '',
-    confirmPassword: '' 
+    newPassword: ''
   })
 
   const [error, setError] = useState(null)
@@ -29,17 +34,17 @@ export function ModCuentaForm(props) {
     if (!formData.newNombre) {
       newErrors.newNombre = 'El campo es requerido';
     }
-  
+
     if (!formData.newUsuario) {
       newErrors.newUsuario = 'El campo es requerido';
     }
-  
+
     if (!formData.newEmail) {
       newErrors.newEmail = 'El campo es requerido';
     }
 
     setErrors(newErrors);
-  
+
     return Object.keys(newErrors).length === 0;
   }
 
@@ -48,7 +53,7 @@ export function ModCuentaForm(props) {
       ...formData,
       [e.target.name]: e.target.value
     });
-  };
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -57,20 +62,15 @@ export function ModCuentaForm(props) {
       return
     }
 
+    setIsLoading(true)
     setError(null)
-    
-    if (formData.newPassword && formData.newPassword !== formData.confirmPassword) {
-      setError('Las contraseñas no coinciden')
-      return
-    }
 
     try {
       await axios.put('/api/auth/updateUser', {
         userId: user.id,
         newNombre: formData.newNombre,
         newUsuario: formData.newUsuario,
-        newEmail: formData.newEmail,
-        newPassword: formData.newPassword,
+        newEmail: formData.newEmail
       })
 
       logout()
@@ -82,18 +82,31 @@ export function ModCuentaForm(props) {
       } else {
         setError('Ocurrió un error inesperado');
       }
+    } finally {
+      setIsLoading(false)
     }
-  };
+  }
+
+  const [toastSuccessMod, setToastSuccessMod] = useState(false)
+
+  const onToastSuccessMod = () => {
+    setToastSuccessMod(true)
+    setTimeout(() => {
+      setToastSuccessMod(false)
+    }, 3000)
+  }
 
   return (
 
     <>
 
+    {toastSuccessMod && <ToastSuccess contain='Modificado exitosamente' onClose={() => setToastSuccessMod(false)} />}
+
       <IconClose onOpenClose={onOpenClose} />
 
       <Form>
         <FormGroup>
-        <FormField error={!!errors.newNombre}>
+          <FormField error={!!errors.newNombre}>
             <Label>Nombre</Label>
             <Input
               name='newNombre'
@@ -101,7 +114,7 @@ export function ModCuentaForm(props) {
               value={formData.newNombre}
               onChange={handleChange}
             />
-            {errors.newNombre && <span className={styles.error}>{errors.newNombre}</span>}
+            {errors.newNombre && <Message>{errors.newNombre}</Message>}
           </FormField>
           <FormField error={!!errors.newUsuario}>
             <Label>Usuario</Label>
@@ -111,7 +124,7 @@ export function ModCuentaForm(props) {
               value={formData.newUsuario}
               onChange={handleChange}
             />
-            {errors.newUsuario && <span className={styles.error}>{errors.newUsuario}</span>}
+            {errors.newUsuario && <Message>{errors.newUsuario}</Message>}
           </FormField>
           <FormField error={!!errors.newEmail}>
             <Label>Correo</Label>
@@ -121,30 +134,17 @@ export function ModCuentaForm(props) {
               value={formData.newEmail}
               onChange={handleChange}
             />
-            {errors.newEmail && <span className={styles.error}>{errors.newEmail}</span>}
-          </FormField>
-          <FormField>
-            <Label>Nueva Contraseña</Label>
-            <Input
-              name='newPassword'
-              type='password'
-              value={formData.newPassword}
-              onChange={handleChange}
-            />
-          </FormField>
-          <FormField>
-            <Label>Confirmar nueva contraseña</Label>
-            <Input
-              name='confirmPassword'
-              type='password'
-              value={formData.confirmPassword}
-              onChange={handleChange}
-            />
+            {errors.newEmail && <Message>{errors.newEmail}</Message>}
           </FormField>
         </FormGroup>
-        {error && <p className={styles.error}>{error}</p>}
-        <Button primary onClick={handleSubmit}>Guardar</Button>
+        <IconKey onOpenCloseEditPass={onOpenCloseEditPass} />
+        {error && <Message>{error}</Message>}
+        <Button primary loading={isLoading} onClick={handleSubmit}>Guardar</Button>
       </Form>
+
+      <BasicModal title='Modificar contraseña' show={showEditPass} onClose={onOpenCloseEditPass}>
+        <EditPass usuario={user} onOpenCloseEditPass={onOpenCloseEditPass} onToastSuccessUsuarioMod={onToastSuccessMod} />
+      </BasicModal>
 
     </>
 

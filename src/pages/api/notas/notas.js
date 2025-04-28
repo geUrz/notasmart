@@ -11,20 +11,22 @@ export default async function handler(req, res) {
             try {
                 const [rows] = await connection.query(`
                 SELECT 
-                    notas.id, 
-                    notas.usuario_id, 
-                    notas.folio, 
-                    notas.cliente_id,  
-                    clientes.cliente AS cliente_cliente, 
-                    clientes.contacto AS cliente_contacto, 
-                    notas.nota,
-                    notas.iva,
-                    notas.iva_total,
-                    notas.createdAt
+                    id, 
+                    usuario_id, 
+                    usuario_nombre, 
+                    folio, 
+                    nota, 
+                    cliente_id,  
+                    cliente_nombre, 
+                    cliente_contacto, 
+                    negocio_id,
+                    negocio_nombre,
+                    iva,
+                    iva_total,
+                    createdAt
                 FROM notas
-                JOIN clientes ON notas.cliente_id = clientes.id 
-                WHERE notas.usuario_id = ?
-                ORDER BY notas.updatedAt DESC`, [usuario_id])
+                WHERE usuario_id = ?
+                ORDER BY updatedAt DESC`, [usuario_id])
 
                 res.status(200).json(rows) // Devolver el evento con los datos del cliente
 
@@ -41,11 +43,12 @@ export default async function handler(req, res) {
                     SELECT
                         notas.id, 
                         notas.usuario_id, 
+                        usuarios.nombre AS usuario_nombre,
                         notas.folio, 
+                        notas.nota,
                         notas.cliente_id, 
                         clientes.cliente AS cliente_cliente,  
                         clientes.contacto AS cliente_contacto, 
-                        notas.nota,
                         notas.iva,
                         notas.iva_total,
                         conceptosnot.concepto AS concepto,
@@ -53,6 +56,7 @@ export default async function handler(req, res) {
                     FROM notas
                     JOIN clientes ON notas.cliente_id = clientes.id
                     LEFT JOIN conceptosnot ON notas.id = conceptosnot.nota_id
+                    LEFT JOIN usuarios ON notas.usuario_id = usuarios.id
                     WHERE 
                         LOWER(notas.folio) LIKE ? 
                     OR 
@@ -62,10 +66,12 @@ export default async function handler(req, res) {
                     OR 
                         LOWER(notas.nota) LIKE ?
                     OR 
+                        LOWER(usuarios.nombre) LIKE ?
+                    OR 
                         LOWER(notas.createdAt) LIKE ?  
                     OR 
                         LOWER(conceptosnot.concepto) LIKE ?
-                    ORDER BY notas.updatedAt DESC`, [searchQuery, searchQuery, searchQuery, searchQuery, searchQuery, searchQuery])
+                    ORDER BY notas.updatedAt DESC`, [searchQuery, searchQuery, searchQuery, searchQuery, searchQuery, searchQuery, searchQuery])
 
                 res.status(200).json(rows) // Devolver los notas encontrados por búsqueda
 
@@ -78,19 +84,21 @@ export default async function handler(req, res) {
         try {
             const [rows] = await connection.query(`
                 SELECT 
-                  notas.id, 
-                  notas.usuario_id, 
-                  notas.folio, 
-                  notas.cliente_id,  
-                  clientes.cliente AS cliente_cliente, 
-                  clientes.contacto AS cliente_contacto, 
-                  notas.nota,
-                  notas.iva,
-                  notas.iva_total,
-                  notas.createdAt
+                    id, 
+                    usuario_id, 
+                    usuario_nombre, 
+                    folio, 
+                    nota, 
+                    cliente_id,  
+                    cliente_nombre, 
+                    cliente_contacto, 
+                    negocio_id,
+                    negocio_nombre,
+                    iva,
+                    iva_total,
+                    createdAt
                 FROM notas
-                JOIN clientes ON notas.cliente_id = clientes.id
-                ORDER BY notas.updatedAt DESC`)
+                ORDER BY updatedAt DESC`)
 
             res.status(200).json(rows)
 
@@ -99,12 +107,12 @@ export default async function handler(req, res) {
         }
     } else if (req.method === 'POST') {
         // Maneja la solicitud POST
-        const { usuario_id, folio, cliente_id, nota } = req.body;
+        const { usuario_id, usuario_nombre, folio, nota, cliente_id, cliente_nombre, cliente_contacto, negocio_id, negocio_nombre } = req.body;
 
         try {
             const [result] = await connection.query(
-                'INSERT INTO notas (usuario_id, folio, cliente_id, nota) VALUES (?, ?, ?, ?)',
-                [usuario_id, folio, cliente_id, nota]
+                'INSERT INTO notas (usuario_id, usuario_nombre, folio, nota, cliente_id, cliente_nombre, cliente_contacto, negocio_id, negocio_nombre) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                [usuario_id, usuario_nombre, folio, nota, cliente_id, cliente_nombre, cliente_contacto, negocio_id, negocio_nombre]
             )
             res.status(201).json({ id: result.insertId })
         } catch (error) {
@@ -113,7 +121,7 @@ export default async function handler(req, res) {
     } else if (req.method === 'PUT') {
 
         const { id } = req.query;
-        const { nota, cliente_id } = req.body;
+        const { nota, cliente_id, cliente_nombre, cliente_contacto, negocio_id, negocio_nombre} = req.body;
 
         if (!id) {
             return res.status(400).json({ error: 'ID del nota es obligatorio' })
@@ -122,8 +130,8 @@ export default async function handler(req, res) {
         if (nota) {
             try {
                 const [result] = await connection.query(
-                    'UPDATE notas SET cliente_id = ?, nota = ? WHERE id = ?',
-                    [cliente_id, nota, id]
+                    'UPDATE notas SET nota = ?, cliente_id = ?, cliente_nombre = ?, cliente_contacto = ?, negocio_id = ?, negocio_nombre = ? WHERE id = ?',
+                    [nota, cliente_id, cliente_nombre, cliente_contacto, negocio_id, negocio_nombre, id]
                 )
 
                 if (result.affectedRows === 0) {

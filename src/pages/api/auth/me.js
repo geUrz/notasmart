@@ -21,7 +21,7 @@ export default async function meHandler(req, res) {
 
     const user = rows[0];
 
-    return res.json({ user: { id: user.id, nombre: user.nombre, usuario: user.usuario, email: user.email, nivel: user.nivel, folios: user.folios, isactive: user.isactive } });
+    return res.json({ user: { id: user.id, nombre: user.nombre, usuario: user.usuario, email: user.email, nivel: user.nivel, negocio_id: user.negocio_id, folios: user.folios, plan: user.plan, isactive: user.isactive } });
   } catch (error) {
     console.error('Error al obtener el usuario:', error);
     return res.status(500).json({ error: 'Error interno del servidor' });

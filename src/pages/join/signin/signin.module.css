@@ -59,14 +59,10 @@
 }
 
 .link a{
+  margin-top: 16px;
   font-size: 14.5px;
   color: var(--clr2);
   cursor: pointer;
-}
-
-.label{
-  color: var(--clrGR0) !important;
-  background-color: azure !important;
 }
 
 .footer{

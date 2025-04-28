@@ -20,13 +20,15 @@
 }
 
 .ui.form .field.field input:-webkit-autofill{
-  box-shadow: 0 0 0 100px var(--bgBody) inset !important;
-  border-color: var(--bgInput)  !important;
+  box-shadow: 0 0 0 100px var(--bgInputFocus) inset !important;
+  border-color: var(--bgInputFocus) !important;
+  transition: none !important;
 }
 
 .ui.form .field.field input:-webkit-autofill:focus{
-  box-shadow: 0 0 0 100px var(--bgBody) inset !important;
-  border-color: var(--bgInput)  !important;
+  box-shadow: 0 0 0 100px var(--bgInputFocus) inset !important;
+  border-color: var(--bgInputFocus) !important;
+  transition: none !important;
 }
 
 .ui.form select{
@@ -72,6 +74,7 @@
   width: 100%;
   height: auto;
   font-size: 14px;
+  font-weight: 600 !important;
   color: var(--clr4) !important;
   display: flex !important;
   align-items: center !important;
@@ -111,7 +114,7 @@
 .ui.message{
   text-align: center;
   color: var(--clrError) !important;
-  background-color: var(--bgInput) !important;
+  background-color: var(--bgInputFocus) !important;
   box-shadow: none !important;
 }
 

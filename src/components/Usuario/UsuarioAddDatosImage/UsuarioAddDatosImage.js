@@ -13,7 +13,7 @@ export function UsuarioAddDatosImage(props) {
 
       <div className={styles.main}>
         <div className={styles.section}>
-          <h1>Para poder subir una imagen, primero debes agregar datos a una fila.</h1>
+          <h1>Para poder subir tu logo, primero debes agregar un dato de tu negocio.</h1>
         </div>
       </div>
 

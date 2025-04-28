@@ -38,20 +38,25 @@
 }
 
 .datos_usuario h1{
-  margin-top: 5px;
+  margin-top: 8px !important;
   font-size: 24px;
   color: var(--clr0);
 }
 
 .datos_usuario h2, .datos_usuario h3{
-  margin-top: 5px;
+  margin-top: 4px !important;
   font-size: 15px;
   color: var(--clrGR0);
 }
 
 .datos_usuario h2{
-  margin-right: 2px !important;
+  margin-right: 4px !important;
   color: var(--clr0);
+}
+
+.datos_usuario svg, .datos_usuario path{
+  margin-top: 5px;
+  font-size: 20px;
 }
 
 .iconEdit{

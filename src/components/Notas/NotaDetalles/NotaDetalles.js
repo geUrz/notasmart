@@ -1,7 +1,7 @@
-import { Confirm, IconClose, IconDel, IconEdit, Loading, ToastSuccess } from '@/components/Layouts'
-import { FaCheck, FaEdit, FaPlus, FaTimes } from 'react-icons/fa'
+import { Confirm, IconClose, IconDel, IconEdit, ToastSuccess } from '@/components/Layouts'
+import { FaPlus } from 'react-icons/fa'
 import { BasicModal } from '@/layouts'
-import { formatCurrency, formatDateIncDet, getValueOrDefault } from '@/helpers'
+import { formatCurrency, formatDateIncDet, getValueOrDefault, getValueOrWhite } from '@/helpers'
 import { BiQr, BiSolidToggleLeft, BiSolidToggleRight } from 'react-icons/bi'
 import { useEffect, useMemo, useState } from 'react'
 import { NotaConceptos } from '../NotaConceptos'
@@ -16,10 +16,11 @@ import styles from './NotaDetalles.module.css'
 import { QRScan } from '../QRScan'
 import { generarPDF } from '../generarPDF'
 import { Form, FormField, FormGroup, Input } from 'semantic-ui-react'
+import { getValueOrDel } from '@/helpers/getValueOrDel/getValueOrDel'
 
 export function NotaDetalles(props) {
   const { user, nota, notaId, reload, onReload, onOpenClose, onAddConcept, onDeleteConcept, onToastSuccess, onToastSuccessMod, onToastSuccessDel, notaSeleccionado } = props
-
+  
   const [showConcep, setShowForm] = useState(false)
   const [showEditConcep, setShowEditConcept] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -244,11 +245,11 @@ export function NotaDetalles(props) {
             </div>
             <div>
               <h1>Cliente</h1>
-              <h2>{getValueOrDefault(notaData?.cliente_cliente)}</h2>
+              <h2>{getValueOrDel(notaData?.cliente_nombre, !notaData?.cliente_id)}</h2>
             </div>
             <div>
               <h1>Atención a</h1>
-              <h2>{getValueOrDefault(notaData?.cliente_contacto)}</h2>
+              <h2>{getValueOrWhite(notaData?.cliente_contacto)}</h2>
             </div>
           </div>
           <div className={styles.datos_2}>
@@ -312,15 +313,15 @@ export function NotaDetalles(props) {
               </>
             ) : (
               <>
-                <h1>${formatCurrency(subtotal)}</h1>
-                <h1>${formatCurrency(iva)}</h1>
+                <h1>{formatCurrency(subtotal)}</h1>
+                <h1>{formatCurrency(iva)}</h1>
               </>
             )}
 
             {!toggleIVA ? (
-              <h1>${formatCurrency(subtotal)}</h1>
+              <h1>{formatCurrency(subtotal)}</h1>
             ) : (
-              <h1>${formatCurrency(total)}</h1>
+              <h1>{formatCurrency(total)}</h1>
             )}
           </div>
         </div>
@@ -338,13 +339,18 @@ export function NotaDetalles(props) {
         </div>
 
         {permissions.showAdmin &&
-          <IconDel setShowConfirmDel={setShowConfirmDel} />
+          <>
+            <IconDel setShowConfirmDel={setShowConfirmDel} />
+            <div className={styles.h1UsuarioNombre}>
+              <h1>{getValueOrDefault(notaData?.usuario_nombre)}</h1>
+            </div>
+          </>
         }
 
       </div>
 
       <BasicModal title='modificar la nota' show={showEditNota} onClose={onOpenEditNota}>
-        <NotaEditForm reload={reload} onReload={onReload} notaData={notaData} actualizarNota={actualizarNota} onOpenEditNota={onOpenEditNota} onToastSuccessMod={onToastSuccessMod} />
+        <NotaEditForm user={user} reload={reload} onReload={onReload} notaData={notaData} actualizarNota={actualizarNota} onOpenEditNota={onOpenEditNota} onToastSuccessMod={onToastSuccessMod} />
       </BasicModal>
 
       <BasicModal title='Agregar concepto' show={showConcep} onClose={onOpenCloseConcep}>

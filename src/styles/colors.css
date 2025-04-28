@@ -19,7 +19,7 @@
   --bgListConcep2: rgb(210, 210, 210);
 
   --bgInput: rgb(217, 236, 255);
-  --bgInputFocus: rgb(200, 228, 255);
+  --bgInputFocus: rgb(192, 224, 255);
   
   --clr0: rgb(0, 102, 204);
   --clr1: rgb(0, 112, 224);
@@ -70,8 +70,8 @@
   --bgListConcep1: rgb(83, 83, 83);
   --bgListConcep2: rgb(103, 103, 103);
 
-  --bgInput: rgb(30, 30, 30);
-  --bgInputFocus: rgb(36, 36, 36);
+  --bgInput: rgb(36, 36, 36);
+  --bgInputFocus: rgb(30, 30, 30);
 
   --clr0: rgb(0, 102, 204);
   --clr1: rgb(0, 112, 224);

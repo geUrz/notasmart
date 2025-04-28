@@ -77,7 +77,7 @@ export function SearchNotas(props) {
         {error && <p>{error}</p>}
         {notas.length > 0 && (
           <div className={styles.resultsContainer}>
-            <NotasListSearch notas={notas} reload={reload} onReload={onReload} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
+            <NotasListSearch user={user} notas={notas} reload={reload} onReload={onReload} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
           </div>
         )}
       </div>

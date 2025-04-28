@@ -4,13 +4,18 @@ import axios from 'axios'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { useRedirectIfAuthenticated } from '@/hooks'
-import styles from './signup.module.css'
 import { genUserId } from '@/helpers'
+import { Loading } from '@/components/Layouts'
+import { useAuth } from '@/contexts'
+import styles from './signup.module.css'
 
 export default function Signup() {
 
+  const { loading } = useAuth()
+
   const router = useRouter()
 
+  const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState({})
 
   const [credentials, setCredentials] = useState({
@@ -18,6 +23,8 @@ export default function Signup() {
     usuario: '',
     email: '',
     nivel: '',
+    negocio: '',
+    plan: '',
     folios: '',
     password: '',
     confirmarPassword: ''
@@ -27,12 +34,32 @@ export default function Signup() {
 
   const [error, setError] = useState(null)
 
-  const handleChange = (e, { name, value }) => {
-    setCredentials({
-      ...credentials,
-      [name]: value
-    });
+  const foliosPorPlan = {
+    prueba: 3,
+    basico: 50,
+    emprendedor: 150,
+    negocio: 250,
+    empresarial: 500,
+    premium: 0
   }
+
+
+  const handleChange = (e, { name, value }) => {
+
+    if (name === 'plan') {
+      setCredentials(prev => ({
+        ...prev,
+        [name]: value,
+        folios: foliosPorPlan[value] || ''
+      }));
+    } else {
+      setCredentials(prev => ({
+        ...prev,
+        [name]: value
+      }))
+    }
+  }
+
 
   const validarFormSignUp = () => {
     const newErrors = {}
@@ -53,6 +80,10 @@ export default function Signup() {
       newErrors.nivel = 'El campo es requerido'
     }
 
+    if (!credentials.plan) {
+      newErrors.plan = 'El campo es requerido'
+    }
+
     if (!credentials.folios) {
       newErrors.folios = 'El campo es requerido'
     }
@@ -71,12 +102,13 @@ export default function Signup() {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     if (!validarFormSignUp()) {
       return;
     }
 
+    setIsLoading(true)
     setError(null);
 
     if (credentials.password !== credentials.confirmarPassword) {
@@ -84,8 +116,8 @@ export default function Signup() {
       return;
     }
 
-    const folio = genUserId(4);
-    const isactive = 1;
+    const folio = genUserId(4)
+    const isactive = 1
 
     try {
       const response = await axios.post('/api/auth/register', {
@@ -94,6 +126,8 @@ export default function Signup() {
         usuario: credentials.usuario,
         email: credentials.email,
         nivel: credentials.nivel,
+        negocio: credentials.negocio,
+        plan: credentials.plan,
         folios: credentials.folios,
         isactive,
         password: credentials.password
@@ -110,6 +144,8 @@ export default function Signup() {
           usuario: '',
           email: '',
           nivel: '',
+          negocio: '',
+          plan: '',
           folios: '',
           password: '',
           confirmarPassword: ''
@@ -121,9 +157,14 @@ export default function Signup() {
     } catch (error) {
       console.error("Error inesperado:", error);
       setError("Error de conexión con el servidor.");
+    } finally {
+      setIsLoading(false)
     }
   }
 
+  if (loading) {
+    return <Loading size={45} loading={'L'} />
+  }
 
   return (
 
@@ -132,7 +173,7 @@ export default function Signup() {
       <div className={styles.main}>
         <div className={styles.boxForm}>
           <div className={styles.logo}>
-            <Image src='/img/logologin.jpg' />
+            <Image src='/img/logologin.webp' />
           </div>
 
           <div className={styles.h1}>
@@ -149,7 +190,7 @@ export default function Signup() {
                   value={credentials.nombre}
                   onChange={handleChange}
                 />
-                {errors.nombre && <Message className={styles.error}>{errors.nombre}</Message>}
+                {errors.nombre && <Message>{errors.nombre}</Message>}
               </FormField>
               <FormField error={!!errors.usuario}>
                 <Label>Usuario</Label>
@@ -159,9 +200,9 @@ export default function Signup() {
                   value={credentials.usuario}
                   onChange={handleChange}
                 />
-                {errors.usuario && <Message className={styles.error}>{errors.usuario}</Message>}
+                {errors.usuario && <Message>{errors.usuario}</Message>}
               </FormField>
-              <FormField>
+              <FormField error={!!errors.email}>
                 <Label>Correo</Label>
                 <Input
                   name='email'
@@ -169,6 +210,7 @@ export default function Signup() {
                   value={credentials.email}
                   onChange={handleChange}
                 />
+                {errors.email && <Message>{errors.email}</Message>}
               </FormField>
               <FormField error={!!errors.nivel}>
                 <Label>Nivel</Label>
@@ -184,7 +226,27 @@ export default function Signup() {
                   value={credentials.nivel}
                   onChange={handleChange}
                 />
-                {errors.nivel && <Message className={styles.error}>{errors.nivel}</Message>}
+                {errors.nivel && <Message>{errors.nivel}</Message>}
+              </FormField>
+              <FormField error={!!errors.plan}>
+                <Label>Plan</Label>
+                <Dropdown
+                  placeholder='Seleccionar'
+                  fluid
+                  selection
+                  options={[
+                    { key: 'Prueba', text: 'Prueba', value: 'prueba' },
+                    { key: 'Básico', text: 'Básico', value: 'basico' },
+                    { key: 'Emprendedor', text: 'Emprendedor', value: 'emprendedor' },
+                    { key: 'Negocio', text: 'Negocio', value: 'negocio' },
+                    { key: 'Empresarial', text: 'Empresarial', value: 'empresarial' },
+                    { key: 'Premium', text: 'Premium', value: 'premium' },
+                  ]}
+                  name='plan'
+                  value={credentials.plan}
+                  onChange={handleChange}
+                />
+                {errors.plan && <Message>{errors.plan}</Message>}
               </FormField>
               <FormField error={!!errors.folios}>
                 <Label>Folios</Label>
@@ -192,9 +254,9 @@ export default function Signup() {
                   name='folios'
                   type='number'
                   value={credentials.folios}
-                  onChange={handleChange}
+                  readOnly
                 />
-                {errors.folios && <Message className={styles.error}>{errors.folios}</Message>}
+                {errors.folios && <Message>{errors.folios}</Message>}
               </FormField>
               <FormField error={!!errors.password}>
                 <Label>Contraseña</Label>
@@ -204,7 +266,7 @@ export default function Signup() {
                   value={credentials.password}
                   onChange={handleChange}
                 />
-                {errors.password && <Message className={styles.error}>{errors.password}</Message>}
+                {errors.password && <Message>{errors.password}</Message>}
               </FormField>
               <FormField error={!!errors.confirmarPassword}>
                 <Label>Confirmar contraseña</Label>
@@ -214,11 +276,11 @@ export default function Signup() {
                   value={credentials.confirmarPassword}
                   onChange={handleChange}
                 />
-                {errors.confirmarPassword && <Message className={styles.error}>{errors.confirmarPassword}</Message>}
+                {errors.confirmarPassword && <Message>{errors.confirmarPassword}</Message>}
               </FormField>
             </FormGroup>
             {error && <Message>{error}</Message>}
-            <Button primary type='submit'>Crear usuario</Button>
+            <Button primary loading={isLoading} type='submit'>Crear</Button>
           </Form>
 
           <div className={styles.link}>

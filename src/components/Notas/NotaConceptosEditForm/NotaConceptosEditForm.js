@@ -7,7 +7,9 @@ import styles from './NotaConceptosEditForm.module.css';
 
 export function NotaConceptosEditForm(props) {
 
-  const { user, reload, onReload, onOpenCloseEditConcep, onOpenCloseConfirm, conceptToEdit, onEditConcept } = props;
+  const { user, reload, onReload, onOpenCloseEditConcep, onOpenCloseConfirm, conceptToEdit, onEditConcept } = props
+
+  const [isLoading, setIsLoading] = useState(false)
 
   const [newConcept, setNewConcept] = useState(conceptToEdit || { tipo: '', concepto: '', precio: '', cantidad: '' })
   const [errors, setErrors] = useState({})
@@ -53,6 +55,8 @@ export function NotaConceptosEditForm(props) {
       return;
     }
 
+    setIsLoading(true)
+
     try {
       const response = await axios.put(`/api/notas/conceptos?id=${newConcept.id}`, {
         tipo: newConcept.tipo,
@@ -71,6 +75,8 @@ export function NotaConceptosEditForm(props) {
       }
     } catch (error) {
       console.error('Error al actualizar el concepto:', error)
+    } finally {
+        setIsLoading(false)
     }
   }
 
@@ -109,7 +115,7 @@ export function NotaConceptosEditForm(props) {
                 value={newConcept.tipo}
                 onChange={handleChange}
               />
-              {errors.tipo && <Message negative>{errors.tipo}</Message>}
+              {errors.tipo && <Message>{errors.tipo}</Message>}
             </FormField>
 
             <FormField error={!!errors.concepto}>
@@ -120,7 +126,7 @@ export function NotaConceptosEditForm(props) {
                 value={newConcept.concepto}
                 onChange={handleChange}
               />
-              {errors.concepto && <Message negative>{errors.concepto}</Message>}
+              {errors.concepto && <Message>{errors.concepto}</Message>}
             </FormField>
 
             <FormField error={!!errors.precio}>
@@ -131,7 +137,7 @@ export function NotaConceptosEditForm(props) {
                 value={newConcept.precio}
                 onChange={handleChange}
               />
-              {errors.precio && <Message negative>{errors.precio}</Message>}
+              {errors.precio && <Message>{errors.precio}</Message>}
             </FormField>
 
             <FormField error={!!errors.cantidad}>
@@ -142,10 +148,10 @@ export function NotaConceptosEditForm(props) {
                 value={newConcept.cantidad}
                 onChange={handleChange}
               />
-              {errors.cantidad && <Message negative>{errors.cantidad}</Message>}
+              {errors.cantidad && <Message>{errors.cantidad}</Message>}
             </FormField>
           </FormGroup>
-          <Button primary onClick={handleUpdateConcept}>
+          <Button primary loading={isLoading} onClick={handleUpdateConcept}>
             Guardar
           </Button>
         </Form>

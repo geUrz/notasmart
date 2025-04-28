@@ -6,14 +6,13 @@ import { FaPlus } from 'react-icons/fa'
 import { BasicModal } from '@/layouts'
 import { ClienteForm } from '@/components/Clientes'
 import { ToastSuccess } from '@/components/Layouts'
-import { useAuth } from '@/contexts/AuthContext'
 import styles from './NotaEditForm.module.css'
 
 export function NotaEditForm(props) {
 
-  const { reload, onReload, notaData, actualizarNota, onOpenEditNota, onToastSuccessMod } = props
+  const { user, reload, onReload, notaData, actualizarNota, onOpenEditNota, onToastSuccessMod } = props
 
-  const {user} = useAuth()
+  const [isLoading, setIsLoading] = useState(false)
 
   const [show, setShow] = useState(false)
 
@@ -23,6 +22,7 @@ export function NotaEditForm(props) {
     nota: notaData.nota,
     cliente_id: notaData.cliente_id
   })
+  
   
   const [errors, setErrors] = useState({})
 
@@ -45,9 +45,16 @@ export function NotaEditForm(props) {
 
   const [clientes, setClientes] = useState([])
   
-  useEffect(() => {
-    const fetchClientes = async () => {
-      if(user && user.id) {
+  const fetchClientes = async () => {
+    if (user && user.id) {
+      if(user.nivel == 'admin'){
+        try {
+          const res = await axios.get(`/api/clientes/clientes`)
+          setClientes(res.data)
+        } catch (error) {
+          console.error('Error al obtener los clientes:', error)
+        }
+      }else if(user.nivel == 'usuario'){
         try {
           const res = await axios.get(`/api/clientes/clientes?usuario_id=${user.id}`)
           setClientes(res.data)
@@ -56,7 +63,9 @@ export function NotaEditForm(props) {
         }
       }
     }
+  }
 
+  useEffect(() => {
     fetchClientes()
   }, [reload, user])
 
@@ -66,8 +75,15 @@ export function NotaEditForm(props) {
   }
 
   const handleDropdownChange = (e, { value }) => {
-    setFormData({ ...formData, cliente_id: value })
-  }
+    const clienteSeleccionado = clientes.find((cliente) => cliente.id === value);
+  
+    setFormData({
+      ...formData,
+      cliente_id: value,
+      cliente_nombre: clienteSeleccionado ? clienteSeleccionado.cliente : '',
+      cliente_contacto: clienteSeleccionado ? clienteSeleccionado.contacto : ''
+    })
+  }  
 
   const handleSubmit = async (e) => {
 
@@ -77,16 +93,32 @@ export function NotaEditForm(props) {
       return
     }
 
+    setIsLoading(true)
+
+    const clienteSeleccionado = clientes.find((cliente) => cliente.id === formData.cliente_id)
+    const cliente_nombre = clienteSeleccionado ? clienteSeleccionado.cliente : ''
+    const cliente_contacto = clienteSeleccionado ? clienteSeleccionado.contacto : ''
+
     try {
       await axios.put(`/api/notas/notas?id=${notaData.id}`, {
         ...formData,
+        cliente_nombre,
+        cliente_contacto 
       })
+  
+      actualizarNota({
+        ...formData,
+        cliente_nombre,
+        cliente_contacto
+      }) 
+
       onReload()
-      actualizarNota(formData)
       onOpenEditNota()
       onToastSuccessMod()
     } catch (error) {
       console.error('Error actualizando la nota:', error)
+    } finally{
+        setIsLoading(false)
     }
   }
 
@@ -120,7 +152,7 @@ export function NotaEditForm(props) {
               value={formData.nota}
               onChange={handleChange}
             />
-            {errors.nota && <Message negative>{errors.nota}</Message>}
+            {errors.nota && <Message>{errors.nota}</Message>}
           </FormField>
           <FormField error={!!errors.cliente_id}>
             <Label>Cliente</Label>
@@ -140,10 +172,10 @@ export function NotaEditForm(props) {
               <h1>Crear cliente</h1>
               <FaPlus />
             </div>
-            {errors.cliente_id && <Message negative>{errors.cliente_id}</Message>}
+            {errors.cliente_id && <Message>{errors.cliente_id}</Message>}
           </FormField>
         </FormGroup>
-        <Button primary onClick={handleSubmit}>
+        <Button primary loading={isLoading} onClick={handleSubmit}>
           Guardar
         </Button>
       </Form>

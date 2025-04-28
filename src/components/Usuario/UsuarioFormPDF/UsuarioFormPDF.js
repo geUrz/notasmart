@@ -9,6 +9,8 @@ export function UsuarioFormPDF(props) {
 
   const {user, reload, onReload, onOpenCloseFormPDF} = props
 
+  const [isLoading, setIsLoading] = useState(false)
+
   const [fila1, setFila1] = useState('')
   const [fila2, setFila2] = useState('')
   const [fila3, setFila3] = useState('')
@@ -18,6 +20,8 @@ export function UsuarioFormPDF(props) {
 
   const crearDatoPDF = async (e) => {
     e.preventDefault()
+
+    setIsLoading(true)
 
     try {
       await axios.post('/api/usuarios/datos_pdf', {
@@ -42,6 +46,8 @@ export function UsuarioFormPDF(props) {
     } catch (error) {
       console.error('Error al crear el datoPDF:', error)
 
+    } finally {
+        setIsLoading(false)
     }
   }
 
@@ -102,18 +108,9 @@ export function UsuarioFormPDF(props) {
                 onChange={(e) => setFila7(e.target.value)}
               />
             </FormField>
-            {/* <FormField>
-              <Label>Página web</Label>
-              <Input
-                type="text"
-                value={web || ''}
-                onChange={(e) => setWeb(e.target.value)}
-                placeholder='Ejemplo: https://www.mipagina.com'
-              />
-            </FormField> */}
           </FormGroup>
         </Form>
-        <Button primary onClick={crearDatoPDF}>Guardar</Button>
+        <Button primary loading={isLoading} onClick={crearDatoPDF}>Guardar</Button>
       </div>
     
     </>

@@ -22,44 +22,45 @@ export function ClienteDetalles(props) {
   const onOpenCloseConfirmDel = () => setShowConfirmDel((prevState) => !prevState)
 
   const handleDeleteCliente = async () => {
-    
+
     if (!cliente?.id) {
       console.error("Cliente o ID no disponible");
       return;
     }
 
-      try {
-        await axios.delete(`/api/clientes/clientes?id=${cliente.id}`)
-        onReload()
-        onToastSuccessDel()
-        onCloseDetalles()
-      } catch (error) {
-        console.error('Error al eliminar la cliente:', error)
-      }
+    try {
+      await axios.delete(`/api/clientes/clientes?id=${cliente.id}`)
+      onReload()
+      onToastSuccessDel()
+      onCloseDetalles()
+    } catch (error) {
+      console.error('Error al eliminar la cliente:', error)
+    }
   }
 
   const [clienteData, setClienteData] = useState(cliente)
-  
-    useEffect(() => {
-      setClienteData(cliente) 
-    }, [cliente]) 
-  
-    const actualizarCliente = (nuevaData) => {
-      setClienteData((prevState) => ({
-        ...prevState,
-        ...nuevaData, 
-      }))
+
+  useEffect(() => {
+    setClienteData(cliente)
+  }, [cliente])
+
+  const actualizarCliente = (nuevaData) => {
+    setClienteData((prevState) => ({
+      ...prevState,
+      ...nuevaData,
+    }))
+  }
+
+  const permissions = useMemo(() => {
+
+    if (!user) return {}
+
+    return {
+      showAdmin: user?.nivel === 'admin',
+      showAdminUsr: user?.id === cliente.usuario_id || user?.nivel === 'admin'
     }
 
-    const permissions = useMemo(() =>{
-
-      if(!user) return {}
-
-      return{
-        showAdmin: ['admin'].includes(user?.nivel)
-      }
-
-    }, [user])
+  }, [user])
 
   return (
 
@@ -101,8 +102,14 @@ export function ClienteDetalles(props) {
 
         <IconEdit onOpenEdit={onOpenCloseEdit} />
 
-        {permissions.showAdmin &&
+        {permissions.showAdminUsr &&
           <IconDel setShowConfirmDel={onOpenCloseConfirmDel} />
+        }
+
+        {permissions.showAdmin &&
+          <div className={styles.h1UsuarioNombre}>
+            <h1>{getValueOrDefault(clienteData?.usuario_nombre)}</h1>
+          </div>
         }
 
       </div>

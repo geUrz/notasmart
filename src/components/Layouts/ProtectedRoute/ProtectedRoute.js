@@ -18,7 +18,7 @@ export default function ProtectedRoute({ children }) {
   }, [loading, user, router])
 
   if (loading || !user) {
-    return <Loading size={45} loading={0} />
+    return <Loading size={45} loading={'L'} />
   }
 
   if (!isUserActive) {

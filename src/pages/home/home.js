@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { size, sum } from 'lodash'
 import { useAuth } from '@/contexts/AuthContext'
-import { FaArrowDown, FaDollarSign, FaFileAlt } from 'react-icons/fa'
+import { FaArrowDown, FaDollarSign, FaFileAlt, FaInfinity } from 'react-icons/fa'
 import { formatCurrency } from '@/helpers'
 import styles from './home.module.css'
 
@@ -138,7 +138,12 @@ export default function Home() {
                 <>
                   <h1>{totalNotas}</h1>
                   <h1>/</h1>
-                  <h1>{sumTotalFolios()}</h1> 
+                  <h1>
+                    {user.plan === 'premium' ? 
+                      <FaInfinity /> :
+                      sumTotalFolios()
+                    }
+                  </h1> 
                 </>
               }
             </div>
@@ -156,17 +161,17 @@ export default function Home() {
             <div className={styles.count}>
               {!conceptos ?
                 <Loading size={30} loading={3} /> :
-                <h1>${formatCurrency(totalPrice)}</h1>
+                <h1>{formatCurrency(totalPrice)}</h1>
               }
             </div>
             <div className={styles.iva}>
               <div>
                 <h1>IVA</h1>
-                <h2>${formatCurrency(totalIVA)}</h2>
+                <h2>{formatCurrency(totalIVA)}</h2>
               </div>
               <div>
                 <h1>Total</h1>
-                <h2>${formatCurrency(totalTotal)}</h2>
+                <h2>{formatCurrency(totalTotal)}</h2>
               </div>
           </div>
           </div>

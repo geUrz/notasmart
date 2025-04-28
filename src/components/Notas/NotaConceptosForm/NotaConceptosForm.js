@@ -8,6 +8,8 @@ export function NotaConceptosForm(props) {
 
   const { user, reload, onReload, notaId, onAddConcept, onOpenCloseConcep, onToastSuccess } = props
 
+  const [isLoading, setIsLoading] = useState(false)
+
   const [newConcept, setNewConcept] = useState({ tipo: '', concepto: '', precio: '', cantidad: '' })
   const [errors, setErrors] = useState({})
 
@@ -45,6 +47,8 @@ export function NotaConceptosForm(props) {
       return
     }
 
+    setIsLoading(true)
+
     if (newConcept.tipo && newConcept.concepto && newConcept.precio && newConcept.cantidad) {
 
       const total = newConcept.precio * newConcept.cantidad
@@ -75,6 +79,8 @@ export function NotaConceptosForm(props) {
         }
       } catch (error) {
         //console.error('Error al agregar el concepto:', error.response?.data || error.message || error)
+      } finally {
+          setIsLoading(false)
       }
     } else {
       console.warn('Datos incompletos o inválidos para agregar concepto', newConcept)
@@ -139,11 +145,10 @@ export function NotaConceptosForm(props) {
               {errors.cantidad && <Message negative>{errors.cantidad}</Message>}
             </FormField>
           </FormGroup>
+          <Button primary loading={isLoading} onClick={handleAddConcept}>
+            Agregar
+          </Button>
         </Form>
-
-        <Button primary onClick={handleAddConcept}>
-          Agregar concepto
-        </Button>
 
       </div>
 

@@ -7,7 +7,21 @@ export default async function handler(req, res) {
         if (usuario_id) {
             // Obtener un cliente por ID
             try {
-                const [rows] = await connection.query('SELECT id, usuario_id, folio, cliente, contacto, cel, direccion, email FROM clientes WHERE usuario_id = ?', [usuario_id])
+                const [rows] = await connection.query(`
+                    SELECT 
+                        clientes.id, 
+                        clientes.usuario_id, 
+                        usuarios.nombre AS usuario_nombre,
+                        clientes.folio, 
+                        clientes.cliente, 
+                        clientes.contacto, 
+                        clientes.cel, 
+                        clientes.direccion, 
+                        clientes.email 
+                    FROM clientes
+                    JOIN usuarios ON clientes.usuario_id = usuarios.id 
+                    WHERE usuario_id = ?
+                    ORDER BY clientes.updatedAt DESC`, [usuario_id])
 
                 if (rows.length === 0) {
                     /* return res.status(404).json({ error: 'Cliente no encontrado' }); */
@@ -26,31 +40,35 @@ export default async function handler(req, res) {
                 try {
                     const [rows] = await connection.query(`
                         SELECT
-                            id, 
-                            folio, 
-                            usuario_id,
-                            cliente,
-                            contacto,
-                            cel,
-                            direccion,
-                            email,
-                            createdAt
+                            clientes.id, 
+                            clientes.folio, 
+                            clientes.usuario_id,
+                            usuarios.nombre AS usuario_nombre,
+                            clientes.cliente,
+                            clientes.contacto,
+                            clientes.cel,
+                            clientes.direccion,
+                            clientes.email,
+                            clientes.createdAt
                         FROM clientes
+                        JOIN usuarios ON clientes.usuario_id = usuarios.id 
                         WHERE 
-                            LOWER(folio) LIKE ? 
+                            LOWER(clientes.folio) LIKE ? 
                         OR 
-                            LOWER(cliente) LIKE ?
+                            LOWER(clientes.cliente) LIKE ?
                         OR 
-                            LOWER(contacto) LIKE ?
+                            LOWER(clientes.contacto) LIKE ?
                         OR 
-                            LOWER(cel) LIKE ?
+                            LOWER(clientes.cel) LIKE ?
                         OR 
-                            LOWER(direccion) LIKE ?
+                            LOWER(clientes.direccion) LIKE ?
                         OR 
-                            LOWER(email) LIKE ?  
+                            LOWER(clientes.email) LIKE ?  
                         OR 
-                            LOWER(createdAt) LIKE ?
-                        ORDER BY updatedAt DESC`, [searchQuery, searchQuery, searchQuery, searchQuery, searchQuery, searchQuery, searchQuery]);
+                            LOWER(usuarios.nombre) LIKE ? 
+                        OR 
+                            LOWER(clientes.createdAt) LIKE ?
+                        ORDER BY clientes.updatedAt DESC`, [searchQuery, searchQuery, searchQuery, searchQuery, searchQuery, searchQuery, searchQuery, searchQuery]);
     
                     res.status(200).json(rows); 
     
@@ -62,7 +80,20 @@ export default async function handler(req, res) {
 
             // Obtener todos los clientes
             try {
-                const [rows] = await connection.query('SELECT id, folio, usuario_id, cliente, contacto, cel, direccion, email FROM clientes ORDER BY updatedAt DESC');
+                const [rows] = await connection.query(`
+                    SELECT 
+                        clientes.id, 
+                        clientes.usuario_id, 
+                        usuarios.nombre AS usuario_nombre,
+                        clientes.folio, 
+                        clientes.cliente, 
+                        clientes.contacto, 
+                        clientes.cel, 
+                        clientes.direccion, 
+                        clientes.email 
+                    FROM clientes
+                    JOIN usuarios ON clientes.usuario_id = usuarios.id 
+                    ORDER BY clientes.updatedAt DESC`);
                 res.status(200).json(rows)
             } catch (error) {
                 res.status(500).json({ error: error.message })
@@ -71,7 +102,7 @@ export default async function handler(req, res) {
     } else if (req.method === 'POST') {
         try {
             const { usuario_id, folio, cliente, contacto, cel, direccion, email } = req.body
-            if (!cliente || !contacto ) {
+            if (!cliente ) {
                 return res.status(400).json({ error: 'Todos los datos son obligatorios' })
             }
 
@@ -91,7 +122,7 @@ export default async function handler(req, res) {
 
         const { folio, cliente, contacto, cel, direccion, email } = req.body
 
-        if (!cliente || !contacto) {
+        if (!cliente) {
             return res.status(400).json({ error: 'Todos los datos son obligatorios' })
         }
 

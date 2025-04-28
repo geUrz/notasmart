@@ -4,8 +4,11 @@ import { useAuth } from '@/contexts/AuthContext'
 import Link from 'next/link'
 import { useRedirectIfAuthenticated } from '@/hooks'
 import styles from './signin.module.css'
+import { Loading } from '@/components/Layouts'
 
 export default function Signin() {
+
+  const [isLoading, setIsLoading] = useState(false)
 
   const [errors, setErrors] = useState({})
 
@@ -16,7 +19,7 @@ export default function Signin() {
 
   useRedirectIfAuthenticated()
 
-  const { login } = useAuth()
+  const { login, loading } = useAuth()
   const [error, setError] = useState(null)
 
   const handleChange = (e) => {
@@ -47,6 +50,8 @@ export default function Signin() {
     if (!validarFormSignIn()) {
       return
     }
+
+    setIsLoading(true)
     setError(null)
 
     try {
@@ -59,6 +64,8 @@ export default function Signin() {
       } else {
         setError(error?.data?.error || '¡ Ocurrió un error inesperado !');
       }
+    } finally {
+        setIsLoading(false)
     }
   }
 
@@ -91,6 +98,10 @@ export default function Signin() {
     }
   }, [])
 
+  if (loading) {
+    return <Loading size={45} loading={'L'} />
+  }
+
   return (
 
     <>
@@ -100,7 +111,7 @@ export default function Signin() {
         <div className={styles.boxForm}>
 
           <div className={styles.logo}>
-            <Image src='/img/logologin.jpg' onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} />
+            <Image src='/img/logologin.webp' onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} />
           </div>
 
           <div className={styles.h1}>
@@ -131,7 +142,7 @@ export default function Signin() {
               </FormField>
             </FormGroup>
             {error && <Message>{error}</Message>}
-            <Button primary type='submit'>
+            <Button primary loading={isLoading} type='submit'>
               Iniciar sesión
             </Button>
           </Form>

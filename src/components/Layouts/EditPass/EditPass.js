@@ -6,6 +6,8 @@ import axios from 'axios'
 export function EditPass(props) {
 
   const { usuario, onOpenCloseEditPass, onToastSuccessUsuarioMod } = props
+
+  const [isLoading, setIsLoading] = useState(false)
   
   const [error, setError] = useState(null)
   const [formData, setFormData] = useState({
@@ -32,11 +34,11 @@ export function EditPass(props) {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    // Validación de formulario
     if (!validarFormUser()) {
       return
     }
 
+    setIsLoading(true)
     setError(null)
 
     // Validar que las contraseñas coincidan
@@ -60,6 +62,8 @@ export function EditPass(props) {
       } else {
         setError('Ocurrió un error inesperado')
       }
+    } finally {
+        setIsLoading(false)
     }
   }
 
@@ -86,9 +90,9 @@ export function EditPass(props) {
           />
         </FormField>
 
-        {error && <Message negative>{error}</Message>}
+        {error && <Message>{error}</Message>}
 
-        <Button primary onClick={handleSubmit}>Guardar</Button>
+        <Button primary loading={isLoading} onClick={handleSubmit}>Guardar</Button>
       </Form>
     </>
   )

@@ -9,11 +9,11 @@ import { getValueOrDefault } from '@/helpers'
 
 export function NotasListSearch(props) {
 
-  const { reload, onReload, notas, onToastSuccessMod } = props
+  const { user, reload, onReload, notas, onToastSuccessMod } = props
 
   const [showDetalles, setShowDetalles] = useState(false)
   const [notaSeleccionada, setNotaSeleccionada] = useState(null)
-
+  
   const onOpenDetalles = (nota) => {
     setNotaSeleccionada(nota)
     setShowDetalles(true)
@@ -28,7 +28,7 @@ export function NotasListSearch(props) {
 
     <>
 
-{!notas ? (
+      {!notas ? (
         <Loading size={45} loading={1} />
       ) : (
         size(notas) === 0 ? (
@@ -36,31 +36,32 @@ export function NotasListSearch(props) {
         ) : (
           <div className={styles.main}>
             {map(notas, (nota) => (
-             <div key={nota.id} className={styles.section} onClick={() => onOpenDetalles(nota)}>
-             <div>
-               <div className={styles.column1}>
-                 <FaFileAlt />
-               </div>
-               <div className={styles.column2}>
-                 <div>
-                   <h1>Nota</h1>
-                   <h2>{getValueOrDefault(nota.nota)}</h2>
-                 </div>
-                 <div>
-                   <h1>Cliente</h1>
-                   <h2>{getValueOrDefault(nota.cliente_cliente)}</h2>
-                 </div>
-               </div>
-             </div>
-           </div>
+              <div key={nota.id} className={styles.section} onClick={() => onOpenDetalles(nota)}>
+                <div>
+                  <div className={styles.column1}>
+                    <FaFileAlt />
+                  </div>
+                  <div className={styles.column2}>
+                    <div>
+                      <h1>Nota</h1>
+                      <h2>{getValueOrDefault(nota.nota)}</h2>
+                    </div>
+                    <div>
+                      <h1>Cliente</h1>
+                      <h2>{getValueOrDefault(nota.cliente_cliente)}</h2>
+                    </div>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
         )
       )}
 
-      <BasicModal title='detalles del nota' show={showDetalles} onClose={onCloseDetalles}>
+      <BasicModal title='detalles de la nota' show={showDetalles} onClose={onCloseDetalles}>
         {notaSeleccionada && (
           <NotaDetalles
+          user={user}
             reload={reload}
             onReload={onReload}
             nota={notaSeleccionada}

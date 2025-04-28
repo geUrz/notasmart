@@ -21,17 +21,23 @@
 
 .input input{
   width: 280px !important;
+  color: var(--clrGR0) !important;
   border-radius: 5px !important;
-  border: 1px solid var(--clrGR2) !important;
+  background-color: var(--bgInput) !important;
+  border: none !important;
+}
+
+.input input:focus{
+  background-color: var(--bgInputFocus) !important;
 }
 
 .iconSearch{
-  margin-left: 10px;
   position: relative;
   cursor: pointer;
 } 
 
 .iconSearch svg, .iconSearch path{
+  margin: 8px 0 0 10px;
   font-size: 28px;
   color: var(--clrGR0);
   cursor: pointer;

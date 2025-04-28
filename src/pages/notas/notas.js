@@ -7,7 +7,8 @@ import { useAuth } from '@/contexts/AuthContext'
 import { size } from 'lodash'
 import { NotaForm, NotasLista, NotasListSearch, SearchNotas } from '@/components/Notas'
 import styles from './Notas.module.css'
-import { FaInfoCircle, FaSearch } from 'react-icons/fa'
+import { FaArrowCircleRight, FaInfoCircle, FaSearch } from 'react-icons/fa'
+import Link from 'next/link'
 
 export default function Notas() {
 
@@ -32,7 +33,7 @@ export default function Notas() {
   const [resultados, setResultados] = useState([])
 
   const [notas, setNotas] = useState(null)
-
+  
   const totalFolios = size(notas)
 
   useEffect(() => {
@@ -60,7 +61,7 @@ export default function Notas() {
   }, [reload, user])
 
   const onOpenCloseFormFolios = () => {
-    if (user && totalFolios >= user.folios) {
+    if (user && user.nivel !== 'admin' && user.plan !== 'premium' && totalFolios >= user.folios) {
       onOpenShowFolios()
     } else {
       onOpenCloseForm()
@@ -140,15 +141,22 @@ export default function Notas() {
       </BasicLayout>
 
       <BasicModal title='crear nota' show={openCloseForm} onClose={onOpenCloseForm}>
-        <NotaForm reload={reload} onReload={onReload} onToastSuccess={onToastSuccess} onOpenCloseForm={onOpenCloseForm} />
+        <NotaForm user={user} reload={reload} onReload={onReload} onToastSuccess={onToastSuccess} onOpenCloseForm={onOpenCloseForm} />
       </BasicModal>
 
       <BasicModal show={showFolios} onClose={onOpenShowFolios}>
         <IconClose onOpenClose={onOpenShowFolios} />
         <div className={styles.noFolios}>
           <FaInfoCircle />
-          <h1>¡ Has agotado tus folios disponibles !</h1>
+          <h1>¡Has agotado tus folios disponibles!</h1>
           <h2>Por favor, póngase en contacto con el administrador para resolverlo.</h2>
+          <Link
+            href="https://api.whatsapp.com/send?phone=526861349399&text=%C2%A1Me%20interesa%20adquirir%20m%C3%A1s%20folios!"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Solicitar folios <FaArrowCircleRight />
+          </Link>
         </div>
       </BasicModal>
 

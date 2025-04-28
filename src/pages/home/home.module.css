@@ -68,6 +68,10 @@
   margin: 0 5px !important;
 }
 
+.folios svg, .folios path{
+  margin-top: 8px;
+}
+
 .count h1{
   font-size: 40px;
   font-family: 'Bebas' !important;

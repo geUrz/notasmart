@@ -3,10 +3,8 @@ import { Button, Dropdown, Form, FormField, FormGroup, Input, Label, Message } f
 import { formatCurrency, genNVId } from '@/helpers'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-import { useAuth } from '@/contexts/AuthContext'
-import { FaCheck, FaPlus, FaTimes, FaTrash } from 'react-icons/fa'
+import { FaPlus } from 'react-icons/fa'
 import { RowHeadModal } from '../RowHead'
-import { BiSolidToggleLeft, BiSolidToggleRight } from 'react-icons/bi'
 import { ClienteForm } from '@/components/Clientes'
 import { BasicModal } from '@/layouts'
 import styles from './NotaForm.module.css'
@@ -14,8 +12,9 @@ import { ConceptosForm } from '../ConceptosForm'
 import { ConceptosEditForm } from '../ConceptosEditForm'
 
 export function NotaForm(props) {
-  const { reload, onReload, onOpenCloseForm, onToastSuccess } = props
-  const { user } = useAuth()
+  const { user, reload, onReload, onOpenCloseForm, onToastSuccess } = props
+  
+  const [isLoading, setIsLoading] = useState(false)
 
   const [showConfirm, setShowConfirm] = useState(false)
   const [show, setShow] = useState(false)
@@ -96,14 +95,23 @@ export function NotaForm(props) {
 
     if (!validarForm()) return
 
+    setIsLoading(true)
+
     const folio = genNVId(4)
+
+    const clienteSeleccionado = clientes.find(c => c.id === cliente_id)
+    const cliente_nombre = clienteSeleccionado ? clienteSeleccionado.cliente : ''
+    const cliente_contacto = clienteSeleccionado ? clienteSeleccionado.cliente : ''
 
     try {
       const res = await axios.post('/api/notas/notas', {
         usuario_id: user.id,
+        usuario_nombre: user.nombre,
+        nota,
         folio,
         cliente_id,
-        nota
+        cliente_nombre,
+        cliente_contacto
       })
 
       const notaId = res.data.id
@@ -127,6 +135,8 @@ export function NotaForm(props) {
       onToastSuccess()
     } catch (error) {
       console.error('Error al crear la nota:', error)
+    } finally {
+        setIsLoading(false)
     }
   }
 
@@ -163,7 +173,7 @@ export function NotaForm(props) {
                 value={nota || ''}
                 onChange={(e) => setNota(e.target.value)}
               />
-              {errors.nota && <Message negative>{errors.nota}</Message>}
+              {errors.nota && <Message>{errors.nota}</Message>}
             </FormField>
             <FormField error={!!errors.cliente_id}>
               <Label>Cliente</Label>
@@ -183,7 +193,7 @@ export function NotaForm(props) {
                 <h1>Crear cliente</h1>
                 <FaPlus onClick={onOpenCloseClienteForm} />
               </div>
-              {errors.cliente_id && <Message negative>{errors.cliente_id}</Message>}
+              {errors.cliente_id && <Message>{errors.cliente_id}</Message>}
             </FormField>
           </FormGroup>
         </Form>
@@ -194,9 +204,9 @@ export function NotaForm(props) {
             <div key={index} className={styles.rowMap} onClick={() => onOpenEditConcep(index)}>
               <h1>{concepto.tipo}</h1>
               <h1>{concepto.concepto}</h1>
-              <h1>${formatCurrency(concepto.precio * 1)}</h1>
+              <h1>{formatCurrency(concepto.precio)}</h1>
               <h1>{concepto.cantidad}</h1>
-              <h1>${formatCurrency(concepto.precio * concepto.cantidad)}</h1>
+              <h1>{formatCurrency(concepto.precio * concepto.cantidad)}</h1>
             </div>
           ))}
 
@@ -212,12 +222,12 @@ export function NotaForm(props) {
             </div>
 
             <div className={styles.box3_2}>
-              <h1>${formatCurrency(total)}</h1>
+              <h1>{formatCurrency(total)}</h1>
             </div>
           </div>
         </div>
 
-        <Button primary onClick={crearNota}>Crear</Button>
+        <Button primary loading={isLoading} onClick={crearNota}>Crear</Button>
       </div>
 
       <BasicModal title='crear cliente' show={show} onClose={onOpenCloseClienteForm}>

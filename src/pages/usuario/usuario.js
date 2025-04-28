@@ -1,7 +1,7 @@
 import { BasicModal } from '@/layouts'
 import { Confirm, Loading, Title, UploadImg } from '@/components/Layouts'
 import { useAuth } from '@/contexts/AuthContext'
-import { FaCheck, FaEdit, FaImage, FaMoon, FaSun, FaTimes, FaUser } from 'react-icons/fa'
+import { FaEdit, FaImage, FaInfinity, FaMoon, FaSun, FaUser } from 'react-icons/fa'
 import { Button, Image } from 'semantic-ui-react'
 import { useEffect, useState } from 'react'
 import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
@@ -35,7 +35,7 @@ export default function Usuario() {
   const onOpenCloseEditPDF = () => setShowEditPDF((prevState) => !prevState)
 
   const [datoPDF, setDatoPDF] = useState(null)
-
+  
   useEffect(() => {
     if (user && user.id) {
       (async () => {
@@ -85,46 +85,44 @@ export default function Usuario() {
       }))
 
       onReload()
-      //setShowImg(false)
+ 
       setShowConfirmDelImg(false)
     } catch (error) {
       console.error('Error al eliminar la imagen:', error)
     }
   }
 
-  const [activeToggleBan, setActiveToggleBan] = useState(1);
-  const [activeToggle, setActiveToggle] = useState(1);
+  const [activeToggleBan, setActiveToggleBan] = useState(1)
+  const [activeToggle, setActiveToggle] = useState(1)
 
-  // Usamos `useEffect` para manejar el acceso a localStorage
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      // Si estamos en el navegador, accedemos a localStorage
-      const savedToggle = localStorage.getItem('activeToggle');
+
+      const savedToggle = localStorage.getItem('activeToggle')
       if (savedToggle) {
-        setActiveToggle(parseInt(savedToggle));
+        setActiveToggle(parseInt(savedToggle))
       }
 
-      const savedToggleBan = localStorage.getItem('activeToggleBan');
+      const savedToggleBan = localStorage.getItem('activeToggleBan')
       if (savedToggleBan) {
-        setActiveToggleBan(parseInt(savedToggleBan));
+        setActiveToggleBan(parseInt(savedToggleBan))
       }
     }
-  }, []);
+  }, [])
 
-  // Guardamos el estado del toggle cuando cambie
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('activeToggleBan', activeToggleBan);
-      localStorage.setItem('activeToggle', activeToggle);
+      localStorage.setItem('activeToggleBan', activeToggleBan)
+      localStorage.setItem('activeToggle', activeToggle)
     }
-  }, [activeToggle, activeToggleBan]);
+  }, [activeToggle, activeToggleBan])
 
   const onToggleBan = (index) => {
-    setActiveToggleBan(index);
+    setActiveToggleBan(index)
   }
 
   const onToggle = (index) => {
-    setActiveToggle(index);
+    setActiveToggle(index)
   }
 
   if (loading) {
@@ -158,8 +156,17 @@ export default function Usuario() {
                   <h3>{user.nivel}</h3>
                 </div>
                 <div>
+                  <h2>Plan:</h2>
+                  <h3>{user.plan}</h3>
+                </div>
+                <div>
                   <h2>Folios:</h2>
-                  <h3>{user.folios}</h3>
+                  <h3>
+                    {user.plan === 'premium' ? 
+                      <FaInfinity /> :
+                      user.folios
+                    }
+                  </h3>
                 </div>
               </>
             }
@@ -282,9 +289,7 @@ export default function Usuario() {
                 <FaMoon onClick={toggleTheme} />
               </div>
             }
-          </div>
-
-          
+          </div>       
 
           <Button negative onClick={logout}>
             Cerrar sesión

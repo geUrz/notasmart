@@ -51,8 +51,8 @@
 }
 
 .loadingIcon img{
-  height: 22px;
+  height: 40px;
   position: absolute;
-  top: -40px;
-  right: 1px;
+  top: -49px;
+  right: 0px;
 }

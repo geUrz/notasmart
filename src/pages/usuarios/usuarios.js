@@ -111,7 +111,7 @@ export default function Usuarios() {
       </BasicLayout>
 
       <BasicModal title='crear usuario' show={openCloseForm} onClose={onOpenCloseForm}>
-        <UsuarioForm reload={reload} onReload={onReload} onToastSuccess={onToastSuccess} onOpenCloseForm={onOpenCloseForm} />
+        <UsuarioForm user={user} reload={reload} onReload={onReload} onToastSuccess={onToastSuccess} onOpenCloseForm={onOpenCloseForm} />
       </BasicModal>
 
     </ProtectedRoute>

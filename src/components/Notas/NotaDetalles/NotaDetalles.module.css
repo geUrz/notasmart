@@ -186,6 +186,19 @@
   justify-content: center;
 }
 
+.h1UsuarioNombre{
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.h1UsuarioNombre h1{
+  font-size: 14px;
+  color: var(--clrFont);
+}
+
 @media screen and (min-width: 768px) {
 
   .datos_1 div, .datos_2 div{

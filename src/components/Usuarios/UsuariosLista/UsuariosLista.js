@@ -68,7 +68,7 @@ export function UsuariosLista(props) {
       )}
 
       <BasicModal title='detalles del usuario' show={showDetalles} onClose={onCloseDetalles}>
-        <UsuarioDetalles reload={reload} onReload={onReload} usuario={usuarioSeleccionado} onCloseDetalles={onCloseDetalles} onToastSuccessMod={onToastSuccessMod} onToastSuccessDel={onToastSuccessDel} />
+        <UsuarioDetalles user={user} reload={reload} onReload={onReload} usuario={usuarioSeleccionado} onCloseDetalles={onCloseDetalles} onToastSuccess={onToastSuccess} onToastSuccessMod={onToastSuccessMod} onToastSuccessDel={onToastSuccessDel} />
       </BasicModal>
 
     </>

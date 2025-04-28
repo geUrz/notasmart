@@ -37,7 +37,7 @@ export function SearchUsuarios(props) {
     }
   
     fetchData()
-  }, [query, user.residencial_id])
+  }, [query])
 
   return (
     <div className={styles.main}>

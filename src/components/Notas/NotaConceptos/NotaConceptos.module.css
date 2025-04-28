@@ -13,22 +13,23 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  background-color: var(--bgListConcep0);
+  background-color: var(--bgList0);
   cursor: pointer;
 }
 
 .rowMap:hover{
-  background-color: var(--bgListConcep1);
+  background-color: var(--bgList1);
 }
 
 .rowMap:active{
-  background-color: var(--bgListConcep2);
+  background-color: var(--bgList2);
 }
 
 .rowMap h1{
   padding: 6.5px 0 !important;
   height: auto;
   font-size: 12px;
+  color: var(--clrGR0);
   cursor: pointer;
 }
 
