@@ -71,6 +71,10 @@ export default function Signup() {
       newErrors.usuario = 'El campo es requerido'
     }
 
+    if (!credentials.email) {
+      newErrors.email = 'El campo es requerido'
+    }
+
     if (!credentials.nivel) {
       newErrors.nivel = 'El campo es requerido'
     }
@@ -191,7 +195,7 @@ export default function Signup() {
                 />
                 {errors.usuario && <Message>{errors.usuario}</Message>}
               </FormField>
-              <FormField>
+              <FormField error={!!errors.email}>
                 <Label>Correo</Label>
                 <Input
                   name='email'
@@ -200,6 +204,7 @@ export default function Signup() {
                   onChange={handleChange}
                 />
               </FormField>
+              {errors.email && <Message>{errors.email}</Message>}
               <FormField error={!!errors.nivel}>
                 <Label>Nivel</Label>
                 <Dropdown
