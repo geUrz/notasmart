@@ -43,30 +43,30 @@ export default async function handler(req, res) {
                     SELECT
                         notas.id, 
                         notas.usuario_id, 
-                        usuarios.nombre AS usuario_nombre,
+                        notas.usuario_nombre, 
                         notas.folio, 
                         notas.nota,
                         notas.cliente_id, 
-                        clientes.cliente AS cliente_cliente,  
-                        clientes.contacto AS cliente_contacto, 
+                        notas.cliente_nombre, 
+                        notas.cliente_contacto,
+                        notas.negocio_id,
+                        notas.negocio_nombre,
                         notas.iva,
                         notas.iva_total,
                         conceptosnot.concepto AS concepto,
                         notas.createdAt
                     FROM notas
-                    JOIN clientes ON notas.cliente_id = clientes.id
                     LEFT JOIN conceptosnot ON notas.id = conceptosnot.nota_id
-                    LEFT JOIN usuarios ON notas.usuario_id = usuarios.id
                     WHERE 
                         LOWER(notas.folio) LIKE ? 
                     OR 
-                        LOWER(clientes.cliente) LIKE ?
+                        LOWER(notas.cliente_nombre) LIKE ?
                     OR 
-                        LOWER(clientes.contacto) LIKE ?
+                        LOWER(notas.cliente_contacto) LIKE ?
                     OR 
                         LOWER(notas.nota) LIKE ?
                     OR 
-                        LOWER(usuarios.nombre) LIKE ?
+                        LOWER(notas.usuario_nombre) LIKE ?
                     OR 
                         LOWER(notas.createdAt) LIKE ?  
                     OR 

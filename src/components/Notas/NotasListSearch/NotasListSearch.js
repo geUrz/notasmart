@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { NotaDetalles } from '../NotaDetalles'
 import styles from './NotasListSearch.module.css'
 import { getValueOrDefault } from '@/helpers'
+import { getValueOrDel } from '@/helpers/getValueOrDel'
 
 export function NotasListSearch(props) {
 
@@ -48,7 +49,7 @@ export function NotasListSearch(props) {
                     </div>
                     <div>
                       <h1>Cliente</h1>
-                      <h2>{getValueOrDefault(nota.cliente_cliente)}</h2>
+                      <h2>{getValueOrDel(nota?.cliente_nombre, !nota?.cliente_id)}</h2>
                     </div>
                   </div>
                 </div>
