@@ -9,7 +9,7 @@ export default async function registerHandler(req, res) {
 
     const { folio, nombre, usuario, email, nivel, negocio_id, folios, plan, isactive, password } = req.body;
 
-    if (!folio || !nombre || !usuario || !email || !nivel || !folios || !plan || !isactive || !password) {
+    if (!folio || !nombre || !usuario || !nivel || !plan || !isactive || !password) {
       return res.status(400).json({ error: "Todos los campos son obligatorios." });
     }
 
@@ -32,7 +32,7 @@ export default async function registerHandler(req, res) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const [result] = await connection.query(
-      'INSERT INTO usuarios (folio, nombre, usuario, email, nivel, negocio_id, folios, plan, isactive, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      'INSERT INTO usuarios (folio, nombre, usuario, email, nivel, negocio_id, folios, plan, isactive, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
       [folio, nombre, usuario, email, nivel, negocio_id, folios, plan, isactive, hashedPassword]
     );
 

@@ -23,7 +23,6 @@ export default function Signup() {
     usuario: '',
     email: '',
     nivel: '',
-    negocio: '',
     plan: '',
     folios: '',
     password: '',
@@ -72,20 +71,12 @@ export default function Signup() {
       newErrors.usuario = 'El campo es requerido'
     }
 
-    if (!credentials.email) {
-      newErrors.email = 'El campo es requerido'
-    }
-
     if (!credentials.nivel) {
       newErrors.nivel = 'El campo es requerido'
     }
 
     if (!credentials.plan) {
       newErrors.plan = 'El campo es requerido'
-    }
-
-    if (!credentials.folios) {
-      newErrors.folios = 'El campo es requerido'
     }
 
     if (!credentials.password) {
@@ -126,7 +117,6 @@ export default function Signup() {
         usuario: credentials.usuario,
         email: credentials.email,
         nivel: credentials.nivel,
-        negocio: credentials.negocio,
         plan: credentials.plan,
         folios: credentials.folios,
         isactive,
@@ -144,7 +134,6 @@ export default function Signup() {
           usuario: '',
           email: '',
           nivel: '',
-          negocio: '',
           plan: '',
           folios: '',
           password: '',
@@ -202,7 +191,7 @@ export default function Signup() {
                 />
                 {errors.usuario && <Message>{errors.usuario}</Message>}
               </FormField>
-              <FormField error={!!errors.email}>
+              <FormField>
                 <Label>Correo</Label>
                 <Input
                   name='email'
@@ -210,7 +199,6 @@ export default function Signup() {
                   value={credentials.email}
                   onChange={handleChange}
                 />
-                {errors.email && <Message>{errors.email}</Message>}
               </FormField>
               <FormField error={!!errors.nivel}>
                 <Label>Nivel</Label>
@@ -248,7 +236,7 @@ export default function Signup() {
                 />
                 {errors.plan && <Message>{errors.plan}</Message>}
               </FormField>
-              <FormField error={!!errors.folios}>
+              <FormField>
                 <Label>Folios</Label>
                 <Input
                   name='folios'
@@ -256,7 +244,6 @@ export default function Signup() {
                   value={credentials.folios}
                   readOnly
                 />
-                {errors.folios && <Message>{errors.folios}</Message>}
               </FormField>
               <FormField error={!!errors.password}>
                 <Label>Contraseña</Label>
