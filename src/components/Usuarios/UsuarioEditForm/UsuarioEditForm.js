@@ -244,7 +244,7 @@ export function UsuarioEditForm(props) {
             />
             {errors.plan && <Message>{errors.plan}</Message>}
           </FormField>
-          <FormField error={!!errors.folios}>
+          <FormField>
             <Label>
               Folios
             </Label>
@@ -254,7 +254,6 @@ export function UsuarioEditForm(props) {
               value={formData.folios}
               readOnly
             />
-            {errors.folios && <Message>{errors.folios}</Message>}
           </FormField>
           <FormField error={!!errors.isactive}>
             <Label>

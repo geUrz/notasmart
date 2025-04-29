@@ -17,9 +17,10 @@ export function UsuarioForm(props) {
   const [credentials, setCredentials] = useState({
     nombre: '',
     usuario: '',
-    folios: '',
     email: '',
     nivel: '',
+    plan: '',
+    folios: '',
     password: '',
     confirmarPassword: ''
   });
@@ -44,12 +45,12 @@ export function UsuarioForm(props) {
       newErrors.usuario = 'El campo es requerido'
     }
 
-    if (!credentials.folios) {
-      newErrors.folios = 'El campo es requerido'
-    }
-
     if (!credentials.nivel) {
       newErrors.nivel = 'El campo es requerido'
+    }
+
+    if (!credentials.plan) {
+      newErrors.plan = 'El campo es requerido'
     }
 
     if (!credentials.password) {
@@ -104,9 +105,10 @@ export function UsuarioForm(props) {
         folio,
         nombre: credentials.nombre,
         usuario: credentials.usuario,
-        folios: credentials.folios,
         email: credentials.email,
         nivel: credentials.nivel,
+        plan: credentials.plan,
+        folios: credentials.folios,
         isactive,
         password: credentials.password
       });
@@ -114,9 +116,10 @@ export function UsuarioForm(props) {
       setCredentials({
         nombre: '',
         usuario: '',
-        folios: '',
         email: '',
         nivel: '',
+        plan: '',
+        folios: '',
         password: '',
         confirmarPassword: ''
       });
@@ -168,7 +171,7 @@ export function UsuarioForm(props) {
                 />
                 {errors.usuario && <Message>{errors.usuario}</Message>}
               </FormField>
-              <FormField error={!!errors.email}>
+              <FormField>
                 <Label>Correo</Label>
                 <Input
                   name='email'
@@ -176,17 +179,6 @@ export function UsuarioForm(props) {
                   value={credentials.email}
                   onChange={handleChange}
                 />
-                {errors.email && <Message>{errors.email}</Message>}
-              </FormField>
-              <FormField>
-                <Label>Folios</Label>
-                <Input
-                  name='folios'
-                  type='number'
-                  value={credentials.folios}
-                  onChange={handleChange}
-                />
-                {errors.folios && <Message>{errors.folios}</Message>}
               </FormField>
               <FormField error={!!errors.nivel}>
                 <Label>Nivel</Label>
@@ -222,6 +214,35 @@ export function UsuarioForm(props) {
                   <h1>Crear negocio</h1>
                   <FaPlus onClick={onOpenCloseNegocioForm} />
                 </div>
+              </FormField>
+              <FormField error={!!errors.plan}>
+                <Label>Plan</Label>
+                <Dropdown
+                  placeholder='Seleccionar'
+                  fluid
+                  selection
+                  options={[
+                    { key: 'Prueba', text: 'Prueba', value: 'prueba' },
+                    { key: 'Básico', text: 'Básico', value: 'basico' },
+                    { key: 'Emprendedor', text: 'Emprendedor', value: 'emprendedor' },
+                    { key: 'Negocio', text: 'Negocio', value: 'negocio' },
+                    { key: 'Empresarial', text: 'Empresarial', value: 'empresarial' },
+                    { key: 'Premium', text: 'Premium', value: 'premium' },
+                  ]}
+                  name='plan'
+                  value={credentials.plan}
+                  onChange={handleChange}
+                />
+                {errors.plan && <Message>{errors.plan}</Message>}
+              </FormField>
+              <FormField>
+                <Label>Folios</Label>
+                <Input
+                  name='folios'
+                  type='number'
+                  value={credentials.folios}
+                  readOnly
+                />
               </FormField>
               <FormField error={!!errors.password}>
                 <Label>Contraseña</Label>

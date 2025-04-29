@@ -117,7 +117,7 @@ export function NotaPDF(props) {
 
     doc.setFontSize(font2)
     doc.setTextColor(120, 120, 120)
-    doc.text(`${getValueOrDefault(nota.cliente_cliente)}`, 6, 75)
+    doc.text(`${getValueOrWhite(nota.cliente_nombre)}`, 6, 75)
 
     const textAtencion = "Atención a:";
     const textWidthAtencion = doc.getTextWidth(textAtencion);
@@ -135,7 +135,7 @@ export function NotaPDF(props) {
 
     doc.setFontSize(font2)
     doc.setTextColor(120, 120, 120)
-    doc.text(`${getValueOrDefault(nota.cliente_contacto)}`, 6, 91)
+    doc.text(`${getValueOrWhite(nota.cliente_contacto)}`, 6, 91)
 
     doc.setFontSize(font1)
     const colorText1 = activeToggleBan === 1 ? gris : blanco

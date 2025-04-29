@@ -96,86 +96,91 @@ export function NotaDetalles(props) {
 
     onReload()
   }
-
-  const [toggleIVA, setToggleIVA] = useState(false)
-
-  const onIVA = () => {
-    setToggleIVA((prevState) => !prevState)
   
-    const updatedIvaValue = toggleIVA ? 0 : (subtotal * ivaValue) / 100;
-  
-    addIVA(ivaValue, updatedIvaValue) 
+  const [ivaValue, setIvaValue] = useState('') // string para input controlado
+const [toggleIVA, setToggleIVA] = useState(false)
+
+useEffect(() => {
+  if (nota?.iva !== undefined && nota?.iva !== null) {
+    setIvaValue(String(nota.iva))
   }
+}, [nota])
 
-  const addIVA = async (ivaPercentage, ivaTotalValue) => {
+useEffect(() => {
+  const fetchIVA = async () => {
+    if (!notaId) return
     try {
-      const res = await axios.put(`/api/notas/ivaTotal?id=${nota.id}`, {
-        iva: ivaPercentage,     
-        iva_total: ivaTotalValue, 
-      })
-  
-    } catch (error) {
-      console.error("Error al actualizar IVA:", error)
+      const response = await axios.get(`/api/notas/notas?id=${notaId}`)
+      const backendIVA = response.data?.iva
+      if (backendIVA !== undefined && backendIVA !== null) {
+        setIvaValue(backendIVA)
+      }
+    } catch (err) {
+      console.error("Error al cargar IVA desde backend:", err)
     }
   }
 
-  const updateIVA = async (ivaPercentage, ivaTotalValue) => {
-    try {
-      const res = await axios.put(`/api/notas/ivaTotal?id=${nota.id}`, {
-        iva: ivaPercentage,   
-        iva_total: ivaTotalValue,  
-      })
-  
-    } catch (error) {
-      console.error("Error al actualizar IVA:", error)
-    }
+  fetchIVA()
+}, [notaId])
+
+const subtotal = (notaState?.conceptos || []).reduce(
+  (sum, concepto) => sum + concepto.precio * concepto.cantidad,
+  0
+)
+
+const iva = ivaValue ? (subtotal * parseFloat(ivaValue)) / 100 : 0
+const total = subtotal + iva
+
+const updateIVA = async (ivaPercentage, ivaTotalValue) => {
+  try {
+    await axios.put(`/api/notas/ivaTotal?id=${nota.id}`, {
+      iva: ivaPercentage,            // número
+      iva_total: ivaTotalValue,      // número
+    })
+  } catch (error) {
+    console.error("Error al actualizar IVA:", error)
   }
+}
 
-  useEffect(() => {
-    const savedToggleIVA = localStorage.getItem('ontoggleIVA')
-    if (savedToggleIVA) {
-      setToggleIVA(JSON.parse(savedToggleIVA))
-    }
-  }, [])
+const handleIvaChange = async (e) => {
+  const value = e.target.value
 
-  useEffect(() => {
-    localStorage.setItem('ontoggleIVA', JSON.stringify(toggleIVA))
-  }, [toggleIVA])
+  // Solo números de 0 a 99 permitidos
+  if (/^\d{0,2}$/.test(value)) {
+    setIvaValue(value)
 
-  const [ivaValue, setIvaValue] = useState(null)
+    const parsed = parseFloat(value)
+    const updatedIva = isNaN(parsed) ? 0 : (subtotal * parsed) / 100
 
-  useEffect(() => {
-    if (nota) {
-      setIvaValue(nota.iva)
-    }
-  }, [nota])
+    await updateIVA(parsed, updatedIva)
+  }
+}
 
-  const subtotal = (notaState?.conceptos || []).reduce(
-    (sum, concepto) => sum + concepto.precio * concepto.cantidad,
-    0
-  )
+const onIVA = () => {
+  const newToggle = !toggleIVA
+  setToggleIVA(newToggle)
 
-  const iva = ivaValue ? (subtotal * ivaValue) / 100 : 0
-  const total = subtotal + iva
+  if (newToggle) {
+    const parsed = parseFloat(ivaValue)
+    const updatedIva = isNaN(parsed) ? 0 : (subtotal * parsed) / 100
+    updateIVA(parsed, updatedIva)
+  } else {
+    updateIVA(0, 0)
+  }
+}
 
-  const handleIvaChange = async (e) => {
-    let value = e.target.value;
-  
-    if (/^\d{0,2}$/.test(value)) {
-      setIvaValue(value)
-  
-      const updatedIvaValue = value ? (subtotal * value) / 100 : 0;
+// Opcional: guardar el toggle en localStorage
+useEffect(() => {
+  const savedToggleIVA = localStorage.getItem('ontoggleIVA')
+  if (savedToggleIVA) {
+    setToggleIVA(JSON.parse(savedToggleIVA))
+  }
+}, [])
 
-      await updateIVA(value, updatedIvaValue)
-    }
-  }  
+useEffect(() => {
+  localStorage.setItem('ontoggleIVA', JSON.stringify(toggleIVA))
+}, [toggleIVA])
 
-  useEffect(() => {
-    if (nota && nota.iva) {
-      setIvaValue(nota.iva)
-    }
-  }, [nota])
-  
 
   const handleDelete = async () => {
     if (!nota?.id || !nota?.folio) {

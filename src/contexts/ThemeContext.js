@@ -34,7 +34,7 @@ export function ThemeProvider({ children }) {
 
       setTimeout(() => {
         circle.remove();
-      }, 600);
+      }, 400);
     };
 
     const handleTouch = (e) => {
@@ -46,7 +46,7 @@ export function ThemeProvider({ children }) {
     };
 
     const handleClick = (e) => {
-      // Si el último toque fue hace menos de 500ms, ignorar el click
+ 
       if (Date.now() - lastTouchTime.current < 500) return;
       createCircle(e.clientX, e.clientY);
     };
