@@ -9,7 +9,7 @@ import styles from './UsuariosListSearch.module.css'
 
 export function UsuariosListSearch(props) {
 
-  const { reload, onReload, usuarios, onToastSuccessMod } = props
+  const { user, reload, onReload, usuarios, onToastSuccessMod } = props
 
   const [showDetalles, setShowDetalles] = useState(false)
   const [usuarioSeleccionada, setUsuarioSeleccionada] = useState(null)
@@ -65,6 +65,7 @@ export function UsuariosListSearch(props) {
       <BasicModal title='detalles del usuario' show={showDetalles} onClose={onCloseDetalles}>
         {usuarioSeleccionada && (
           <UsuarioDetalles
+            user={user}
             reload={reload}
             onReload={onReload}
             usuario={usuarioSeleccionada}

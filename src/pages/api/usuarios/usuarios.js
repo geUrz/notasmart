@@ -23,7 +23,7 @@ export default async function handler(req, res) {
                         id,
                         folio, 
                         nombre, 
-                        usuario_id, 
+                        usuario, 
                         email, 
                         nivel,
                         negocio_id,
@@ -142,7 +142,7 @@ export default async function handler(req, res) {
         }
     } else if (req.method === 'POST') {
         // Crear un nuevo usuario
-        const { folio, nombre, usuario, email, nivel, negocio_id, folios, isactive, password } = req.body;
+        const { folio, nombre, usuario, email, nivel, negocio_id, plan, folios, isactive, password } = req.body;
 
         if (!password) {
             return res.status(400).json({ error: 'Se requiere una contraseña' });
@@ -196,7 +196,8 @@ export default async function handler(req, res) {
 
             res.status(200).json({ id, ...updateData });
         } catch (error) {
-            res.status(500).json({ error: error.message });
+            console.error("Error details: ", error); // Muestra más detalles sobre el error
+    res.status(500).json({ error: error.message })
         }
     } else if (req.method === 'DELETE') {
 

@@ -46,7 +46,7 @@ export function UsuarioEditForm(props) {
       newErrors.plan = 'El campo es requerido'
     }
 
-    if (!formData.folios) {
+    if (formData.plan !== 'premium' && !formData.folios) {
       newErrors.folios = 'El campo es requerido'
     }
 
@@ -108,6 +108,10 @@ export function UsuarioEditForm(props) {
     }
 
     setIsLoading(true)
+
+    if (formData.plan === 'premium') {
+      formData.folios = 0
+    }
 
     try {
       await axios.put(`/api/usuarios/usuarios?id=${usuarioData.id}`, {

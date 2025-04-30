@@ -42,7 +42,6 @@ export default function Signup() {
     premium: 0
   }
 
-
   const handleChange = (e, { name, value }) => {
 
     if (name === 'plan') {
@@ -58,7 +57,6 @@ export default function Signup() {
       }))
     }
   }
-
 
   const validarFormSignUp = () => {
     const newErrors = {}

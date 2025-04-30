@@ -25,14 +25,31 @@ export function UsuarioForm(props) {
     confirmarPassword: ''
   });
 
-  const [error, setError] = useState(null);
+  const foliosPorPlan = {
+    prueba: 3,
+    basico: 50,
+    emprendedor: 150,
+    negocio: 250,
+    empresarial: 500,
+    premium: 0
+  }
 
   const handleChange = (e, { name, value }) => {
-    setCredentials({
-      ...credentials,
-      [name]: value
-    });
-  };
+    if (name === 'plan') {
+      setCredentials(prev => ({
+        ...prev,
+        [name]: value,
+        folios: foliosPorPlan[value] || ''
+      }));
+    } else {
+      setCredentials(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+  }  
+
+  const [error, setError] = useState(null)
 
   const validarFormSignUp = () => {
     const newErrors = {};
@@ -52,6 +69,11 @@ export function UsuarioForm(props) {
     if (!credentials.plan) {
       newErrors.plan = 'El campo es requerido'
     }
+
+    if (credentials.plan === 'premium') {
+      credentials.folios = 0;
+    }
+    
 
     if (!credentials.password) {
       newErrors.password = 'El campo es requerido'
@@ -99,7 +121,10 @@ export function UsuarioForm(props) {
     const folio = genUserId(4)
     const isactive = 1
 
-    // Enviar datos al backend para crear el usuario
+    if (credentials.plan === 'premium') {
+      credentials.folios = 0
+    }
+
     try {
       await axios.post('/api/usuarios/usuarios', {
         folio,

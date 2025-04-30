@@ -60,7 +60,7 @@ export function SearchUsuarios(props) {
         {error && <p>{error}</p>}
         {usuarios.length > 0 && (
           <div className={styles.resultsContainer}>
-            <UsuariosListSearch usuarios={usuarios} reload={reload} onReload={onReload} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
+            <UsuariosListSearch user={user} usuarios={usuarios} reload={reload} onReload={onReload} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
           </div>
         )}
       </div>

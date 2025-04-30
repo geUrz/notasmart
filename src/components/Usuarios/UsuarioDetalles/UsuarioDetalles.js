@@ -5,6 +5,7 @@ import axios from 'axios'
 import { getValueOrDefault } from '@/helpers'
 import styles from './UsuarioDetalles.module.css'
 import { UsuarioEditForm } from '../UsuarioEditForm'
+import { FaInfinity } from 'react-icons/fa'
 
 export function UsuarioDetalles(props) {
 
@@ -60,7 +61,7 @@ export function UsuarioDetalles(props) {
 
   const permissions = useMemo(() => {
 
-    if (!usuario) return {}
+    if (!user) return {}
 
     return {
 
@@ -115,7 +116,12 @@ export function UsuarioDetalles(props) {
             </div>
             <div>
               <h1>Folios</h1>
-              <h2>{getValueOrDefault(usuarioData?.folios)}</h2>
+              <h2>
+                {usuarioData?.plan === 'premium' ?
+                  <FaInfinity /> :
+                  getValueOrDefault(usuarioData?.folios)
+                }
+              </h2>
             </div>
           </div>
         </div>
