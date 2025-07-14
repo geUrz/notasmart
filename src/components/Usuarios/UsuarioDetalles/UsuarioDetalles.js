@@ -1,5 +1,5 @@
 import { IconClose, Confirm, IconKey, EditPass, IconEdit, IconDel } from '@/components/Layouts'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { BasicModal } from '@/layouts'
 import axios from 'axios'
 import { getValueOrDefault } from '@/helpers'
@@ -9,7 +9,9 @@ import { FaInfinity } from 'react-icons/fa'
 
 export function UsuarioDetalles(props) {
 
-  const { user, reload, onReload, usuario, onCloseDetalles, onToastSuccess, onToastSuccessMod, toastSuccessDel } = props
+  const { user, reload, onReload, isAdmin, isSuperUser, usuario, onCloseDetalles, onToastSuccess, onToastSuccessMod, toastSuccessDel } = props
+
+  const negocioId = user.negocio_id
   
   const [showEdit, setShowEdit] = useState(false)
 
@@ -59,18 +61,6 @@ export function UsuarioDetalles(props) {
     isActive = 'Inactivo'
   }
 
-  const permissions = useMemo(() => {
-
-    if (!user) return {}
-
-    return {
-
-      showAdmin: ['admin'].includes(user.nivel),
-
-    }
-
-  }, [user])
-
   return (
 
     <>
@@ -92,10 +82,12 @@ export function UsuarioDetalles(props) {
               <h1>Nivel</h1>
               <h2>{getValueOrDefault(usuarioData?.nivel)}</h2>
             </div>
-            <div>
-              <h1>Plan</h1>
-              <h2>{getValueOrDefault(usuarioData?.plan)}</h2>
-            </div>
+            {negocioId &&
+              <div>
+                <h1>Plan</h1>
+                <h2>{getValueOrDefault(usuarioData?.plan)}</h2>
+              </div>
+            }
             <div>
               <h1>Activo</h1>
               <h2>{isActive}</h2>
@@ -114,19 +106,21 @@ export function UsuarioDetalles(props) {
               <h1>Negocio</h1>
               <h2>{getValueOrDefault(usuarioData?.negocio_nombre)}</h2>
             </div>
-            <div>
-              <h1>Folios</h1>
-              <h2>
-                {usuarioData?.plan === 'premium' ?
-                  <FaInfinity /> :
-                  getValueOrDefault(usuarioData?.folios)
-                }
-              </h2>
-            </div>
+            {negocioId &&
+              <div>
+                <h1>Folios</h1>
+                <h2>
+                  {usuarioData?.plan === 'premium' ?
+                    <FaInfinity /> :
+                    getValueOrDefault(usuarioData?.folios)
+                  }
+                </h2>
+              </div>
+            }
           </div>
         </div>
 
-        {permissions.showAdmin &&
+        {(isAdmin || isSuperUser) &&
 
           <>
 
@@ -143,7 +137,7 @@ export function UsuarioDetalles(props) {
       </div>
 
       <BasicModal title='modificar usuario' show={showEdit} onClose={onOpenCloseEdit}>
-        <UsuarioEditForm user={user} reload={reload} onReload={onReload} usuarioData={usuarioData} actualizarUsuario={actualizarUsuario} onOpenCloseEdit={onOpenCloseEdit} onToastSuccess={onToastSuccess} onToastSuccessMod={onToastSuccessMod} />
+        <UsuarioEditForm user={user} reload={reload} onReload={onReload} isAdmin={isAdmin} isSuperUser={isSuperUser} usuarioData={usuarioData} actualizarUsuario={actualizarUsuario} onOpenCloseEdit={onOpenCloseEdit} onToastSuccess={onToastSuccess} onToastSuccessMod={onToastSuccessMod} />
       </BasicModal>
 
       <BasicModal title='Modificar contraseña' show={showEditPass} onClose={onOpenCloseEditPass}>

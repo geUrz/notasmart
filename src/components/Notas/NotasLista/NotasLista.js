@@ -8,37 +8,35 @@ import { BasicModal } from '@/layouts'
 import { NotaDetalles } from '../NotaDetalles'
 import styles from './NotasLista.module.css'
 import { getValueOrDel } from '@/helpers/getValueOrDel'
+import { useDispatch, useSelector } from 'react-redux'
+import { setNota } from '@/store/notas/notaSlice'
+import { selectNota, selectNotas } from '@/store/notas/notaSelectors'
 
 export function NotasLista(props) {
 
-  const { user, reload, onReload, notas, onToastSuccess, onToastSuccessMod, onToastSuccessDel } = props
+  const { user, reload, onReload, isAdmin, isSuperUser, isPremium, onToastSuccess, onToastSuccessMod, onToastSuccessDel } = props
 
-  const [show, setShow] = useState(false)
+  const dispatch = useDispatch()
+  const nota = useSelector(selectNota)
+  const notas = useSelector(selectNotas)
+  
+  const [showDetalles, setShowDetalles] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   
-  const [notaSeleccionado, setNotaSeleccionado] = useState(null)
   const [toastSuccess, setToastSuccess] = useState(false)
   const [toastSuccessConfirm, setToastSuccessConfirm] = useState(false)
   const [toastSuccessDelete, setToastSuccessDelete] = useState(false)
 
   const onShowConfirm = () => setShowConfirm((prevState) => !prevState)
 
-  const onOpenClose = async (nota) => {
+  const onOpenDetalles = (nota) => {
+    dispatch(setNota(nota))
+    setShowDetalles(true)
+  }  
 
-    if (!nota || !nota.id) {
-      setShow(false)
-      return;
-    }
-
-    try {
-      const response = await axios.get(`/api/notas/conceptos?nota_id=${nota.id}`)
-      nota.conceptos = response.data
-      setNotaSeleccionado(nota)
-      setShow((prevState) => !prevState)
-    } catch (error) {
-      console.error('Error al obtener los conceptos:', error)
-      setShow(false)
-    }
+  const onCloseDetalles = () => {
+    dispatch(setNota(null))
+    setShowDetalles(false)
   }
 
   const onDeleteConcept = async (conceptoId) => {
@@ -46,26 +44,78 @@ export function NotasLista(props) {
       const response = await axios.delete(`/api/notas/conceptos`, {
         params: { concepto_id: conceptoId },
       })
+  
       if (response.status === 200) {
-        setNotaSeleccionado((prevState) => ({
-          ...prevState,
-          conceptos: prevState.conceptos.filter((concepto) => concepto.id !== conceptoId),
-        }))
-      } else {
-        console.error('Error al eliminar el concepto: Respuesta del servidor no fue exitosa', response);
+ 
+        const res = await axios.get(`/api/notas/notas?id=${nota.id}`)
+        dispatch(setNota(res.data))
+  
+        onReload()
       }
     } catch (error) {
-      console.error('Error al eliminar el concepto:', error.response || error.message || error);
+      console.error('Error al eliminar el concepto:', error.response || error.message || error)
+    }
+  }  
+
+  const onDeleteAbono = async (abonoId) => {
+    try {
+      const response = await axios.delete(`/api/notas/abonos`, {
+        params: { abono_id: abonoId },
+      })
+  
+      if (response.status === 200) {
+
+        const res = await axios.get(`/api/notas/notas?id=${nota.id}`)
+        dispatch(setNota(res.data))
+  
+        onReload()
+      }
+    } catch (error) {
+      console.error('Error al eliminar el abono:', error.response || error.message || error)
     }
   }
 
-  const onAddConcept = (concept) => {
-    setNotaSeleccionado((prevState) => ({
-      ...prevState,
-      conceptos: [...prevState.conceptos, concept],
-    }))
-    onReload()
+  const onDeleteAnticipo = async (anticipoId) => {
+    try {
+      const response = await axios.delete(`/api/notas/anticipos`, {
+        params: { anticipo_id: anticipoId },
+      })
+  
+      if (response.status === 200) {
+
+        const res = await axios.get(`/api/notas/notas?id=${nota.id}`)
+        dispatch(setNota(res.data))
+  
+        onReload()
+      }
+    } catch (error) {
+      console.error('Error al eliminar el anticipo:', error.response || error.message || error)
+    }
   }
+
+  const onAddConcept = (nuevoConcepto) => {
+    if (!nota) return
+    dispatch(setNota({
+      ...nota,
+      conceptos: [...(nota.conceptos || []), nuevoConcepto]
+    }))
+  }  
+  
+  const onAddAbono = (nuevoAbono) => {
+    if (!nota) return
+    dispatch(setNota({
+      ...nota,
+      abonos: [...(nota.abonos || []), nuevoAbono]
+    }))
+  }
+
+  const onAddAnticipo = (nuevoAnticipo) => {
+    if (!nota) return
+    dispatch(setNota({
+      ...nota,
+      anticipos: [...(nota.anticipos || []), nuevoAnticipo]
+    }))
+  }  
 
   return (
 
@@ -85,7 +135,7 @@ export function NotasLista(props) {
         ) : (
           <div className={styles.main}>
             {map(notas, (nota) => (
-             <div key={nota.id} className={styles.section} onClick={() => onOpenClose(nota)}>
+             <div key={nota.id} className={styles.section} onClick={() => onOpenDetalles(nota)}>
              <div>
                <div className={styles.column1}>
                  <FaFileAlt />
@@ -107,8 +157,8 @@ export function NotasLista(props) {
         )
       )}
 
-      <BasicModal title='detalles de la nota' show={show} onClose={onOpenClose}>
-        <NotaDetalles user={user} nota={notaSeleccionado} notaId={notaSeleccionado} reload={reload} onReload={onReload} onShowConfirm={onShowConfirm} onOpenClose={onOpenClose} onToastSuccess={onToastSuccess} onToastSuccessMod={onToastSuccessMod} onToastSuccessDel={onToastSuccessDel} onAddConcept={onAddConcept} onDeleteConcept={onDeleteConcept} notaSeleccionado={setNotaSeleccionado} />
+      <BasicModal title='detalles de la nota' show={showDetalles} onClose={onCloseDetalles}>
+        <NotaDetalles user={user} isAdmin={isAdmin} isSuperUser={isSuperUser} isPremium={isPremium} reload={reload} onReload={onReload} onShowConfirm={onShowConfirm} onCloseDetalles={onCloseDetalles} onToastSuccess={onToastSuccess} onToastSuccessMod={onToastSuccessMod} onToastSuccessDel={onToastSuccessDel} onAddConcept={onAddConcept} onAddAbono={onAddAbono} onAddAnticipo={onAddAnticipo} onDeleteConcept={onDeleteConcept} onDeleteAbono={onDeleteAbono} onDeleteAnticipo={onDeleteAnticipo} />
       </BasicModal>
 
     </>

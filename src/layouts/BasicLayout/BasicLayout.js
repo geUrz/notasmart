@@ -3,43 +3,46 @@ import styles from './BasicLayout.module.css'
 import { BottomMenu, IconClose, Menu } from '@/components/Layouts'
 import { useEffect, useState } from 'react'
 import { BasicModal } from '../BasicModal'
-import { useAuth } from '@/contexts/AuthContext'
 import { FaArrowCircleRight, FaInfoCircle } from 'react-icons/fa'
 import Link from 'next/link'
+import { useSelector } from 'react-redux'
+import { selectNegocioId, selectPlan, selectTotalFoliosNgId, selectTotalNotasNgId } from '@/store/notas/notaSelectors'
 
 export function BasicLayout(props) {
-
-  const { user } = useAuth()
 
   const {
     children,
     relative = false,
-    totalNotas
   } = props
 
+  const plan = useSelector(selectPlan)
+  const negocioId = useSelector(selectNegocioId)
+  const totalNotasNgId = useSelector(selectTotalNotasNgId)
+  const totalFoliosNgId = useSelector(selectTotalFoliosNgId)
+  
   const [total, setTotal] = useState(false)
 
   useEffect(() => {
-    if (user && user.id) {
-      if (totalNotas === user.folios - 5) {
-        setTotal(true)
-      } else {
-        setTotal(false)
+      if(negocioId) {
+        if (plan !== 'premium' && totalNotasNgId === totalFoliosNgId - 5) {
+          setTotal(true)
+        } else {
+          setTotal(false)
+        }
       }
-    }
-  }, [totalNotas, user.folios])
+  }, [totalNotasNgId, totalFoliosNgId])
 
   const [prueba, setPrueba] = useState(false)
 
   useEffect(() => {
-    if (user && user.id) {
-      if (user.plan === 'prueba' && totalNotas === user.folios) {
-        setPrueba(true)
-      } else {
-        setPrueba(false)
+      if(negocioId) {
+        if (plan !== 'premium' && totalNotasNgId == totalFoliosNgId) {
+          setPrueba(true)
+        } else {
+          setPrueba(false)
+        }
       }
-    }
-  }, [totalNotas, user.folios])
+  }, [totalNotasNgId, totalFoliosNgId])
 
   return (
 

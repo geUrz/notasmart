@@ -1,5 +1,5 @@
 import { IconClose } from '@/components/Layouts'
-import { Button, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
+import { Button, Dropdown, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
 import { useState } from 'react'
 import { genNEId } from '@/helpers'
 import axios from 'axios'
@@ -13,8 +13,19 @@ export function NegocioForm(props) {
 
   const [negocio, setNegocio] = useState('')
   const [cel, setCel] = useState('')
-  const [email, setEmail] = useState('')
   const [direccion, setDireccion] = useState('')
+  const [email, setEmail] = useState('')
+  const [plan, setPlan] = useState('')
+  const [folios, setFolios] = useState('')
+
+  const foliosPorPlan = {
+    prueba: 3,
+    basico: 50,
+    emprendedor: 150,
+    negocio: 250,
+    empresarial: 500,
+    premium: 0
+  }
 
   const [errors, setErrors] = useState({})
 
@@ -25,6 +36,10 @@ export function NegocioForm(props) {
       newErrors.negocio = 'El campo es requerido'
     }
 
+    if (!plan) {
+      newErrors.plan = 'El campo es requerido'
+    }
+
     setErrors(newErrors)
 
     return Object.keys(newErrors).length === 0
@@ -33,7 +48,7 @@ export function NegocioForm(props) {
   const crearNegocio = async (e) => {
     e.preventDefault()
 
-    if(!validarForm()){
+    if (!validarForm()) {
       return
     }
 
@@ -42,28 +57,32 @@ export function NegocioForm(props) {
     const folio = genNEId(4)
 
     try {
-      await axios.post ('/api/negocios/negocios', {
+      await axios.post('/api/negocios/negocios', {
         usuario_id: user.id,
         folio,
-        negocio, 
-        cel, 
+        negocio,
+        cel,
+        direccion,
         email,
-        direccion 
+        plan,
+        folios
       })
 
       setNegocio('')
       setCel('')
-      setEmail('')
       setDireccion('')
+      setEmail('')
+      setPlan('')
+      setFolios('')
 
       onReload()
       onCloseForm()
       onToastSuccess()
 
     } catch (error) {
-        console.error('Error al crear el negocio:', error)
+      console.error('Error al crear el negocio:', error)
     } finally {
-        setIsLoading(false)
+      setIsLoading(false)
     }
 
   }
@@ -94,6 +113,14 @@ export function NegocioForm(props) {
             />
           </FormField>
           <FormField>
+            <Label>Dirección</Label>
+            <Input
+              type="text"
+              value={direccion}
+              onChange={(e) => setDireccion(e.target.value)}
+            />
+          </FormField>
+          <FormField>
             <Label>Correo</Label>
             <Input
               type="email"
@@ -101,13 +128,33 @@ export function NegocioForm(props) {
               onChange={(e) => setEmail(e.target.value)}
             />
           </FormField>
-          <FormField>
-            <Label>Dirección</Label>
-            <Input
-              type="text"
-              value={direccion}
-              onChange={(e) => setDireccion(e.target.value)}
+          <FormField error={!!errors.plan}>
+            <Label>Plan</Label>
+            <Dropdown
+              name='plan'
+              placeholder='Seleccionar'
+              fluid
+              selection
+              options={[
+                { key: 'Prueba', text: 'Prueba', value: 'prueba' },
+                { key: 'Básico', text: 'Básico', value: 'basico' },
+                { key: 'Emprendedor', text: 'Emprendedor', value: 'emprendedor' },
+                { key: 'Negocio', text: 'Negocio', value: 'negocio' },
+                { key: 'Empresarial', text: 'Empresarial', value: 'empresarial' },
+                { key: 'Premium', text: 'Premium', value: 'premium' },
+              ]}
+              value={plan}
+              onChange={(e, { value }) => {
+                setPlan(value)
+                setFolios(foliosPorPlan[value] || '')
+              }}
             />
+
+            {errors.plan && <Message>{errors.plan}</Message>}
+          </FormField>
+          <FormField>
+            <Label>Folios</Label>
+            <Input name='folios' type='number' value={folios} readOnly />
           </FormField>
         </FormGroup>
         <Button primary loading={isLoading} onClick={crearNegocio}>Crear</Button>

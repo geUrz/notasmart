@@ -1,33 +1,21 @@
-import { FaBuilding, FaFileAlt, FaHome, FaUser, FaUsers } from 'react-icons/fa'
+import { FaBuilding, FaFileAlt, FaHome, FaUsers } from 'react-icons/fa'
 import Link from 'next/link'
-import { useAuth } from '@/contexts/AuthContext'
 import styles from './BottomMenu.module.css'
-import { useMemo } from 'react'
-import { BiSolidUser, BiUser } from 'react-icons/bi'
+import { BiSolidUser } from 'react-icons/bi'
+import { usePermissions } from '@/hooks'
 
 export function BottomMenu() {
 
-  const { user } = useAuth()
-
-  const permissions = useMemo(() => {
-
-    if(!user) return {}
-
-    return{
-      showAdmin : user?.nivel === 'admin',
-      showAdminAct : user?.isactive === 1
-    }
-
-  }, [user])
+  const {isUserActive, isAdmin, isSuperUser} = usePermissions()
 
   return (
 
     <div className={styles.main}>
       <div className={styles.section}>
 
-        {permissions.showAdminAct ?
+        {isUserActive ?
           <>
-          {permissions.showAdmin &&
+          {isAdmin &&
             <Link href='/negocios' className={styles.tab}>
               <div>
                 <FaBuilding />
@@ -53,7 +41,7 @@ export function BottomMenu() {
                 <h1>Clientes</h1>
               </div>
             </Link>
-            {permissions.showAdmin &&
+            {(isAdmin || isSuperUser) &&
               <Link href='/usuarios' className={styles.tab}>
               <div>
                 <FaUsers />

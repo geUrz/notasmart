@@ -1,11 +1,17 @@
 import connection from "@/libs/db"
+import authMiddleware from "@/middleware/authMiddleware";
 
-export default async function handler(req, res) {
-    const { usuario_id, search } = req.query;
+export async function handler(req, res) {
+
+    const user = req.user
+    if (!user) return
+
+    const { id, search } = req.query;
+    const isAdmin = user?.nivel === 'admin'
 
     if (req.method === 'GET') {
-        if (usuario_id) {
-            // Obtener un negocio por ID
+
+        if (id) {
             try {
                 const [rows] = await connection.query(`
                     SELECT 
@@ -14,34 +20,42 @@ export default async function handler(req, res) {
                         negocio, 
                         cel, 
                         direccion, 
-                        email 
-                    FROM negocios 
-                    WHERE usuario_id = ?
-                    ORDER BY updatedAt DESC`, [usuario_id])
+                        email,
+                        plan,
+                        folios    
+                    FROM negocios
+                    WHERE id = ?
+                `, [id])
 
                 if (rows.length === 0) {
-                    /* return res.status(404).json({ error: 'Negocio no encontrado' }); */
+                    return res.status(404).json({ error: 'Negocio no encontrado' })
                 }
 
-                res.status(200).json(rows)
+                res.status(200).json(rows[0])
             } catch (error) {
                 res.status(500).json({ error: error.message })
             }
 
-            return
         }
 
-            if (search) {
-                const searchQuery = `%${search.toLowerCase()}%`;
-                try {
-                    const [rows] = await connection.query(`
+        if (search) {
+
+            if (!isAdmin) {
+                return res.status(403).json({ error: 'No tienes permiso para accesar.' });
+            }
+
+            const searchQuery = `%${search.toLowerCase()}%`;
+            try {
+                const [rows] = await connection.query(`
                         SELECT
                             id, 
                             folio, 
                             negocio, 
                             cel, 
                             direccion, 
-                            email 
+                            email,
+                            plan,
+                            folios  
                         FROM negocios
                         WHERE 
                             LOWER(folio) LIKE ? 
@@ -54,42 +68,52 @@ export default async function handler(req, res) {
                         OR 
                             LOWER(email) LIKE ?  
                         OR 
+                            LOWER(plan) LIKE ? 
+                        OR 
                             LOWER(createdAt) LIKE ?
-                        ORDER BY updatedAt DESC`, [searchQuery, searchQuery, searchQuery, searchQuery, searchQuery, searchQuery]);
-    
-                    res.status(200).json(rows); 
-    
-                } catch (error) {
-                    res.status(500).json({ error: 'Error al realizar la búsqueda' });
-                }
-                return;
+                        ORDER BY updatedAt DESC`, [searchQuery, searchQuery, searchQuery, searchQuery, searchQuery, searchQuery, searchQuery]);
+
+                res.status(200).json(rows);
+
+            } catch (error) {
+                res.status(500).json({ error: 'Error al realizar la búsqueda' });
+            }
+            return;
+
+        } else {
+
+            if (!isAdmin) {
+                return res.status(403).json({ error: 'No tienes permiso para accesar.' });
             }
 
-            // Obtener todos los negocios
             try {
                 const [rows] = await connection.query(`
-                    SELECT 
-                        id, 
-                        folio, 
-                        negocio, 
-                        cel, 
-                        direccion, 
-                        email  
-                    FROM negocios
-                    ORDER BY updatedAt DESC`);
+                        SELECT 
+                            id, 
+                            folio, 
+                            negocio, 
+                            cel, 
+                            direccion, 
+                            email,
+                            plan,
+                            folios    
+                        FROM negocios
+                        ORDER BY updatedAt DESC`);
                 res.status(200).json(rows)
             } catch (error) {
                 res.status(500).json({ error: error.message })
             }
-        
+
+        }
+
     } else if (req.method === 'POST') {
         try {
-            const { folio, negocio, cel, direccion, email } = req.body
+            const { folio, negocio, cel, direccion, email, plan, folios } = req.body
             if (!negocio) {
                 return res.status(400).json({ error: 'Todos los datos son obligatorios' })
             }
 
-            const [result] = await connection.query('INSERT INTO negocios (folio, negocio, cel, direccion, email) VALUES (?, ?, ?, ?, ?)', [folio, negocio, cel, direccion, email])
+            const [result] = await connection.query('INSERT INTO negocios (folio, negocio, cel, direccion, email, plan, folios) VALUES (?, ?, ?, ?, ?, ?, ?)', [folio, negocio, cel, direccion, email, plan, folios])
             const newClient = { id: result.insertId }
             res.status(201).json(newClient)
         } catch (error) {
@@ -103,14 +127,14 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'ID del negocio es obligatorio' })
         }
 
-        const { folio, negocio, cel, direccion, email } = req.body
+        const { negocio, cel, direccion, email, plan, folios } = req.body
 
         if (!negocio) {
             return res.status(400).json({ error: 'Todos los datos son obligatorios' })
         }
 
         try {
-            const [result] = await connection.query('UPDATE negocios SET folio = ?, negocio = ?, cel = ?, direccion = ?, email = ? WHERE id = ?', [folio, negocio, cel, direccion, email, id])
+            const [result] = await connection.query('UPDATE negocios SET negocio = ?, cel = ?, direccion = ?, email = ?, plan = ?, folios = ? WHERE id = ?', [negocio, cel, direccion, email, plan, folios, id])
 
             if (result.affectedRows === 0) {
                 return res.status(404).json({ error: 'Negocio no encontrado' })
@@ -146,3 +170,5 @@ export default async function handler(req, res) {
         res.status(405).end(`Method ${req.method} Not Allowed`)
     }
 }
+
+export default authMiddleware(handler)

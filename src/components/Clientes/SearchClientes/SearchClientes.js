@@ -7,13 +7,13 @@ import styles from './SearchClientes.module.css';
 
 export function SearchClientes(props) {
 
-  const {user, reload, onReload, onResults, onOpenCloseSearch, onToastSuccessMod} = props
+  const { user, reload, onReload, onResults, onOpenCloseSearch, onToastSuccessMod } = props
 
   const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [clientes, setClientes] = useState([])
-  
+
   useEffect(() => {
     const fetchData = async () => {
       if (query.trim() === '') {
@@ -24,34 +24,18 @@ export function SearchClientes(props) {
       setLoading(true)
       setError('')
 
-      if(user && user.id){
-        if(user.nivel === 'admin'){
-          try {
-            const res = await axios.get(`/api/clientes/clientes?search=${query}`)
-            setClientes(res.data)
-          } catch (err) {
-            console.error('Error fetching data:', err)
-            setError('No se encontraron clientes')
-            setClientes([])
-          } finally {
-            setLoading(false)
-          }
-        } else if(user.nivel === 'usuario'){
-        try {
-          const res = await axios.get(`/api/clientes/clientes?search=${query}`)
-          const clientesFiltered = res.data.filter(cliente => cliente.usuario_id === user.id)
-          setClientes(clientesFiltered)
-        } catch (err) {
-          console.error('Error fetching data:', err)
-          setError('No se encontraron clientes')
-          setClientes([])
-        } finally {
-          setLoading(false)
-        }
+      try {
+        const res = await axios.get(`/api/clientes/clientes?search=${query}`)
+        setClientes(res.data)
+      } catch (err) {
+        console.error('Error fetching data:', err)
+        setError('No se encontraron clientes')
+        setClientes([])
+      } finally {
+        setLoading(false)
       }
     }
-  }
-  
+
     fetchData()
   }, [query, user.id])
 

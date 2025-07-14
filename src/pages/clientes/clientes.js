@@ -1,12 +1,13 @@
-import { Add, Loading, Title, ToastDelete, ToastSuccess } from '@/components/Layouts'
+import { Add, ErrorAccesso, Loading, Search, Title, ToastDelete, ToastSuccess } from '@/components/Layouts'
 import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
 import { useAuth } from '@/contexts/AuthContext'
 import { BasicLayout, BasicModal } from '@/layouts'
-import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { ClienteForm, ClientesLista, ClientesListSearch, SearchClientes } from '@/components/Clientes'
-import styles from './clientes.module.css'
 import { FaSearch } from 'react-icons/fa'
+import { useDispatch } from 'react-redux'
+import { fetchClientes } from '@/store/clientes/clienteSlice'
+import styles from './clientes.module.css'
 
 export default function Clientes() {
 
@@ -21,36 +22,23 @@ export default function Clientes() {
   const onOpenCloseForm = () => setOpenForm((prevState) => !prevState)
 
   const [search, setSearch] = useState(false)
-    
+
   const onOpenCloseSearch = () => setSearch((prevState) => !prevState)
-    
+
   const [resultados, setResultados] = useState([])
 
-  const [clientes, setClientes] = useState(null)
+  const [apiError, setApiError] = useState(null)
+  const [errorModalOpen, setErrorModalOpen] = useState(false)
+
+  const onOpenCloseErrorModal = () => setErrorModalOpen((prev) => !prev)
+
+  const dispatch = useDispatch()
 
   useEffect(() => {
-    if(user && user.id) {
-      if (user.nivel === 'admin') {
-        (async () => {
-          try {
-            const res = await axios.get(`/api/clientes/clientes`)
-            setClientes(res.data)
-          } catch (error) {
-            console.error(error)
-          }
-        })()
-      } else {
-        (async () => {
-          try {
-            const res = await axios.get(`/api/clientes/clientes?usuario_id=${user.id}`)
-            setClientes(res.data)
-          } catch (error) {
-            console.error(error)
-          }
-        })()
-      }
+    if (user) {
+      dispatch(fetchClientes(user.negocio_id))
     }
-  }, [reload, user])
+  }, [dispatch, reload, user])
 
   const [toastSuccess, setToastSuccess] = useState(false)
   const [toastSuccessMod, setToastSuccessMod] = useState(false)
@@ -93,39 +81,34 @@ export default function Clientes() {
 
         {toastSuccessDel && <ToastDelete contain='Eliminado exitosamente' onClose={() => setToastSuccessDel(false)} />}
 
-        <Title title='clientes'  />
+        <Title title='clientes' />
 
         <Add onOpenClose={onOpenCloseForm} />
 
-        {!search ? (
-          ''
-        ) : (
-          <div className={styles.searchMain}>
-            <SearchClientes user={user} onResults={setResultados} reload={reload} onReload={onReload} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
-            {resultados.length > 0 && (
-              <ClientesListSearch visitas={resultados} reload={reload} onReload={onReload} />
-            )}
-          </div>
-        )}
+        <Search
+          title='cliente'
+          search={search}
+          onOpenCloseSearch={onOpenCloseSearch}
+          user={user}
+          reload={reload}
+          onReload={onReload}
+          resultados={resultados}
+          setResultados={setResultados}
+          SearchComponent={SearchClientes}
+          SearchListComponent={ClientesListSearch}
+          onToastSuccessMod={onToastSuccessMod}
+        />
 
-        {!search ? (
-          <div className={styles.iconSearchMain}>
-            <div className={styles.iconSearch} onClick={onOpenCloseSearch}>
-              <h1>Buscar clientes</h1>
-              <FaSearch />
-            </div>
-          </div>
-        ) : (
-          ''
-        )}
-        
-        <ClientesLista reload={reload} onReload={onReload} clientes={clientes} onToastSuccessMod={onToastSuccessMod} onToastSuccessDel={onToastSuccessDel} />
-
+        <ClientesLista user={user} reload={reload} onReload={onReload} onToastSuccessMod={onToastSuccessMod} onToastSuccessDel={onToastSuccessDel} />
 
       </BasicLayout>
 
       <BasicModal title='crear cliente' show={openForm} onClose={onOpenCloseForm}>
-        <ClienteForm reload={reload} onReload={onReload} onCloseForm={onOpenCloseForm} onToastSuccess={onToastSuccess} />
+        <ClienteForm user={user} reload={reload} onReload={onReload} onCloseForm={onOpenCloseForm} onToastSuccess={onToastSuccess} />
+      </BasicModal>
+
+      <BasicModal title="Error de acceso" show={errorModalOpen} onClose={onOpenCloseErrorModal}>
+        <ErrorAccesso apiError={apiError} onOpenCloseErrorModal={onOpenCloseErrorModal} />
       </BasicModal>
 
     </ProtectedRoute>

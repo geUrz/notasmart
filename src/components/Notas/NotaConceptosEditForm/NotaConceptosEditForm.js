@@ -1,13 +1,12 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState } from 'react';
 import { IconClose, IconDel } from '@/components/Layouts';
 import { Button, Dropdown, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react';
 import axios from 'axios';
-import { FaTrash } from 'react-icons/fa';
 import styles from './NotaConceptosEditForm.module.css';
 
 export function NotaConceptosEditForm(props) {
 
-  const { user, reload, onReload, onOpenCloseEditConcep, onOpenCloseConfirm, conceptToEdit, onEditConcept } = props
+  const { reload, onReload, isAdmin, isPremium, onOpenCloseEditConcep, onOpenCloseConfirm, conceptToEdit, onEditConcept } = props
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -85,18 +84,6 @@ export function NotaConceptosEditForm(props) {
     { key: 2, text: 'Producto', value: 'Producto' }
   ]
 
-  const permissions = useMemo(() => {
-
-    if(!user) return {}
-
-    return{
-
-      showAdmin: user.nivel === 'admin'
-
-    }
-
-  }, [user])
-
   return (
     <>
       <IconClose onOpenClose={onOpenCloseEditConcep} />
@@ -156,7 +143,7 @@ export function NotaConceptosEditForm(props) {
           </Button>
         </Form>
 
-        {permissions.showAdmin &&
+        {(isAdmin || isPremium) &&
           <IconDel setShowConfirmDel={() => onOpenCloseConfirm(newConcept)} />
         }
 

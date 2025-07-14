@@ -3,10 +3,16 @@ import { IconClose } from '@/components/Layouts'
 import { Button, Dropdown, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
 import axios from 'axios'
 import styles from './NotaConceptosForm.module.css'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectNota } from '@/store/notas/notaSelectors'
+import { fetchNotaById } from '@/store/notas/notaSlice'
 
 export function NotaConceptosForm(props) {
 
-  const { user, reload, onReload, notaId, onAddConcept, onOpenCloseConcep, onToastSuccess } = props
+  const { user, reload, onReload, onAddConcept, onOpenCloseConcep, onToastSuccess } = props
+
+  const dispatch = useDispatch()
+  const nota = useSelector(selectNota)
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -55,7 +61,7 @@ export function NotaConceptosForm(props) {
 
       try {
         const response = await axios.post(`/api/notas/conceptos`, {
-          nota_id: notaId,
+          nota_id: nota.id,
           usuario_id: user.id, 
           ...newConcept,
           total
@@ -67,7 +73,7 @@ export function NotaConceptosForm(props) {
             const newConceptWithId = { ...newConcept, id, total }
             onAddConcept(newConceptWithId)
             setNewConcept({ tipo: '', concepto: '', precio: '', cantidad: '' })
-
+            dispatch(fetchNotaById(nota.id))
             onReload()
             onOpenCloseConcep()
 

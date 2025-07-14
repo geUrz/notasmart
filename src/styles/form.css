@@ -9,7 +9,7 @@
   padding-left: 5px !important;
   width: 300px !important;
   font-size: 12.5px !important;
-  color: var(--clrGR0) !important;
+  color: var(--clrGlobalG) !important;
   background-color: var(--bgInput) !important;
   border-color: var(--bgBody) !important;
 }
@@ -75,7 +75,7 @@
   height: auto;
   font-size: 14px;
   font-weight: 600 !important;
-  color: var(--clr4) !important;
+  color: var(--clrGlobalB) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: flex-start;
@@ -135,7 +135,7 @@
 
 .ui.dropdown .menu .item span, .ui.dropdown .text{
   cursor: pointer !important;
-  color: var(--clrGR0) !important;
+  color: var(--clrGlobalG) !important;
 }
 
 .ui.dropdown{

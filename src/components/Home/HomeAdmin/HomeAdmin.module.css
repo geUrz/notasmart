@@ -1,0 +1,109 @@
+.main{
+  width: 100%;
+  height: auto;
+  padding: 0 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.notas, .entradas{
+  margin: 5px;
+  width: 250px;
+  height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bgBoxHome);
+  border-radius: 5%;
+}
+
+.icon{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon1 svg, .icon1 path{
+  font-size: 30px;
+  color: var(--clrFolioPrice);
+}
+
+.icon2 svg, .icon2 path{
+  margin: 0 4px 10px -6px;
+  font-size: 20px;
+  color: var(--clrFolioPrice);
+}
+
+.icon h1{
+  font-size: 18px;
+  font-family: 'Bebas' !important;
+  color: var(--clrFolioPrice);
+}
+
+.count, .folios{
+  padding: 0 5px;
+  margin-top: 10px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.folios h1{
+  font-size: 34px;
+  color: var(--clrFolioPrice);
+  font-family: 'Bebas' !important;
+}
+
+.folios h1:nth-child(1){
+  font-size: 45PX;
+  color: var(--clrPrice);
+}
+
+.folios h1:nth-child(2){
+  margin: 0 5px !important;
+}
+
+.folios svg, .folios path{
+  margin-top: 8px;
+}
+
+.count h1{
+  font-size: 40px;
+  font-family: 'Bebas' !important;
+  color: var(--clrPrice);
+}
+
+.iva{
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.iva div{
+  width: 100%;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.iva h1, .iva h2{
+  font-size: 18px;
+  font-family: 'Bebas' !important;
+  color: var(--clrFolioPrice);
+}
+
+.iva h2{
+  margin-left: 5px !important;
+  font-size: 24px;
+  color: var(--clrPrice);
+}

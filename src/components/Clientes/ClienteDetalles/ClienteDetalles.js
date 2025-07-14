@@ -1,18 +1,23 @@
-import { FaCheck, FaEdit, FaTimes, FaTrash } from 'react-icons/fa'
-import { IconClose, Confirm, IconDel, IconEdit } from '@/components/Layouts'
+import { IconClose, Confirm, IconDel, IconEdit, ErrorAccesso } from '@/components/Layouts'
 import { useEffect, useMemo, useState } from 'react'
 import { BasicModal } from '@/layouts'
 import { ClienteEditForm } from '../ClienteEditForm'
-import { useAuth } from '@/contexts/AuthContext'
 import axios from 'axios'
 import { getValueOrDefault } from '@/helpers'
 import styles from './ClienteDetalles.module.css'
+import { usePermissions } from '@/hooks'
+import { selectCliente } from '@/store/clientes/clienteSelectors'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchClientes, setCliente } from '@/store/clientes/clienteSlice'
 
 export function ClienteDetalles(props) {
 
-  const { reload, onReload, cliente, onCloseDetalles, onToastSuccessMod, onToastSuccessDel } = props
-
-  const { user } = useAuth()
+  const { user, reload, onReload, syncNota, onCloseDetalles, onToastSuccessMod, onToastSuccessDel } = props
+  
+  const dispatch = useDispatch()
+  const cliente = useSelector(selectCliente)
+  
+  const {isAdmin, isUserSuperUser} = usePermissions()
 
   const [showEdit, setShowEdit] = useState(false)
 
@@ -20,6 +25,11 @@ export function ClienteDetalles(props) {
 
   const [showConfirmDel, setShowConfirmDel] = useState(false)
   const onOpenCloseConfirmDel = () => setShowConfirmDel((prevState) => !prevState)
+
+  const [apiError, setApiError] = useState(null)
+  const [errorModalOpen, setErrorModalOpen] = useState(false)
+
+  const onOpenCloseErrorModal = () => setErrorModalOpen((prev) => !prev)
 
   const handleDeleteCliente = async () => {
 
@@ -30,37 +40,21 @@ export function ClienteDetalles(props) {
 
     try {
       await axios.delete(`/api/clientes/clientes?id=${cliente.id}`)
+
+      dispatch(fetchClientes(user.negocio_id))
+      dispatch(setCliente(null))
+
+      syncNota()
+
       onReload()
       onToastSuccessDel()
       onCloseDetalles()
     } catch (error) {
-      console.error('Error al eliminar la cliente:', error)
+      console.error(error)
+      setApiError(error.response?.data?.error || 'Error al cargar clientes')
+      setErrorModalOpen(true)
     }
   }
-
-  const [clienteData, setClienteData] = useState(cliente)
-
-  useEffect(() => {
-    setClienteData(cliente)
-  }, [cliente])
-
-  const actualizarCliente = (nuevaData) => {
-    setClienteData((prevState) => ({
-      ...prevState,
-      ...nuevaData,
-    }))
-  }
-
-  const permissions = useMemo(() => {
-
-    if (!user) return {}
-
-    return {
-      showAdmin: user?.nivel === 'admin',
-      showAdminUsr: user?.id === cliente.usuario_id || user?.nivel === 'admin'
-    }
-
-  }, [user])
 
   return (
 
@@ -73,49 +67,53 @@ export function ClienteDetalles(props) {
           <div className={styles.box1_1}>
             <div>
               <h1>Cliente</h1>
-              <h2>{getValueOrDefault(clienteData?.cliente)}</h2>
+              <h2>{getValueOrDefault(cliente?.cliente)}</h2>
             </div>
             <div>
               <h1>Contacto</h1>
-              <h2>{getValueOrDefault(clienteData?.contacto)}</h2>
+              <h2>{getValueOrDefault(cliente?.contacto)}</h2>
             </div>
             <div>
               <h1>Dirección</h1>
-              <h2>{getValueOrDefault(clienteData?.direccion)}</h2>
+              <h2>{getValueOrDefault(cliente?.direccion)}</h2>
             </div>
           </div>
           <div className={styles.box1_2}>
             <div>
               <h1>Folio</h1>
-              <h2>{getValueOrDefault(clienteData?.folio)}</h2>
+              <h2>{getValueOrDefault(cliente?.folio)}</h2>
             </div>
             <div>
               <h1>Cel</h1>
-              <h2>{getValueOrDefault(clienteData?.cel)}</h2>
+              <h2>{getValueOrDefault(cliente?.cel)}</h2>
             </div>
             <div>
               <h1>Email</h1>
-              <h2>{getValueOrDefault(clienteData?.email)}</h2>
+              <h2>{getValueOrDefault(cliente?.email)}</h2>
             </div>
           </div>
         </div>
 
         <IconEdit onOpenEdit={onOpenCloseEdit} />
 
-        {permissions.showAdminUsr &&
+        {(isAdmin || isUserSuperUser) &&
           <IconDel setShowConfirmDel={onOpenCloseConfirmDel} />
         }
 
-        {permissions.showAdmin &&
+        {isAdmin &&
           <div className={styles.h1UsuarioNombre}>
-            <h1>{getValueOrDefault(clienteData?.usuario_nombre)}</h1>
+            <h1>Creado por: {getValueOrDefault(cliente?.usuario_nombre)}</h1>
           </div>
         }
 
       </div>
 
       <BasicModal title='modificar cliente' show={showEdit} onClose={onOpenCloseEdit}>
-        <ClienteEditForm reload={reload} onReload={onReload} clienteData={clienteData} actualizarCliente={actualizarCliente} onOpenCloseEdit={onOpenCloseEdit} onToastSuccessMod={onToastSuccessMod} />
+        <ClienteEditForm user={user} reload={reload} onReload={onReload} onOpenCloseEdit={onOpenCloseEdit} onToastSuccessMod={onToastSuccessMod} />
+      </BasicModal>
+
+      <BasicModal title="Error de acceso" show={errorModalOpen} onClose={onOpenCloseErrorModal}>
+        <ErrorAccesso apiError={apiError} onOpenCloseErrorModal={onOpenCloseErrorModal} />
       </BasicModal>
 
       <Confirm

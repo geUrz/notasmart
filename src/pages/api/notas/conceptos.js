@@ -15,31 +15,58 @@ export default async function handler(req, res) {
             res.status(500).json({ error: error.message });
         }
     } else if (req.method === 'GET') {
-        const { nota_id, usuario_id } = req.query // Ahora se incluye usuario_id
-
+        const { nota_id, usuario_id, negocio_id } = req.query;
+    
         try {
-            let query = 'SELECT * FROM conceptosnot';
+            let query = '';
             let params = [];
-
+    
+            if (!nota_id && !usuario_id && !negocio_id) {
+                query = `SELECT SUM(total) AS total FROM conceptosnot`;
+                const [rows] = await connection.query(query);
+                const total = parseFloat(rows[0].total) || 0;
+                res.status(200).json({ total });
+                return;
+            }
+    
+            if (negocio_id) {
+                query = `
+                    SELECT SUM(c.total) AS total
+                    FROM conceptosnot c
+                    JOIN usuarios u ON c.usuario_id = u.id
+                    WHERE u.negocio_id = ?
+                `;
+                params.push(negocio_id);
+    
+                const [rows] = await connection.query(query, params);
+                const total = parseFloat(rows[0].total) || 0;
+                res.status(200).json({ total });
+                return;
+            }
+    
+            query = 'SELECT * FROM conceptosnot';
+    
             if (nota_id) {
                 query += ' WHERE nota_id = ?';
                 params.push(nota_id);
             }
-
-            if (usuario_id) { // Si se pasa usuario_id, agregarlo a la consulta
+    
+            if (usuario_id) {
                 if (params.length > 0) {
-                    query += ' AND usuario_id = ?'; // Si ya hay otros filtros, usamos AND
+                    query += ' AND usuario_id = ?';
                 } else {
-                    query += ' WHERE usuario_id = ?'; // Si no hay filtros previos, usamos WHERE
+                    query += ' WHERE usuario_id = ?';
                 }
                 params.push(usuario_id);
             }
-
+    
             const [rows] = await connection.query(query, params);
             res.status(200).json(rows);
+    
         } catch (error) {
             res.status(500).json({ error: error.message });
-        }
+        }    
+    
     } else if (req.method === 'DELETE') {
         const { concepto_id } = req.query
 

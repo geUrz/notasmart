@@ -1,5 +1,5 @@
 import { Button, Dropdown, Form, FormField, FormGroup, Image, Input, Label, Message } from 'semantic-ui-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
@@ -8,23 +8,22 @@ import { genUserId } from '@/helpers'
 import { Loading } from '@/components/Layouts'
 import { useAuth } from '@/contexts'
 import styles from './signup.module.css'
+import { FaPlus } from 'react-icons/fa'
 
 export default function Signup() {
 
-  const { loading } = useAuth()
+  const { user, loading } = useAuth()
 
   const router = useRouter()
 
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState({})
-
+  
   const [credentials, setCredentials] = useState({
     nombre: '',
     usuario: '',
     email: '',
     nivel: '',
-    plan: '',
-    folios: '',
     password: '',
     confirmarPassword: ''
   });
@@ -33,30 +32,12 @@ export default function Signup() {
 
   const [error, setError] = useState(null)
 
-  const foliosPorPlan = {
-    prueba: 3,
-    basico: 50,
-    emprendedor: 150,
-    negocio: 250,
-    empresarial: 500,
-    premium: 0
-  }
-
   const handleChange = (e, { name, value }) => {
-
-    if (name === 'plan') {
-      setCredentials(prev => ({
-        ...prev,
-        [name]: value,
-        folios: foliosPorPlan[value] || ''
-      }));
-    } else {
-      setCredentials(prev => ({
-        ...prev,
-        [name]: value
-      }))
-    }
-  }
+    setCredentials(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };  
 
   const validarFormSignUp = () => {
     const newErrors = {}
@@ -69,16 +50,8 @@ export default function Signup() {
       newErrors.usuario = 'El campo es requerido'
     }
 
-    if (!credentials.email) {
-      newErrors.email = 'El campo es requerido'
-    }
-
     if (!credentials.nivel) {
       newErrors.nivel = 'El campo es requerido'
-    }
-
-    if (!credentials.plan) {
-      newErrors.plan = 'El campo es requerido'
     }
 
     if (!credentials.password) {
@@ -119,8 +92,6 @@ export default function Signup() {
         usuario: credentials.usuario,
         email: credentials.email,
         nivel: credentials.nivel,
-        plan: credentials.plan,
-        folios: credentials.folios,
         isactive,
         password: credentials.password
       }, {
@@ -136,8 +107,6 @@ export default function Signup() {
           usuario: '',
           email: '',
           nivel: '',
-          plan: '',
-          folios: '',
           password: '',
           confirmarPassword: ''
         });
@@ -193,7 +162,7 @@ export default function Signup() {
                 />
                 {errors.usuario && <Message>{errors.usuario}</Message>}
               </FormField>
-              <FormField error={!!errors.email}>
+              <FormField>
                 <Label>Correo</Label>
                 <Input
                   name='email'
@@ -202,7 +171,6 @@ export default function Signup() {
                   onChange={handleChange}
                 />
               </FormField>
-              {errors.email && <Message>{errors.email}</Message>}
               <FormField error={!!errors.nivel}>
                 <Label>Nivel</Label>
                 <Dropdown
@@ -211,42 +179,14 @@ export default function Signup() {
                   selection
                   options={[
                     { key: 'Admin', text: 'Admin', value: 'admin' },
-                    { key: 'Usuario', text: 'Usuario', value: 'usuario' },
+                    { key: 'UsuarioSU', text: 'UsuarioSU', value: 'usuariosu' },
+                    { key: 'Usuario', text: 'Usuario', value: 'usuario' }
                   ]}
                   name='nivel'
                   value={credentials.nivel}
                   onChange={handleChange}
                 />
                 {errors.nivel && <Message>{errors.nivel}</Message>}
-              </FormField>
-              <FormField error={!!errors.plan}>
-                <Label>Plan</Label>
-                <Dropdown
-                  placeholder='Seleccionar'
-                  fluid
-                  selection
-                  options={[
-                    { key: 'Prueba', text: 'Prueba', value: 'prueba' },
-                    { key: 'Básico', text: 'Básico', value: 'basico' },
-                    { key: 'Emprendedor', text: 'Emprendedor', value: 'emprendedor' },
-                    { key: 'Negocio', text: 'Negocio', value: 'negocio' },
-                    { key: 'Empresarial', text: 'Empresarial', value: 'empresarial' },
-                    { key: 'Premium', text: 'Premium', value: 'premium' },
-                  ]}
-                  name='plan'
-                  value={credentials.plan}
-                  onChange={handleChange}
-                />
-                {errors.plan && <Message>{errors.plan}</Message>}
-              </FormField>
-              <FormField>
-                <Label>Folios</Label>
-                <Input
-                  name='folios'
-                  type='number'
-                  value={credentials.folios}
-                  readOnly
-                />
               </FormField>
               <FormField error={!!errors.password}>
                 <Label>Contraseña</Label>

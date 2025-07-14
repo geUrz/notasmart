@@ -1,24 +1,53 @@
 import { IconClose } from '@/components/Layouts'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Button, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchClientes, setCliente, updateCliente } from '@/store/clientes/clienteSlice'
 import styles from './ClienteEditForm.module.css'
+import { selectCliente } from '@/store/clientes/clienteSelectors'
 
 export function ClienteEditForm(props) {
 
-  const { reload, onReload, clienteData, actualizarCliente, onOpenCloseEdit, onToastSuccessMod } = props
+  const { reload, onReload, onOpenCloseEdit, onToastSuccessMod } = props
+
+  const dispatch = useDispatch()
+  const cliente = useSelector(selectCliente)
 
   const [isLoading, setIsLoading] = useState(false)
 
   const [formData, setFormData] = useState({
-    cliente: clienteData.cliente,
-    contacto: clienteData.contacto,
-    cel: clienteData.cel,
-    direccion: clienteData.direccion,
-    email: clienteData.email
+    cliente: '',
+    contacto: '',
+    cel: '',
+    direccion: '',
+    email: ''
   })
 
   const [errors, setErrors] = useState({})
+
+  useEffect(() => {
+    if (!cliente) return
+  
+    setFormData((prev) => {
+      const isEqual =
+        prev.cliente === cliente.cliente &&
+        prev.contacto === cliente.contacto &&
+        prev.cel === cliente.cel &&
+        prev.direccion === cliente.direccion &&
+        prev.email === cliente.email
+  
+      if (isEqual) return prev
+  
+      return {
+        cliente: cliente.cliente || '',
+        contacto: cliente.contacto || '',
+        cel: cliente.cel || '',
+        direccion: cliente.direccion || '',
+        email: cliente.email || ''
+      }
+    })
+  }, [cliente])  
 
   const validarForm = () => {
     const newErrors = {}
@@ -49,11 +78,14 @@ export function ClienteEditForm(props) {
     setIsLoading(true)
 
     try {
-      await axios.put(`/api/clientes/clientes?id=${clienteData.id}`, {
+      await axios.put(`/api/clientes/clientes?id=${cliente.id}`, {
         ...formData
       })
+      
+      const res = await axios.get(`/api/clientes/clientes?id=${cliente.id}`) 
+      dispatch(setCliente(res.data))
+
       onReload()
-      actualizarCliente(formData)
       onOpenCloseEdit()
       onToastSuccessMod()
     } catch (error) {

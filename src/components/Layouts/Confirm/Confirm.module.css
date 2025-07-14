@@ -5,7 +5,7 @@
   position: absolute;
   top: 10px;
   right: 10px;
-  color: var(--clrGR0);
+  color: var(--clrGlobalG);
   cursor: pointer;
 }
 
@@ -16,17 +16,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--clr0);
+  background-color: var(--bgBtnB);
   border-radius: 50%;
   cursor: pointer;
 }
 
 .iconCheck:hover{
-  background-color: var(--clr1);
+  background-color: var(--bgBtnB1);
 }
 
 .iconCheck:active{
-  background-color: var(--clr2);
+  background-color: var(--bgBtnB2);
 }
 
 .iconCheck svg, .iconCheck path{

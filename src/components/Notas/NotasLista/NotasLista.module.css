@@ -50,7 +50,7 @@
 
 .column1 svg, .column1 path{
   font-size: 20px;
-  color: var(--clr5);
+  color: var(--clrGlobalB);
   cursor: pointer;
 }
 
@@ -97,12 +97,12 @@
 .column2 h1{
   font-size: 14px;
   font-weight: 600 !important;
-  color: var(--clr5);
+  color: var(--clrGlobalB);
   cursor: pointer;
 }
 
 .column2 h2{
   font-size: 14px;
-  color: var(--clrGR0) !important;
+  color: var(--clrGlobalG) !important;
   cursor: pointer;
 }

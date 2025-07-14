@@ -6,21 +6,26 @@ import { BasicModal } from '@/layouts'
 import { NegocioDetalles } from '../NegocioDetalles'
 import { getValueOrDefault } from '@/helpers'
 import styles from './NegociosLista.module.css'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectNegocios } from '@/store/negocios/negocioSelectors'
+import { setNegocio } from '@/store/negocios/negocioSlice'
 
 export function NegociosLista(props) {
 
-  const { user, reload, onReload, negocios, onToastSuccess, onToastSuccessMod, onToastSuccessDel } = props
+  const { reload, onReload, isAdmin, isPremium, onToastSuccess, onToastSuccessMod, onToastSuccessDel } = props
 
+  const dispatch = useDispatch()
+  const negocios = useSelector(selectNegocios)
+  
   const [showDetalles, setShowDetalles] = useState(false)
-  const [negocioSeleccionado, setNegocioSeleccionado] = useState(null)
 
   const onOpenDetalles = (negocio) => {
-    setNegocioSeleccionado(negocio)
+    dispatch(setNegocio(negocio))
     setShowDetalles(true)
   }
 
   const onCloseDetalles = () => {
-    setNegocioSeleccionado(null)
+    dispatch(setNegocio(null))
     setShowDetalles(false)
   }
 
@@ -59,7 +64,7 @@ export function NegociosLista(props) {
       )}
 
       <BasicModal title='detalles del negocio' show={showDetalles} onClose={onCloseDetalles}>
-        <NegocioDetalles user={user} reload={reload} onReload={onReload} negocio={negocioSeleccionado} onCloseDetalles={onCloseDetalles} onToastSuccess={onToastSuccess} onToastSuccessMod={onToastSuccessMod} onToastSuccessDel={onToastSuccessDel} />
+        <NegocioDetalles reload={reload} onReload={onReload} isAdmin={isAdmin} isPremium={isPremium} onCloseDetalles={onCloseDetalles} onToastSuccess={onToastSuccess} onToastSuccessMod={onToastSuccessMod} onToastSuccessDel={onToastSuccessDel} />
       </BasicModal>
 
     </>

@@ -24,37 +24,20 @@ export function SearchNotas(props) {
       setLoading(true)
       setError('')
 
-      if(user && user.id){
-        if(user.nivel === 'admin'){
-          try {
-            const res = await axios.get(`/api/notas/notas?search=${query}`)
-            setNotas(res.data)
-          } catch (err) {
-            console.error('Error fetching data:', err)
-            setError('No se encontraron notas')
-            setNotas([])
-          } finally {
-            setLoading(false)
-          }
-        }else if(user.nivel === 'usuario'){
-          try {
-            const res = await axios.get(`/api/notas/notas?search=${query}`)
-            const notasFiltered = res.data.filter(nota => nota.usuario_id === user.id)
-            setNotas(notasFiltered)
-          } catch (err) {
-            console.error('Error fetching data:', err)
-            setError('No se encontraron notas')
-            setNotas([])
-          } finally {
-            setLoading(false)
-          }
-        }
+      try {
+        const res = await axios.get(`/api/notas/notas?search=${query}`)
+        setNotas(res.data)
+      } catch (err) {
+        console.error('Error fetching data:', err)
+        setError('No se encontraron notas')
+        setNotas([])
+      } finally {
+        setLoading(false)
       }
-      
     }
-  
+
     fetchData()
-  }, [query, user.id])
+  }, [query])
 
   return (
     <div className={styles.main}>

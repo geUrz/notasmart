@@ -8,14 +8,6 @@
 
 .iconPDF svg, .iconPDF path{
   font-size: 48px;
-  color: var(--clrGR0);
+  color: var(--clrGlobalG);
   cursor: pointer;
-}
-
-.iconPDF div:hover svg, .iconPDF div:hover path{
-  color: var(--clrGR1);
-}
-
-.iconPDF div:active svg, .iconPDF div:active path{
-  color: var(--clrGR2);
 }

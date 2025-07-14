@@ -2,15 +2,20 @@ import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
 import { BasicLayout, BasicModal } from '@/layouts'
 import { useAuth } from '@/contexts'
 import { useEffect, useState } from 'react'
-import { Add, Loading, Title, ToastDelete, ToastSuccess } from '@/components/Layouts'
+import { Add, ErrorAccesso, Loading, Title, ToastDelete, ToastSuccess } from '@/components/Layouts'
 import { NegocioForm, NegociosLista, NegociosListSearch, SearchNegocios } from '@/components/Negocios'
 import { FaSearch } from 'react-icons/fa'
 import axios from 'axios'
 import styles from './negocios.module.css'
+import { usePermissions } from '@/hooks'
+import { useDispatch } from 'react-redux'
+import { fetchNegocios } from '@/store/negocios/negocioSlice'
 
 export default function Negocios() {
 
   const { user, loading } = useAuth()
+
+  const { isAdmin, isPremium } = usePermissions()
 
   const [reload, setReload] = useState(false)
 
@@ -26,18 +31,16 @@ export default function Negocios() {
 
   const [resultados, setResultados] = useState([])
 
-  const [negocios, setNegocios] = useState(null)
+  const [apiError, setApiError] = useState(null)
+  const [errorModalOpen, setErrorModalOpen] = useState(false)
+
+  const onOpenCloseErrorModal = () => setErrorModalOpen((prev) => !prev)
+
+  const dispatch = useDispatch()
 
   useEffect(() => {
-    (async () => {
-      try {
-        const res = await axios.get('/api/negocios/negocios')
-        setNegocios(res.data)
-      } catch (error) {
-        console.error(error)
-      }
-    })()
-  }, [reload])
+      dispatch(fetchNegocios())
+    }, [dispatch, reload])
 
   const [toastSuccess, setToastSuccess] = useState(false)
   const [toastSuccessMod, setToastSuccessMod] = useState(false)
@@ -88,7 +91,7 @@ export default function Negocios() {
           ''
         ) : (
           <div className={styles.searchMain}>
-            <SearchNegocios user={user} onResults={setResultados} reload={reload} onReload={onReload} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
+            <SearchNegocios onResults={setResultados} reload={reload} onReload={onReload} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
             {resultados.length > 0 && (
               <NegociosListSearch visitas={resultados} reload={reload} onReload={onReload} />
             )}
@@ -106,12 +109,16 @@ export default function Negocios() {
           ''
         )}
 
-        <NegociosLista user={user} loading={loading} reload={reload} onReload={onReload} negocios={negocios} setNegocios={setNegocios} onToastSuccessMod={onToastSuccessMod} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
+        <NegociosLista loading={loading} reload={reload} onReload={onReload} isAdmin={isAdmin} isPremium={isPremium} onToastSuccessMod={onToastSuccessMod} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
 
       </BasicLayout>
 
       <BasicModal title='crear negocio' show={openForm} onClose={onOpenCloseForm}>
         <NegocioForm user={user} reload={reload} onReload={onReload} onCloseForm={onOpenCloseForm} onToastSuccess={onToastSuccess} />
+      </BasicModal>
+
+      <BasicModal title="Error de acceso" show={errorModalOpen} onClose={onOpenCloseErrorModal}>
+        <ErrorAccesso apiError={apiError} onOpenCloseErrorModal={onOpenCloseErrorModal} />
       </BasicModal>
 
     </ProtectedRoute>

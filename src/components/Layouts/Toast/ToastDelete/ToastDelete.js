@@ -19,7 +19,6 @@ export function ToastDelete(props) {
     <div className={styles.section}>
       <div className={styles.toast}>
         <FaCheck />
-        <h1>¡ {contain} !</h1>
       </div>
     </div>
 

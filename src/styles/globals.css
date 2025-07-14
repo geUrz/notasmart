@@ -1,6 +1,7 @@
 @import './colors.css';
 @import './form.css';
 @import './confirm.css';
+@import './SkeletonPlaceholder.css';
 
 @font-face {
   font-family: 'Mulish';
@@ -30,8 +31,8 @@ body{
 }
 
 h1,h2,h3,h4{
-  margin: 0 !important;
-  padding: 0 !important;
+  margin: 0;
+  padding: 0;
   color: var(--clrFont);
 }
 

@@ -10,7 +10,7 @@
 .title h1{
   font-size: 28px;
   font-family: 'Bebas' !important;
-  color: var(--clrGR0);
+  color: var(--clrGlobalG);
 }
 
 .title svg, .title path{
@@ -21,6 +21,6 @@
   position: absolute;
   left: 24px;
   font-size: 45px;
-  color: var(--clrGR0);
+  color: var(--clrGlobalG);
   cursor: pointer;
 }

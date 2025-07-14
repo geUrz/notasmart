@@ -7,13 +7,13 @@ import styles from './SearchUsuarios.module.css';
 
 export function SearchUsuarios(props) {
 
-  const {user, reload, onReload, onResults, onOpenCloseSearch, onToastSuccessMod} = props
+  const {user, reload, onReload, onResults, isAdmin, isUserSuperUser, onOpenCloseSearch, onToastSuccessMod} = props
 
   const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [usuarios, setUsuarios] = useState([])
-
+  
   useEffect(() => {
     const fetchData = async () => {
       if (query.trim() === '') {
@@ -60,7 +60,7 @@ export function SearchUsuarios(props) {
         {error && <p>{error}</p>}
         {usuarios.length > 0 && (
           <div className={styles.resultsContainer}>
-            <UsuariosListSearch user={user} usuarios={usuarios} reload={reload} onReload={onReload} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
+            <UsuariosListSearch user={user} usuarios={usuarios} reload={reload} onReload={onReload} isAdmin={isAdmin} isUserSuperUser={isUserSuperUser} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
           </div>
         )}
       </div>

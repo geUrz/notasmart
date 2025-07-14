@@ -13,7 +13,7 @@
 }
 
 .section svg, .section path{
-  color: var(--clrGR0);
+  color: var(--clrGlobalG);
 }
 
 .section svg:nth-child(1), .section path:nth-child(1){

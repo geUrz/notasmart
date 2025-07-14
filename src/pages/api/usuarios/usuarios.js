@@ -1,15 +1,22 @@
 import connection from "@/libs/db"
+import authMiddleware from "@/middleware/authMiddleware";
 import bcrypt from "bcrypt"
 
-export default async function handler(req, res) {
-    const { id, isadmin, search } = req.query;
+export async function handler(req, res) {
 
+    const user = req.user
+    if (!user) return
+
+    const { id, negocio_id, search } = req.query;
+    const isAdmin = user?.nivel === 'admin'
+    const negocioSolicitado = parseInt(negocio_id)
+    const negocioId = user?.negocio_id;
+    
     if (req.method === 'GET') {
 
         if (search) {
             const searchQuery = `%${search.toLowerCase()}%`
 
-            // Convertir 'Activo' a 1 y 'Inactivo' a 0
             let isActiveQuery = null;
             if (search.toLowerCase() === "activo") {
                 isActiveQuery = 1;
@@ -18,92 +25,78 @@ export default async function handler(req, res) {
             }
 
             try {
-                const query = `
-                    SELECT  
-                        id,
-                        folio, 
-                        nombre, 
-                        usuario, 
-                        email, 
-                        nivel,
-                        negocio_id,
-                        plan,
-                        folios,
-                        isactive
-                    FROM 
-                        usuarios
-                    WHERE LOWER(nombre) LIKE ? 
-                    OR LOWER(folio) LIKE ? 
-                    OR LOWER(usuario) LIKE ? 
-                    OR LOWER(email) LIKE ? 
-                    OR LOWER(nivel) LIKE ? 
-                    OR LOWER(negocio_id) LIKE ? 
-                    OR LOWER(plan) LIKE ? 
-                    OR LOWER(CAST(isactive AS CHAR)) LIKE ?
-                    ${isActiveQuery !== null ? "OR usuarios.isactive = ?" : ""}
-                    ORDER BY updatedAt DESC`;
+
+                // Construir cláusulas dinámicamente
+                const whereClauses = [
+                    "LOWER(nombre) LIKE ?",
+                    "LOWER(folio) LIKE ?",
+                    "LOWER(usuario) LIKE ?",
+                    "LOWER(email) LIKE ?",
+                    "LOWER(nivel) LIKE ?",
+                    "LOWER(negocio_nombre) LIKE ?",
+                    "LOWER(CAST(isactive AS CHAR)) LIKE ?"
+                ];
 
                 const params = [
                     searchQuery, searchQuery, searchQuery, searchQuery,
-                    searchQuery, searchQuery, searchQuery, searchQuery
+                    searchQuery, searchQuery, searchQuery
                 ];
 
                 if (isActiveQuery !== null) {
+                    whereClauses.push("usuarios.isactive = ?");
                     params.push(isActiveQuery);
                 }
 
-                /* if (rows.length === 0) {
-                    return res.status(404).json({ message: 'No se encontraron usuarios' })
-                } */
+                let whereClause = `(${whereClauses.join(" OR ")})`;
+
+                if (!isAdmin && negocioId) {
+                    whereClause += ` AND usuarios.negocio_id = ?`;
+                    params.push(negocioId);
+                }
+
+                const query = `
+                SELECT  
+                  id,
+                  folio, 
+                  nombre, 
+                  usuario, 
+                  email, 
+                  nivel,
+                  negocio_id,
+                  negocio_nombre,
+                  isactive
+                FROM 
+                 usuarios
+                 WHERE ${whereClause}
+                 ORDER BY updatedAt DESC
+              `;
 
                 const [rows] = await connection.query(query, params);
-                res.status(200).json(rows);
+                return res.status(200).json(rows);
 
             } catch (error) {
-                res.status(500).json({ error: 'Error al realizar la búsqueda' });
-            }
-            return;
-        }
-
-
-        if (isadmin) {
-
-            const isadminValues = isadmin.split(',').map(value => value.trim())
-
-            try {
-                const [rows] = await connection.query(
-                    `SELECT 
-                        id,
-                        folio, 
-                        nombre, 
-                        usuario, 
-                        email, 
-                        nivel,
-                        plan,
-                        negocio_id,
-                        folios,
-                        isactive
-                        FROM usuarios 
-                        WHERE isadmin IN (?)
-                        ORDER BY 
-                        usuarios.updatedAt DESC`,
-                    [isadminValues]
-                );
-
-                /* if (rows.length === 0) {
-                    return res.status(404).json({ error: 'Usuario no encontrado' });
-                } */
-
-                res.status(200).json(rows);
-            } catch (error) {
-                res.status(500).json({ error: error.message });
+                console.error(error)
+                return res.status(500).json({ error: 'Error al realizar la búsqueda' });
             }
         }
 
         if (id) {
             try {
                 const [rows] = await connection.query(
-                    'SELECT id, nombre, usuario, email, nivel, negocio_id, plan, folios, isactive FROM usuarios WHERE id = ?',
+                    `SELECT 
+                    u.id,
+                    u.folio, 
+                    u.nombre, 
+                    u.usuario,
+                    u.email, 
+                    u.nivel,
+                    u.negocio_id,
+                    u.negocio_nombre,
+                    u.isactive,
+                    n.plan
+                  FROM usuarios u
+                  LEFT JOIN negocios n ON u.negocio_id = n.id
+                    WHERE id = ?`,
                     [id]
                 );
 
@@ -115,34 +108,71 @@ export default async function handler(req, res) {
             } catch (error) {
                 res.status(500).json({ error: error.message });
             }
-        } else {
+        }
+
+        if (negocio_id) {
+
+            if (!isAdmin && negocioSolicitado !== negocioId) {
+                return res.status(403).json({ error: 'No tienes permiso para accesar' });
+            }
+
             try {
                 const [rows] = await connection.query(
                     `SELECT 
-                        usuarios.id,
-                        usuarios.folio, 
-                        usuarios.nombre, 
-                        usuarios.usuario,
-                        usuarios.email, 
-                        usuarios.nivel,
-                        usuarios.negocio_id,
-                        negocios.negocio AS negocio_nombre,
-                        usuarios.plan,
-                        usuarios.folios,
-                        usuarios.isactive
-                    FROM usuarios
-                    LEFT JOIN negocios ON usuarios.negocio_id = negocios.id
-                    ORDER BY 
-                        usuarios.updatedAt DESC`
-                );
-                res.status(200).json(rows);
+                        u.id,
+                        u.folio, 
+                        u.nombre, 
+                        u.usuario,
+                        u.email, 
+                        u.nivel,
+                        u.negocio_id,
+                        u.negocio_nombre,
+                        u.isactive,
+                        n.plan
+                        FROM usuarios u
+                        LEFT JOIN negocios n ON u.negocio_id = n.id
+                        WHERE u.negocio_id = ?
+                        ORDER BY u.updatedAt DESC`,
+                    [negocio_id]
+                )
+                res.status(200).json(rows)
             } catch (error) {
-                res.status(500).json({ error: error.message });
+                res.status(500).json({ error: error.message })
             }
-        }
+
+        } else {
+
+            if (!isAdmin) {
+                return res.status(403).json({ error: 'No tienes permiso para accesar' });
+            }
+            
+                try {
+                    const [rows] = await connection.query(
+                        `SELECT 
+                            u.id,
+                            u.folio, 
+                            u.nombre, 
+                            u.usuario,
+                            u.email, 
+                            u.nivel,
+                            u.negocio_id,
+                            u.negocio_nombre,
+                            u.isactive,
+                            n.plan
+                        FROM usuarios u
+                        LEFT JOIN negocios n ON u.negocio_id = n.id
+                        ORDER BY u.updatedAt DESC`
+                    );
+                    res.status(200).json(rows);
+                } catch (error) {
+                    res.status(500).json({ error: error.message });
+                }
+
+            }
+
     } else if (req.method === 'POST') {
         // Crear un nuevo usuario
-        const { folio, nombre, usuario, email, nivel, negocio_id, plan, folios, isactive, password } = req.body;
+        const { folio, nombre, usuario, email, nivel, negocio_id, negocio_nombre, isactive, password } = req.body;
 
         if (!password) {
             return res.status(400).json({ error: 'Se requiere una contraseña' });
@@ -153,12 +183,12 @@ export default async function handler(req, res) {
             const hashedPassword = await bcrypt.hash(password, 10);
 
             const [result] = await connection.query(
-                `INSERT INTO usuarios (folio, nombre, usuario, email, nivel, negocio_id, plan, folios, isactive, password)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-                [folio, nombre, usuario, email, nivel, negocio_id, plan, folios, isactive, hashedPassword]
+                `INSERT INTO usuarios (folio, nombre, usuario, email, nivel, negocio_id, negocio_nombre, isactive, password)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                [folio, nombre, usuario, email, nivel, negocio_id, negocio_nombre, isactive, hashedPassword]
             );
 
-            res.status(201).json({ id: result.insertId, folio, nombre, usuario, email, nivel, negocio_id, plan, folios, isactive });
+            res.status(201).json({ id: result.insertId, folio, nombre, usuario, email, nivel, negocio_id, negocio_nombre, isactive });
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
@@ -168,14 +198,14 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'ID del usuario es necesario para actualizar' });
         }
 
-        const { nombre, usuario, email, nivel, negocio_id, plan, folios, isactive } = req.body;
+        const { nombre, usuario, email, nivel, negocio_id, negocio_nombre, isactive } = req.body;
 
-        let updateData = { nombre, usuario, email, nivel, negocio_id, plan, folios, isactive };
+        let updateData = { nombre, usuario, email, nivel, negocio_id, negocio_nombre, isactive };
 
         try {
             const [result] = await connection.query(
                 `UPDATE usuarios 
-                 SET nombre = ?, usuario = ?, email = ?, nivel = ?, negocio_id = ?, plan = ?, folios = ?, isactive = ?
+                 SET nombre = ?, usuario = ?, email = ?, nivel = ?, negocio_id = ?, negocio_nombre = ?, isactive = ?
                  WHERE id = ?`,
                 [
                     updateData.nombre,
@@ -183,8 +213,7 @@ export default async function handler(req, res) {
                     updateData.email,
                     updateData.nivel,
                     updateData.negocio_id,
-                    updateData.plan,
-                    updateData.folios,
+                    updateData.negocio_nombre,
                     updateData.isactive,
                     id
                 ]
@@ -197,7 +226,7 @@ export default async function handler(req, res) {
             res.status(200).json({ id, ...updateData });
         } catch (error) {
             console.error("Error details: ", error); // Muestra más detalles sobre el error
-    res.status(500).json({ error: error.message })
+            res.status(500).json({ error: error.message })
         }
     } else if (req.method === 'DELETE') {
 
@@ -226,3 +255,5 @@ export default async function handler(req, res) {
         res.status(405).end(`Method ${req.method} Not Allowed`);
     }
 }
+
+export default authMiddleware(handler)

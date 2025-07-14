@@ -22,9 +22,9 @@
 
 .toast svg, .toast path{
   padding: 8px;
-  font-size: 50px;
+  font-size: 65px;
   color: var(--bgBody);
-  background-color: var(--clr5);
+  background-color: var(--bgBtnB);
   border-radius: 50%;
 }
 

@@ -1,4 +1,4 @@
-import { Add, Loading, Title, ToastDelete, ToastSuccess } from '@/components/Layouts'
+import { Add, ErrorAccesso, Loading, Title, ToastDelete, ToastSuccess } from '@/components/Layouts'
 import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
 import { SearchUsuarios, UsuarioForm, UsuariosLista, UsuariosListSearch } from '@/components/Usuarios'
 import { useAuth } from '@/contexts/AuthContext'
@@ -7,10 +7,13 @@ import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { FaSearch } from 'react-icons/fa'
 import styles from './usuarios.module.css'
+import { usePermissions } from '@/hooks'
 
 export default function Usuarios() {
 
   const { user, loading } = useAuth()
+  
+  const {isAdmin, isUserSuperUser} = usePermissions()
 
   const [reload, setReload]  = useState(false)
 
@@ -26,18 +29,33 @@ export default function Usuarios() {
   
   const [resultados, setResultados] = useState([])
 
-  const [usuarios, setUsuarios] = useState(null)
+  const [apiError, setApiError] = useState(null)
+  const [errorModalOpen, setErrorModalOpen] = useState(false)
 
+  const onOpenCloseErrorModal = () => setErrorModalOpen((prev) => !prev)
+
+  const [usuarios, setUsuarios] = useState(null)
+  
   useEffect(() => {
+
+    if(!user) return
+    
     (async () => {
       try {
-        const res = await axios.get('/api/usuarios/usuarios')
+
+        const url = isAdmin || !user.negocio_id
+        ? '/api/usuarios/usuarios'
+        : `/api/usuarios/usuarios?negocio_id=${user?.negocio_id}`
+
+        const res = await axios.get(url)
         setUsuarios(res.data)
       } catch (error) {
         console.error(error)
+        setApiError(error.response?.data?.error || 'Error al cargar usuarios')
+        setErrorModalOpen(true)
       }
     })()
-  }, [reload])
+  }, [reload, user])
 
   const [toastSuccess, setToastSuccessReportes] = useState(false)
   const [toastSuccessMod, setToastSuccessReportesMod] = useState(false)
@@ -88,7 +106,7 @@ export default function Usuarios() {
           ''
         ) : (
           <div className={styles.searchMain}>
-            <SearchUsuarios user={user} onResults={setResultados} reload={reload} onReload={onReload} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
+            <SearchUsuarios user={user} onResults={setResultados} reload={reload} onReload={onReload} isAdmin={isAdmin} isUserSuperUser={isUserSuperUser} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
             {resultados.length > 0 && (
               <UsuariosListSearch visitas={resultados} reload={reload} onReload={onReload} />
             )}
@@ -106,12 +124,16 @@ export default function Usuarios() {
           ''
         )}
 
-        <UsuariosLista user={user} loading={loading} reload={reload} onReload={onReload} usuarios={usuarios} setUsuarios={setUsuarios} onToastSuccessMod={onToastSuccessMod} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
+        <UsuariosLista user={user} loading={loading} reload={reload} onReload={onReload} isAdmin={isAdmin} isUserSuperUser={isUserSuperUser} usuarios={usuarios} setUsuarios={setUsuarios} onToastSuccessMod={onToastSuccessMod} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
 
       </BasicLayout>
 
       <BasicModal title='crear usuario' show={openCloseForm} onClose={onOpenCloseForm}>
         <UsuarioForm user={user} reload={reload} onReload={onReload} onToastSuccess={onToastSuccess} onOpenCloseForm={onOpenCloseForm} />
+      </BasicModal>
+
+      <BasicModal title="Error de acceso" show={errorModalOpen} onClose={onOpenCloseErrorModal}>
+        <ErrorAccesso apiError={apiError} onOpenCloseErrorModal={onOpenCloseErrorModal} />
       </BasicModal>
 
     </ProtectedRoute>

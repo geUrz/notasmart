@@ -5,11 +5,16 @@ import { useEffect, useState } from 'react'
 import styles from './NotaConceptos.module.css'
 import { BasicModal } from '@/layouts'
 import { ClickCount } from '../ClickCount/ClickCount'
+import { useSelector } from 'react-redux'
+import { selectConceptos, selectNota } from '@/store/notas/notaSelectors'
 
 export function NotaConceptos(props) {
 
-  const { user, conceptos, onOpenCloseEditConcep } = props
+  const { user, isAdmin, isSuperUser, isPremium, onOpenCloseEditConcep } = props
 
+  const nota = useSelector(selectNota)
+  const conceptos = useSelector(selectConceptos)
+  
   const [clickCount, setClickCount] = useState(0)
   const [showCount, setShowCount] = useState(false) 
   const maxClicks = 3
@@ -29,23 +34,30 @@ export function NotaConceptos(props) {
 
   const handleClick = (concepto) => {
 
-    if (user.nivel === 'admin') {
-      onOpenCloseEditConcep(concepto)
-      return
-    }
+  const isAuthor = user.id === nota.usuario_id;
 
-    if (clicks[concepto.id] && clicks[concepto.id] >= maxClicks) {
-      setShowCount(true)
-    } else {
-      setClicks(prevClicks => {
-        const newClicks = { ...prevClicks }
-        newClicks[concepto.id] = (newClicks[concepto.id] || 0) + 1
-        return newClicks
-      })
+  if (!isAdmin && !isSuperUser && !isAuthor) return;
 
-      onOpenCloseEditConcep(concepto)
-    }
+  if (isAdmin || isPremium) {
+    onOpenCloseEditConcep(concepto);
+    return;
   }
+
+  const currentClicks = clicks[concepto.id] || 0;
+
+  if (currentClicks >= maxClicks) {
+    setShowCount(true);
+    return;
+  }
+
+  setClicks(prevClicks => ({
+    ...prevClicks,
+    [concepto.id]: currentClicks + 1
+  }));
+
+  onOpenCloseEditConcep(concepto);
+};
+
 
   return (
 

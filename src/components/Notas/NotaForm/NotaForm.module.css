@@ -25,16 +25,16 @@
 
 .addCliente h1{
   font-size: 11.5px;
-  color: var(--clr1);
+  color: var(--clrGlobalB);
 }
 
 .addCliente svg, .addCliente path{
   margin-left: 5px;
-  color: var(--clr2);
+  color: var(--clrGlobalB);
   cursor: pointer;
 }
 
-.rowMap{
+.rowMapConceptos, .rowMapAbonos{
   width: 100%;
   height: auto;
   display: flex;
@@ -43,15 +43,15 @@
   background-color: var(--bgList0);
 }
 
-.rowMap:hover{
+.rowMapConceptos:hover, .rowMapAbonos:hover{
   background-color: var(--bgList1);
 }
 
-.rowMap:active{
+.rowMapConceptos:active, .rowMapAbonos:active{
   background-color: var(--bgList2);
 }
 
-.rowMap h1{
+.rowMapConceptos h1, .rowMapAbonos h1{
   padding: 6.5px 0 !important;
   height: auto;
   font-size: 12px;
@@ -59,36 +59,51 @@
   cursor: pointer;
 }
 
-.rowMap h1:nth-child(1){
+.rowMapConceptos h1:nth-child(1), .rowMapAbonos h1:nth-child(1){
   width: 20%;
   font-size: 11px;
   text-align: center;
 }
 
-.rowMap h1:nth-child(2){
+.rowMapConceptos h1:nth-child(2), .rowMapAbonos h1:nth-child(2){
   padding-left: 5px !important;
   width: 50%;
   text-align: left;
 }
 
-.rowMap h1:nth-child(3){
+.rowMapAbonos h1:nth-child(2){
+  padding-left: 0 !important;
+  width: 28%;
+  text-align: center;
+}
+
+.rowMapConceptos h1:nth-child(3), .rowMapAbonos h1:nth-child(3){
   padding-left: 5px !important;
   width: 20%;
   font-size: 10px;
   text-align: right;
 }
 
-.rowMap h1:nth-child(4){
+.rowMapAbonos h1:nth-child(3){
+  width: 25%;
+  text-align: center;
+}
+
+.rowMapConceptos h1:nth-child(4){
   width: 10%;
   font-size: 10px;
   text-align: center;
 }
 
-.rowMap h1:nth-child(5){
+.rowMapConceptos h1:nth-child(5), .rowMapAbonos h1:nth-child(4){
   padding-right: 3.5px !important;
   width: 24%;
   font-size: 10px;
   text-align: right;
+}
+
+.rowMapAbonos h1:nth-child(4){
+  width: 28%;
 }
 
 .iconPlus{
@@ -107,30 +122,22 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background-color: var(--clrGR0);
+  background-color: var(--bgBtnG);
   cursor: pointer;
 }
 
 .iconPlus div:hover{
-  background-color: var(--clrGR1);
+  background-color: var(--bgBtnG1);
 }
 
 .iconPlus div:active{
-  background-color: var(--clrGR3);
+  background-color: var(--bgBtnG2);
 }
 
 .iconPlus svg, .iconPlus path{
   font-size: 18px;
-  color: var(--bgBody);
+  color: var(--clrBtn);
   cursor: pointer;
-}
-
-.toggleCot{
-  width: 100%;
-  height: auto;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
 }
 
 .toggleOff, .toggleOn{
@@ -149,7 +156,7 @@
 
 .toggleOFF svg, .toggleOff svg, .toggleON svg, .toggleOn svg, .toggleOFF path, .toggleOff path, .toggleON path, .toggleOn path{
   margin-right: 5px;
-  color: var(--clrGR0);
+  color: var(--clrGlobalG);
   cursor: pointer;
 }
 
@@ -175,8 +182,7 @@
 .box3 h1{
   margin: 2.5px 0 !important;
   font-size: 12.5px;
-  font-weight: 600 !important;
-  color: var(--clrGR0);
+  color: var(--clrGlobalG);
 }
 
 .box3_1{
@@ -192,9 +198,47 @@
 }
 
 .box3_2 h1{
-  padding: 4px 0 !important;
+  padding: 2px 0 !important;
   font-size: 12.5px;
   text-align: right;
+}
+
+.box3_1 h1:nth-child(3), .box3_2 h1:nth-child(3){
+  font-weight: 600 !important;
+}
+
+.pagado{
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: var(--clrGlobalB) !important;
+}
+
+.productoBaseBox {
+  margin: 20px 0;
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.productoBaseBox h1{
+  margin-top: 5px !important;
+  font-size: 16px;
+  color: var(--clrGlobalG);
+}
+
+.productoBaseBox svg, .productoBaseBox path{
+  margin-top: 10px;
+  font-size: 20px;
+  color: var(--clrGlobalG);
+  cursor: pointer;
+}
+
+.span{
+  color: var(--clrGlobalB) !important;
+  font-weight: 600 !important;
 }
 
 @media screen and (min-width: 768px) {

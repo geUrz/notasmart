@@ -4,14 +4,15 @@ import { useState } from 'react'
 import { genCLId } from '@/helpers'
 import axios from 'axios'
 import styles from './ClienteForm.module.css'
-import { useAuth } from '@/contexts/AuthContext'
+import { useDispatch } from 'react-redux'
+import { fetchClientes } from '@/store/clientes/clienteSlice'
 
 export function ClienteForm(props) {
 
-  const { reload, onReload, onToastSuccess, onCloseForm } = props
+  const { user, reload, onReload, onToastSuccess, onCloseForm } = props
 
-  const {user} = useAuth()
-
+  const dispatch = useDispatch()
+  
   const [isLoading, setIsLoading] = useState(false)
 
   const [cliente, setCliente] = useState('')
@@ -48,13 +49,18 @@ export function ClienteForm(props) {
     try {
       await axios.post ('/api/clientes/clientes', {
         usuario_id: user.id,
+        usuario_nombre: user.nombre,
         folio,
         cliente, 
         contacto, 
         cel, 
         email,
-        direccion 
+        direccion,
+        negocio_id: user.negocio_id,
+        negocio_nombre: user.negocio_nombre 
       })
+
+      dispatch(fetchClientes(user.negocio_id))
 
       setCliente('')
       setContacto('')

@@ -1,13 +1,15 @@
 import { BiSolidFilePdf } from 'react-icons/bi'
 import jsPDF from 'jspdf'
 import 'jspdf-autotable'
-import { formatCurrency, formatDateLong, getValueOrDefault } from '@/helpers'
+import { formatCurrency, formatDateIncDet, formatDateLong, getValueOrDefault } from '@/helpers'
 import styles from './NotaPDF.module.css'
 import { getValueOrWhite } from '@/helpers/getValueOrWhite'
 
 export function NotaPDF(props) {
 
-  const { nota, datoPDF, conceptos, ivaValue } = props
+  const { nota, datoPDF, conceptos, abonos, saldoRestante, totalAbonado, saldoAnterior, productoBase } = props
+
+  const isAbono = nota?.forma_pago === 'abonos'
 
   const generarPDF = async () => {
 
@@ -119,7 +121,7 @@ export function NotaPDF(props) {
     doc.setTextColor(120, 120, 120)
     doc.text(`${getValueOrWhite(nota.cliente_nombre)}`, 6, 75)
 
-    const textAtencion = "Atención a:";
+    const textAtencion = "Contacto:";
     const textWidthAtencion = doc.getTextWidth(textAtencion);
     const textHeight2 = font2 * 0.4;
     const padding2 = 1;
@@ -167,66 +169,117 @@ export function NotaPDF(props) {
     doc.autoTable({
       startY: 98,
       head: [
-        [
-          { content: 'Tipo', styles: { halign: 'center' } },
-          { content: 'Concepto', styles: { halign: 'left' } },
-          { content: 'Precio', styles: { halign: 'right' } },
-          { content: 'Qty', styles: { halign: 'center' } },
-          { content: 'Total', styles: { halign: 'right' } },
-        ]
+        isAbono
+          ? [
+            { content: 'Tipo', styles: { halign: 'center' } },
+            { content: 'Metodo pago', styles: { halign: 'center' } },
+            { content: 'Fecha pago', styles: { halign: 'center' } },
+            { content: 'Monto', styles: { halign: 'right' } }
+          ]
+          : [
+            { content: 'Tipo', styles: { halign: 'center' } },
+            { content: 'Concepto', styles: { halign: 'left' } },
+            { content: 'Precio', styles: { halign: 'right' } },
+            { content: 'Qty', styles: { halign: 'center' } },
+            { content: 'Total', styles: { halign: 'right' } }
+          ]
       ],
+      body: isAbono
+        ? abonos
+          .filter(abono => abono.producto_base !== 1)
+          .map(abono => [
+            { content: `${getValueOrDefault(abono.tipo)}`, styles: { halign: 'center' } },
+            { content: `${getValueOrDefault(abono.metodo_pago)}`, styles: { halign: 'center' } },
+            { content: `${getValueOrDefault(formatDateIncDet(abono.fecha_pago))}`, styles: { halign: 'center' } },
+            { content: `${getValueOrDefault(formatCurrency(abono.monto))}`, styles: { halign: 'right' } }
+          ])
+
+        : conceptos.map(concepto => [
+          { content: `${getValueOrDefault(concepto.tipo)}`, styles: { halign: 'center' } },
+          { content: `${getValueOrDefault(concepto.concepto)}`, styles: { halign: 'left' } },
+          { content: `${getValueOrDefault(formatCurrency(concepto.precio))}`, styles: { halign: 'right' } },
+          { content: `${getValueOrDefault(concepto.cantidad)}`, styles: { halign: 'center' } },
+          { content: `${getValueOrDefault(formatCurrency(concepto.precio * concepto.cantidad))}`, styles: { halign: 'right' } }
+        ]),
       styles: {
         cellPadding: 1.5,
         cellWidth: 'auto',
       },
-      body: conceptos.map(concepto => [
-        { content: `${getValueOrDefault(concepto.tipo)}`, styles: { halign: 'center' } },
-        { content: `${getValueOrDefault(concepto.concepto)}`, styles: { halign: 'left' } },
-        { content: `${getValueOrDefault(formatCurrency(concepto.precio))}`, styles: { halign: 'right' } },
-        { content: `${getValueOrDefault(concepto.cantidad)}`, styles: { halign: 'center' } },
-        { content: `${getValueOrDefault(formatCurrency(concepto.precio * concepto.cantidad))}`, styles: { halign: 'right' } },
-      ]),
       headStyles: {
         fillColor: gris,
         fontSize: font3,
         fontStyle: 'bold',
         textColor: [255, 255, 255]
       },
-      bodyStyles: { fontSize: `${font3}` },
-      columnStyles: {
-        0: { cellWidth: 20 },
-        1: { cellWidth: 'auto' },
-        2: { cellWidth: 'auto' },
-        3: { cellWidth: 15 },
-        4: { cellWidth: 'auto' },
-        cellPadding: 1.5,
-        valign: 'middle'
-      },
+      bodyStyles: { fontSize: font3 },
+      columnStyles: isAbono
+        ? {
+          0: { cellWidth: 20 },
+          1: { cellWidth: 'auto' },
+          2: { cellWidth: 'auto' },
+          3: { cellWidth: 25 },
+        }
+        : {
+          0: { cellWidth: 20 },
+          1: { cellWidth: 'auto' },
+          2: { cellWidth: 'auto' },
+          3: { cellWidth: 15 },
+          4: { cellWidth: 'auto' },
+        },
+
 
       margin: { top: 0, left: 6, bottom: 0, right: 6 },
-
     })
 
-    const calcularTotales = () => {
+    /* const calcularTotales = () => {
       const subtotal = conceptos.reduce((acc, curr) => acc + curr.cantidad * curr.precio, 0)
       const iva = subtotal * (ivaValue / 100)
       const total = toggleIVA ? subtotal + iva : subtotal
       return { subtotal, iva, total }
     }
     
-    const { subtotal, iva, total } = calcularTotales()
-    
+    const { subtotal, iva, total } = calcularTotales()   */
 
-    const verticalData = [
-      ...toggleIVA ? [
-        ['Subtotal:', `${formatCurrency(subtotal)}`],
-        ['IVA:', `${formatCurrency(iva)}`],
-      ] : [],
-      ['Total:', `${formatCurrency(total)}`]
-    ];
+    const calcularTotales = () => {
+      const total = conceptos.reduce((acc, curr) => acc + curr.cantidad * curr.precio, 0)
+      return { total }
+    }
+
+    const { subtotal, iva, total } = calcularTotales();
+
+    const verticalData = (() => {
+      if (isAbono) {
+        const rows = [];
+
+        // Mostrar Saldo anterior
+        rows.push(['Saldo anterior:', `${formatCurrency(saldoAnterior)}`]);
+        rows.push(['Total abonado:', `${formatCurrency(totalAbonado)}`]);
+        
+        // Mostrar Saldo restante o "PAGADO"
+        if (saldoRestante <= 0) {
+          rows.push(['PAGADO', '$0.00']);
+        } else {
+          rows.push(['Saldo restante:', `${formatCurrency(saldoRestante)}`]);
+        }
+
+        return rows;
+      }
+
+      // Si no es abono, mostrar Subtotal + IVA (si toggleIVA) y Total
+      const rows = [];
+
+      if (toggleIVA) {
+        rows.push(['Subtotal:', `${formatCurrency(subtotal)}`]);
+        rows.push(['IVA:', `${formatCurrency(iva)}`]);
+      }
+
+      rows.push(['Total:', `${formatCurrency(total)}`]);
+
+      return rows;
+    })()
 
     const pWidth = doc.internal.pageSize.getWidth()
-    const mRight = 10
+    const mRight = isAbono ? 15 : 10
     const tableWidth = 44
     const marginLeft = pWidth - mRight - tableWidth
 
@@ -235,14 +288,14 @@ export function NotaPDF(props) {
       margin: { left: marginLeft, bottom: 0, right: marginRight },
       body: verticalData,
       styles: {
-        cellPadding: 1,
+        cellPadding: 2,
         valign: 'middle',
         fontSize: font3,
         textColor: [255, 255, 255]
       },
       columnStyles: {
         0: {
-          cellWidth: 24, fontStyle: 'bold', halign: 'right',
+          cellWidth: isAbono ? 29 : 24, fontStyle: 'bold', halign: 'right',
           fillColor: {
             1: gris,
             2: blue,
@@ -256,7 +309,6 @@ export function NotaPDF(props) {
     })
 
     doc.setFontSize(`${font3}`)
-    //doc.setFont("Roboto", "normal")
     doc.setTextColor(0, 0, 0)
     doc.text('• Precio en pesos.', 6, 279)
     doc.text('• Este documento no es un comprobante fiscal válido.', 6, 284)
@@ -269,7 +321,12 @@ export function NotaPDF(props) {
     doc.rect(0, pageHeight - footerHeight, pageWidth, footerHeight, 'F');
 
     // Obtener el texto
-    const footerText = getValueOrWhite(datoPDF?.fila1);
+    const footerText = getValueOrWhite(
+      isAbono
+        ? `Producto: ${productoBase?.producto_nombre} | Precio: ${formatCurrency(productoBase?.monto)}`
+        : datoPDF?.fila1
+    )
+
     const textWidthFooter = doc.getTextWidth(footerText);
     const xFooter = (pageWidth - textWidthFooter) / 2
     const yFooter = pageHeight - (footerHeight / 2) + 3

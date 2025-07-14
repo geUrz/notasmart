@@ -9,7 +9,7 @@ import styles from './UsuariosLista.module.css'
 
 export function UsuariosLista(props) {
 
-  const { user, reload, onReload, usuarios, onToastSuccess, onToastSuccessMod, onToastSuccessDel } = props
+  const { user, reload, onReload, isAdmin, isUserSuperUser, usuarios, onToastSuccess, onToastSuccessMod, onToastSuccessDel } = props
 
   const [showDetalles, setShowDetalles] = useState(false)
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null)
@@ -68,7 +68,7 @@ export function UsuariosLista(props) {
       )}
 
       <BasicModal title='detalles del usuario' show={showDetalles} onClose={onCloseDetalles}>
-        <UsuarioDetalles user={user} reload={reload} onReload={onReload} usuario={usuarioSeleccionado} onCloseDetalles={onCloseDetalles} onToastSuccess={onToastSuccess} onToastSuccessMod={onToastSuccessMod} toastSuccessDel={onToastSuccessDel} />
+        <UsuarioDetalles user={user} reload={reload} onReload={onReload} isAdmin={isAdmin} isUserSuperUser={isUserSuperUser} usuario={usuarioSeleccionado} onCloseDetalles={onCloseDetalles} onToastSuccess={onToastSuccess} onToastSuccessMod={onToastSuccessMod} toastSuccessDel={onToastSuccessDel} />
       </BasicModal>
 
     </>

@@ -239,41 +239,15 @@
   color: rgb(50, 50, 50);
 }
 
-.toggleTheme{
-  padding: 30px 0 50px 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.toggleTheme div{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.toggleTheme h1{
-  margin-right: 10px !important;
-  font-size: 16px;
-  color: var(--clrGR0);
-}
-
-.toggleTheme svg, .toggleTheme path{
-  font-size: 38px;
-  color: var(--clr2);
-  cursor: pointer;
-}
-
-.toggleMoon svg, .toggleMoon path{
-  color: var(--bg4);
+.iconThemeSun, .iconThemeMoon{
+  margin: 30px 0;
 }
 
 .iconThemeSun svg, .iconThemeSun path, .iconThemeMoon svg, .iconThemeMoon path{
   margin-top: 14px;
   font-size: 38px;
   color: var(--clr2);
-  cursor: default;
+  cursor: pointer;
 }
 
 .iconThemeMoon svg, .iconThemeMoon path{

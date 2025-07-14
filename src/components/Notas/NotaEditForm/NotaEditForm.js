@@ -5,12 +5,20 @@ import { Button, Dropdown, Form, FormField, FormGroup, Input, Label, Message } f
 import { FaPlus } from 'react-icons/fa'
 import { BasicModal } from '@/layouts'
 import { ClienteForm } from '@/components/Clientes'
-import { ToastSuccess } from '@/components/Layouts'
+import { ErrorAccesso, ToastSuccess } from '@/components/Layouts'
+import { useSelector, useDispatch } from 'react-redux'
+import { selectNota, selectNotaError } from '@/store/notas/notaSelectors'
+import { setNota } from '@/store/notas/notaSlice'
 import styles from './NotaEditForm.module.css'
+import { fetchClientes } from '@/store/clientes/clienteSlice'
 
 export function NotaEditForm(props) {
 
-  const { user, reload, onReload, notaData, actualizarNota, onOpenEditNota, onToastSuccessMod } = props
+  const { user, reload, onReload, onOpenEditNota, onToastSuccessMod } = props
+
+  const dispatch = useDispatch()
+  const nota = useSelector(selectNota)
+  const errorNotas = useSelector(selectNotaError)
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -19,10 +27,18 @@ export function NotaEditForm(props) {
   const onOpenCloseClienteForm = () => setShow((prevState) => !prevState)
 
   const [formData, setFormData] = useState({
-    nota: notaData.nota,
-    cliente_id: notaData.cliente_id
+    nota: '',
+    cliente_id: ''
   })
-  
+
+  useEffect(() => {
+    if (nota) {
+      setFormData({
+        nota: nota.nota || '',
+        cliente_id: nota.cliente_id || ''
+      })
+    }
+  }, [nota])
   
   const [errors, setErrors] = useState({})
 
@@ -43,31 +59,12 @@ export function NotaEditForm(props) {
 
   }
 
-  const [clientes, setClientes] = useState([])
-  
-  const fetchClientes = async () => {
-    if (user && user.id) {
-      if(user.nivel == 'admin'){
-        try {
-          const res = await axios.get(`/api/clientes/clientes`)
-          setClientes(res.data)
-        } catch (error) {
-          console.error('Error al obtener los clientes:', error)
-        }
-      }else if(user.nivel == 'usuario'){
-        try {
-          const res = await axios.get(`/api/clientes/clientes?usuario_id=${user.id}`)
-          setClientes(res.data)
-        } catch (error) {
-          console.error('Error al obtener los clientes:', error)
-        }
-      }
-    }
-  }
-
   useEffect(() => {
-    fetchClientes()
-  }, [reload, user])
+    if (!user) return
+    dispatch(fetchClientes(user.negocio_id))
+  }, [dispatch, user])
+  
+  const clientes = useSelector(state => state.clientes?.clientes)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -100,17 +97,14 @@ export function NotaEditForm(props) {
     const cliente_contacto = clienteSeleccionado ? clienteSeleccionado.contacto : ''
 
     try {
-      await axios.put(`/api/notas/notas?id=${notaData.id}`, {
+      await axios.put(`/api/notas/notas?id=${nota.id}`, {
         ...formData,
         cliente_nombre,
         cliente_contacto 
       })
   
-      actualizarNota({
-        ...formData,
-        cliente_nombre,
-        cliente_contacto
-      }) 
+      const res = await axios.get(`/api/notas/notas?id=${nota.id}`)
+      dispatch(setNota(res.data))
 
       onReload()
       onOpenEditNota()
@@ -157,7 +151,7 @@ export function NotaEditForm(props) {
           <FormField error={!!errors.cliente_id}>
             <Label>Cliente</Label>
             <Dropdown
-              placeholder='Seleccionar'
+              placeholder= {clientes.length === 0 ? 'No hay clientes' : 'Seleccionar'}
               fluid
               selection
               options={clientes.map(cliente => ({
@@ -181,8 +175,14 @@ export function NotaEditForm(props) {
       </Form>
 
       <BasicModal title='crear cliente' show={show} onClose={onOpenCloseClienteForm}>
-        <ClienteForm reload={reload} onReload={onReload} onCloseForm={onOpenCloseClienteForm} onToastSuccess={onToastSuccessCliente} />
+        <ClienteForm user={user} reload={reload} onReload={onReload} onCloseForm={onOpenCloseClienteForm} onToastSuccess={onToastSuccessCliente} />
       </BasicModal>
+
+      {errorNotas && (
+        <BasicModal title="Error de acceso" show={errorModalOpen} onClose={() => dispatch(setError(null))}>
+          <ErrorAccesso apiError={errorNotas} onOpenCloseErrorModal={() => dispatch(setError(null))} />
+        </BasicModal>
+      )}
 
     </>
 

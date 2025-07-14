@@ -7,15 +7,15 @@ import { useEffect, useState } from 'react'
 import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
 import { ModCuentaForm, UsuarioAddDatosImage, UsuarioFormEditPDF, UsuarioFormPDF } from '@/components/Usuario'
 import { BiSolidToggleLeft, BiSolidToggleRight } from 'react-icons/bi'
-import styles from './usuario.module.css'
 import { getValueOrDefault } from '@/helpers'
 import { useTheme } from '@/contexts/ThemeContext'
 import axios from 'axios'
+import styles from './usuario.module.css'
 
 export default function Usuario() {
 
   const { user, logout, loading } = useAuth()
-
+  
   const { theme, toggleTheme } = useTheme()
 
   const [reload, setReload] = useState(false)
@@ -142,29 +142,33 @@ export default function Usuario() {
           <div className={styles.datos_usuario}>
             {user && user.usuario &&
               <>
-                <h1>{user.usuario}</h1>
+                <h1>{getValueOrDefault(user.usuario)}</h1>
                 <div>
                   <h2>Nombre:</h2>
-                  <h3>{user.nombre}</h3>
+                  <h3>{getValueOrDefault(user.nombre)}</h3>
                 </div>
                 <div>
                   <h2>Correo:</h2>
-                  <h3>{user.email}</h3>
+                  <h3>{getValueOrDefault(user.email)}</h3>
                 </div>
                 <div>
                   <h2>Nivel:</h2>
-                  <h3>{user.nivel}</h3>
+                  <h3>{getValueOrDefault(user.nivel)}</h3>
+                </div>
+                <div>
+                  <h2>Negocio:</h2>
+                  <h3>{getValueOrDefault(user.negocio_nombre)}</h3>
                 </div>
                 <div>
                   <h2>Plan:</h2>
-                  <h3>{user.plan}</h3>
+                  <h3>{getValueOrDefault(user.negocio_plan)}</h3>
                 </div>
                 <div>
                   <h2>Folios:</h2>
                   <h3>
-                    {user.plan === 'premium' ? 
+                    {user.negocio_plan === 'premium' ? 
                       <FaInfinity /> :
-                      user.folios
+                      getValueOrDefault(user.negocio_folios)
                     }
                   </h3>
                 </div>
@@ -271,16 +275,6 @@ export default function Usuario() {
           </div>
           
           <div className={styles.toggleTheme}>
-            {theme != 'dark' ?
-              <div>
-                <h1>Modo claro</h1>
-                <BiSolidToggleLeft onClick={toggleTheme} />
-              </div> : 
-              <div className={styles.toggleMoon}>
-                <h1>Modo oscuro</h1>
-                <BiSolidToggleRight onClick={toggleTheme} />
-              </div>
-            }
             {theme != 'dark' ?
               <div className={styles.iconThemeSun}>
                 <FaSun onClick={toggleTheme} />

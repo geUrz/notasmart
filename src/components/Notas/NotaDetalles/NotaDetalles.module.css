@@ -32,17 +32,30 @@
 .datos_1 h1, .datos_2 h1{
   font-size: 14px;
   font-weight: 600 !important;
-  color: var(--clr5);
+  color: var(--clrGlobalB);
 }
 
 .datos_1 h2, .datos_2 h2{
   font-size: 14px;
   text-transform: capitalize;
-  color: var(--clrGR0);
+  color: var(--clrGlobalG);
 }
 
 .datos_2 h2{
   text-align: right;
+}
+
+.infCliente{
+  margin: 0 !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+}
+
+.infCliente svg, .infCliente path{
+  margin-left: 5px;
+  color: var(--clrGlobalB);
+  cursor: pointer;
 }
 
 .toggleOFF, .toggleON{
@@ -54,24 +67,24 @@
 
 .toggleOFF svg, .toggleON svg, .toggleOFF path, .toggleON path{
   margin-right: 5px;
-  color: var(--clrGR0);
+  color: var(--clrGlobalG);
   cursor: pointer;
 }
 
 .toggleON svg, .toggleON path{
-  color: var(--clr2);
+  color: var(--clrGlobalB);
   cursor: pointer;
 }
 
 .toggleON svg, .toggleOn svg, .toggleON path, .toggleOn path{
-  color: var(--clr2);
+  color: var(--clrGlobalB);
   cursor: pointer;
 }
 
 .toggleON h2{
   margin: 0 2px !important;
   font-size: 14px;
-  color: var(--clrGR0);
+  color: var(--clrGlobalG);
 }
 
 .ivaInput{
@@ -95,21 +108,21 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background-color: var(--clrGR0);
+  background-color: var(--bgBtnG);
   cursor: pointer;
 }
 
 .iconPlus div:hover{
-  background-color: var(--clrGR1);
+  background-color: var(--bgBtnG1);
 }
 
 .iconPlus div:active{
-  background-color: var(--clrGR2);
+  background-color: var(--bgBtnG2);
 }
 
 .iconPlus svg, .iconPlus path{
   font-size: 18px;
-  color: var(--bgBody);
+  color: var(--clrBtn);
   cursor: pointer;
 }
 
@@ -124,7 +137,13 @@
 
 .sectionTotal h1{
   font-size: 12.5px;
-  color: var(--clrGR0);
+  color: var(--clrGlobalG);
+}
+
+.pagado{
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: var(--clrGlobalB) !important;
 }
 
 .sectionTotal_1{
@@ -143,12 +162,16 @@
   justify-content: center;
 }
 
-.sectionTotal_2 h1{
-  margin: 4px 0 !important;
+.sectionTotal_1 h1{
+  margin: 4.5px 0 !important;
 }
 
 .sectionTotal_1 h1:nth-child(3), .sectionTotal_2 h1:nth-child(3){
   font-weight: 600 !important;
+}
+
+.sectionTotal_2 h1{
+  margin: 4px 0 !important;
 }
 
 .mainQRPDF{
@@ -166,16 +189,8 @@
 
 .qrMain svg, .qrMain path{
   font-size: 50px;
-  color: var(--clrGR0);
+  color: var(--clrGlobalG);
   cursor: pointer;
-}
-
-.qrMain div:hover svg, .qrMain div:hover path{
-  color: var(--clrGR1);
-}
-
-.qrMain div:active svg, .qrMain div:active path{
-  color: var(--clrGR2);
 }
 
 .iconPDF{
@@ -197,7 +212,7 @@
 
 .h1UsuarioNombre h1{
   font-size: 14px;
-  color: var(--clrFont);
+  color: var(--clrGlobalG);
 }
 
 @media screen and (min-width: 768px) {

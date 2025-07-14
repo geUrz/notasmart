@@ -14,16 +14,16 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background-color: var(--clr0);
+  background-color: var(--bgBtnB);
   cursor: pointer;
 }
 
 .iconEdit div:hover{
-  background-color: var(--clr1);
+  background-color: var(--bgBtnB1);
 }
 
 .iconEdit div:active{
-  background-color: var(--clr2);
+  background-color: var(--bgBtnB2);
 }
 
 .iconEdit svg, .iconEdit path{

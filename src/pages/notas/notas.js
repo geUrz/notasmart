@@ -1,18 +1,22 @@
 import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
 import { BasicLayout, BasicModal } from '@/layouts'
-import { Add, IconClose, Loading, Title, ToastDelete, ToastSuccess } from '@/components/Layouts'
+import { Add, ErrorAccesso, IconClose, Loading, Search, Title, ToastDelete, ToastSuccess } from '@/components/Layouts'
 import { useEffect, useState } from 'react'
-import axios from 'axios'
 import { useAuth } from '@/contexts/AuthContext'
-import { size } from 'lodash'
 import { NotaForm, NotasLista, NotasListSearch, SearchNotas } from '@/components/Notas'
 import styles from './Notas.module.css'
 import { FaArrowCircleRight, FaInfoCircle, FaSearch } from 'react-icons/fa'
 import Link from 'next/link'
+import { usePermissions } from '@/hooks'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchNotas } from '@/store/notas/notaSlice'
+import { selectNotaError, selectTotalFoliosNgId, selectTotalNotasNgId } from '@/store/notas/notaSelectors'
 
 export default function Notas() {
 
   const { user, loading } = useAuth()
+
+  const { isAdmin, isSuperUser, isPremium } = usePermissions()
 
   const [reload, setReload] = useState(false)
 
@@ -27,47 +31,28 @@ export default function Notas() {
   const onOpenShowFolios = () => setShowFolios((prevState) => !prevState)
 
   const [search, setSearch] = useState(false)
-    
+
   const onOpenCloseSearch = () => setSearch((prevState) => !prevState)
-    
+
   const [resultados, setResultados] = useState([])
 
-  const [notas, setNotas] = useState(null)
-  
-  const totalFolios = size(notas)
+  const dispatch = useDispatch()
+  const totalNotasNgId = useSelector(selectTotalNotasNgId)
+  const totalFoliosNgId = useSelector(selectTotalFoliosNgId)
+  const errorNotas = useSelector(selectNotaError)
 
   useEffect(() => {
-    if (user && user.id) {
-      if (user.nivel === 'usuario') {
-        (async () => {
-          try {
-            const res = await axios.get(`/api/notas/notas?usuario_id=${user.id}`)
-            setNotas(res.data)
-          } catch (error) {
-            console.error(error)
-          }
-        })()
-      } else if (user.nivel === 'admin') {
-        (async () => {
-          try {
-            const res = await axios.get(`/api/notas/notas`)
-            setNotas(res.data)
-          } catch (error) {
-            console.error(error)
-          }
-        })()
-      }
-    }
-  }, [reload, user])
+    if (!user) return
+    dispatch(fetchNotas(user?.negocio_id))
+  }, [dispatch, user, reload])
 
   const onOpenCloseFormFolios = () => {
-    if (user && user.nivel !== 'admin' && user.plan !== 'premium' && totalFolios >= user.folios) {
+    if (!isAdmin && !isPremium && totalNotasNgId >= totalFoliosNgId) {
       onOpenShowFolios()
     } else {
       onOpenCloseForm()
     }
   }
-
 
   const [toastSuccess, setToastSuccessReportes] = useState(false)
   const [toastSuccessMod, setToastSuccessReportesMod] = useState(false)
@@ -104,44 +89,36 @@ export default function Notas() {
 
       <BasicLayout relative onReload={onReload}>
 
-        {toastSuccess && <ToastSuccess contain='Creado exitosamente' onClose={() => setToastSuccessReportes(false)} />}
+        {toastSuccess && <ToastSuccess onClose={() => setToastSuccessReportes(false)} />}
 
-        {toastSuccessMod && <ToastSuccess contain='Modificado exitosamente' onClose={() => setToastSuccessReportesMod(false)} />}
+        {toastSuccessMod && <ToastSuccess onClose={() => setToastSuccessReportesMod(false)} />}
 
-        {toastSuccessDel && <ToastDelete contain='Eliminado exitosamente' onClose={() => setToastSuccessReportesDel(false)} />}
+        {toastSuccessDel && <ToastDelete onClose={() => setToastSuccessReportesDel(false)} />}
 
         <Title title='notas' />
 
         <Add onOpenClose={onOpenCloseFormFolios} />
 
-        {!search ? (
-          ''
-        ) : (
-          <div className={styles.searchMain}>
-            <SearchNotas user={user} onResults={setResultados} reload={reload} onReload={onReload} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
-            {resultados.length > 0 && (
-              <NotasListSearch visitas={resultados} reload={reload} onReload={onReload} />
-            )}
-          </div>
-        )}
+        <Search
+          title='nota'
+          search={search}
+          onOpenCloseSearch={onOpenCloseSearch}
+          user={user}
+          reload={reload}
+          onReload={onReload}
+          resultados={resultados}
+          setResultados={setResultados}
+          SearchComponent={SearchNotas}
+          SearchListComponent={NotasListSearch}
+          onToastSuccessMod={onToastSuccessMod}
+        />
 
-        {!search ? (
-          <div className={styles.iconSearchMain}>
-            <div className={styles.iconSearch} onClick={onOpenCloseSearch}>
-              <h1>Buscar notas</h1>
-              <FaSearch />
-            </div>
-          </div>
-        ) : (
-          ''
-        )}
-
-        <NotasLista user={user} loading={loading} reload={reload} onReload={onReload} notas={notas} setNotas={setNotas} onToastSuccessMod={onToastSuccessMod} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
+        <NotasLista user={user} loading={loading} reload={reload} onReload={onReload} isAdmin={isAdmin} isSuperUser={isSuperUser} isPremium={isPremium} onToastSuccessMod={onToastSuccessMod} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
 
       </BasicLayout>
 
       <BasicModal title='crear nota' show={openCloseForm} onClose={onOpenCloseForm}>
-        <NotaForm user={user} reload={reload} onReload={onReload} onToastSuccess={onToastSuccess} onOpenCloseForm={onOpenCloseForm} />
+        <NotaForm user={user} reload={reload} onReload={onReload} isAdmin={isAdmin} onToastSuccess={onToastSuccess} onOpenCloseForm={onOpenCloseForm} />
       </BasicModal>
 
       <BasicModal show={showFolios} onClose={onOpenShowFolios}>
@@ -159,6 +136,12 @@ export default function Notas() {
           </Link>
         </div>
       </BasicModal>
+
+      {/* {errorNotas && (
+        <BasicModal title="Error de acceso" show={true} onClose={() => dispatch(setError(null))}>
+          <ErrorAccesso apiError={errorNotas} onOpenCloseErrorModal={() => dispatch(setError(null))} />
+        </BasicModal>
+      )} */}
 
     </ProtectedRoute>
 

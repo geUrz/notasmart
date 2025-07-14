@@ -9,7 +9,7 @@ import styles from './UsuariosListSearch.module.css'
 
 export function UsuariosListSearch(props) {
 
-  const { user, reload, onReload, usuarios, onToastSuccessMod } = props
+  const { user, reload, onReload, isAdmin, isUserSuperUser, usuarios, onToastSuccessMod } = props
 
   const [showDetalles, setShowDetalles] = useState(false)
   const [usuarioSeleccionada, setUsuarioSeleccionada] = useState(null)
@@ -68,6 +68,8 @@ export function UsuariosListSearch(props) {
             user={user}
             reload={reload}
             onReload={onReload}
+            isAdmin={isAdmin} 
+            isUserSuperUser={isUserSuperUser}
             usuario={usuarioSeleccionada}
             onCloseDetalles={onCloseDetalles}
             onToastSuccessMod={onToastSuccessMod}

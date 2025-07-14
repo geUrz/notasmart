@@ -5,7 +5,7 @@ import { IconClose, IconDel } from '@/components/Layouts';
 import { FaTrash } from 'react-icons/fa';
 
 export function ConceptosEditForm(props) {
-  const { concepto, onSave, onCloseEditConcep, onOpenCloseConfirm } = props;
+  const { concepto, onSave, index, onCloseEditConcep, onOpenCloseConfirm } = props;
 
   const [editedConcepto, setEditedConcepto] = useState(concepto);
   const [errors, setErrors] = useState({});
@@ -120,7 +120,7 @@ export function ConceptosEditForm(props) {
           </Button>
         </Form>
 
-        <IconDel setShowConfirmDel={() => onOpenCloseConfirm(editedConcepto)} />
+        <IconDel setShowConfirmDel={() => onOpenCloseConfirm(index)} />
 
       </div>
     </>
