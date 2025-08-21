@@ -16,15 +16,26 @@ import { AbonosEditForm } from '../AbonosEditForm'
 import { ProductoBaseEditForm } from '../ProductoBaseEditForm'
 import { AnticiposForm } from '../AnticiposForm'
 import { AnticiposEditForm } from '../AnticiposEditForm'
+import { selectClientes } from '@/store/clientes/clienteSelectors'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchClientes } from '@/store/clientes/clienteSlice'
+import { selectNotaError } from '@/store/notas/notaSelectors'
 
 export function NotaForm(props) {
   const { user, reload, onReload, isAdmin, onOpenCloseForm, onToastSuccess } = props
 
   const [isLoading, setIsLoading] = useState(false)
 
+  const dispatch = useDispatch()
+  const clientes = useSelector(selectClientes)
+
+  useEffect(() => {
+    if (!user) return
+    dispatch(fetchClientes(user.negocio_id))
+  }, [dispatch, reload, user])
+
   const [show, setShow] = useState(false)
   const [toastSuccessCliente, setToastSuccessCliente] = useState(false)
-  const [clientes, setClientes] = useState([])
   const [cliente_id, setCliente] = useState('')
   const [nota, setNota] = useState('')
   const [forma_pago, setFormaPago] = useState('')
@@ -59,11 +70,6 @@ export function NotaForm(props) {
   const onCloseEditProductoBase = () => {
     setShowEditProductoBase(false);
   }
-
-  const [apiError, setApiError] = useState(null)
-  const [errorModalOpen, setErrorModalOpen] = useState(false)
-
-  const onOpenCloseErrorModal = () => setErrorModalOpen((prev) => !prev)
 
   const [showConfirmConcepto, setShowConfirmConcepto] = useState(false)
   const [showConfirmAbono, setShowConfirmAbono] = useState(false)
@@ -163,28 +169,6 @@ export function NotaForm(props) {
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
-
-  useEffect(() => {
-
-    if (!user) return
-
-    (async () => {
-      try {
-
-        const url = isAdmin || !user.negocio_id
-          ? '/api/clientes/clientes'
-          : `/api/clientes/clientes?negocio_id=${user?.negocio_id}`
-
-        const res = await axios.get(url)
-        setClientes(res.data)
-      } catch (error) {
-        console.error(error)
-        setApiError(error.response?.data?.error || 'Error al cargar clientes')
-        setErrorModalOpen(true)
-      }
-    })()
-
-  }, [reload, user])
 
   const opcionesFormaPago = [
     { key: 1, text: 'Único', value: 'unico' },
@@ -389,7 +373,7 @@ export function NotaForm(props) {
             <FormField error={!!errors.cliente_id}>
               <Label>Cliente</Label>
               <Dropdown
-                placeholder='Seleccionar'
+                placeholder={clientes.length === 0 ? 'No hay clientes' : 'Seleccionar'}
                 fluid
                 selection
                 options={clientes.map(cliente => ({
@@ -399,6 +383,7 @@ export function NotaForm(props) {
                 }))}
                 value={cliente_id}
                 onChange={(e, { value }) => setCliente(value)}
+                disabled={clientes.length === 0}
               />
               <div className={styles.addCliente}>
                 <h1>Crear cliente</h1>
@@ -615,10 +600,6 @@ export function NotaForm(props) {
           onCloseEditAnticipo={onCloseEditAnticipo}
           onOpenCloseConfirmAnticipo={onOpenCloseConfirmAnticipo}
         />
-      </BasicModal>
-
-      <BasicModal title="Error de acceso" show={errorModalOpen} onClose={onOpenCloseErrorModal}>
-        <ErrorAccesso apiError={apiError} onOpenCloseErrorModal={onOpenCloseErrorModal} />
       </BasicModal>
 
       <Confirm

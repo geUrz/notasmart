@@ -1,26 +1,24 @@
+import styles from './home.module.css'
 import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
 import { BasicLayout, BasicModal } from '@/layouts'
 import { ErrorAccesso, Loading, Title } from '@/components/Layouts'
 import { useEffect, useState } from 'react'
-import axios from 'axios'
 import { useAuth } from '@/contexts/AuthContext'
-import styles from './home.module.css'
 import { usePermissions } from '@/hooks'
-import { HomeAdmin, HomeUsuario } from '@/components/Home'
+import { HomeUsuario } from '@/components/Home'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectNegocioId, selectPlan, selectPorCobrarTotalGlobal, selectPorCobrarTotalNgId, selectPrecioGranTotalGlobal, selectPrecioGranTotalNgId, selectPrecioProductoBaseTotalGlobal, selectPrecioProductoBaseTotalNgId, selectTotalFoliosNgId, selectTotalNotasGlobal, selectTotalNotasNgId } from '@/store/notas/notaSelectors'
+import { selectNegocioId, selectNotaError, selectPlan } from '@/store/notas/notaSelectors'
 import { fetchNotas } from '@/store/notas/notaSlice'
 
 export default function Home() {
 
   const { user, loading } = useAuth()
-
+  
   const dispatch = useDispatch()
   const negocioId = useSelector(selectNegocioId)
   const plan = useSelector(selectPlan)
   
-  
-  const { isUserActive, isAdmin, isUserSuperUser, isPremium } = usePermissions()
+  const { isAdmin, isSuperUser, isPremium } = usePermissions()
 
   const [reload, setReload] = useState(false)
 
@@ -28,8 +26,16 @@ export default function Home() {
 
   const [apiError, setApiError] = useState(null)
   const [errorModalOpen, setErrorModalOpen] = useState(false)
+  const error = useSelector(selectNotaError)
 
   const onOpenCloseErrorModal = () => setErrorModalOpen((prev) => !prev)
+
+  useEffect(() => {
+      if (error) {
+        setApiError(error)
+        setErrorModalOpen(true)  
+      }
+    }, [error])
 
   useEffect(() => {
     if (!user) return
@@ -48,15 +54,11 @@ export default function Home() {
 
         <Title title='home' />
 
-        {isUserActive && (
-          isAdmin ? (
-            <HomeAdmin />
-          ) : isUserSuperUser ? (
-            <HomeUsuario
-              isPremium={isPremium}
-            />
-          ) : null
-        )}
+        {(isAdmin || isSuperUser) &&
+          <HomeUsuario
+            isPremium={isPremium}
+          />
+        }
 
       </BasicLayout>
 

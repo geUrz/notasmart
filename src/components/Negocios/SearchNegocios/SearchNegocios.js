@@ -1,15 +1,17 @@
+import styles from './SearchNegocios.module.css';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Input } from 'semantic-ui-react';
 import { NegociosListSearch } from '../NegociosListSearch';
 import { FaTimesCircle } from 'react-icons/fa';
-import styles from './SearchNegocios.module.css';
 import { BasicModal } from '@/layouts';
 import { ErrorAccesso } from '@/components/Layouts';
+import { searchNegocios } from '@/store/negocios/negocioSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectNegocios } from '@/store/negocios/negocioSelectors';
 
 export function SearchNegocios(props) {
 
-  const { reload, onReload, onResults, onOpenCloseSearch, onToastSuccessMod } = props
+  const { reload, onReload, onResults, onOpenCloseSearch, onToastSuccess } = props
 
   const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(false)
@@ -20,34 +22,34 @@ export function SearchNegocios(props) {
 
   const onOpenCloseErrorModal = () => setErrorModalOpen((prev) => !prev)
 
-  const [negocios, setNegocios] = useState([])
+  const negocios = useSelector(selectNegocios)
+
+  const dispatch = useDispatch()
 
   useEffect(() => {
     const fetchData = async () => {
-      if (query.trim() === '') {
-        setNegocios([])
-        return
+      if (query.trim().length < 1) {
+        setError('')
+        return;
       }
 
       setLoading(true)
       setError('')
 
       try {
-        const res = await axios.get(`/api/negocios/negocios?search=${query}`)
-        setNegocios(res.data)
+        await dispatch(searchNegocios(query))
       } catch (error) {
         console.error(error)
-        setApiError(error.response?.data?.error || 'Error al cargar notas')
+        setApiError(error.response?.data?.error || 'Error al cargar negocios')
         setErrorModalOpen(true)
         setError('No se encontraron negocios')
-        setNegocios([])
       } finally {
         setLoading(false)
       }
     }
 
     fetchData()
-  }, [query])
+  }, [query, dispatch])
 
   return (
 
@@ -73,7 +75,7 @@ export function SearchNegocios(props) {
           {error && <p>{error}</p>}
           {negocios.length > 0 && (
             <div className={styles.resultsContainer}>
-              <NegociosListSearch negocios={negocios} reload={reload} onReload={onReload} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
+              <NegociosListSearch reload={reload} onReload={onReload} query={query} onToastSuccess={onToastSuccess} onOpenCloseSearch={onOpenCloseSearch} />
             </div>
           )}
         </div>

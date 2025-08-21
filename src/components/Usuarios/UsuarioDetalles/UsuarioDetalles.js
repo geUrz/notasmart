@@ -1,17 +1,21 @@
+import styles from './UsuarioDetalles.module.css'
 import { IconClose, Confirm, IconKey, EditPass, IconEdit, IconDel } from '@/components/Layouts'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { BasicModal } from '@/layouts'
 import axios from 'axios'
 import { getValueOrDefault } from '@/helpers'
-import styles from './UsuarioDetalles.module.css'
 import { UsuarioEditForm } from '../UsuarioEditForm'
 import { FaInfinity } from 'react-icons/fa'
+import { useSelector } from 'react-redux'
+import { selectUsuario } from '@/store/usuarios/usuarioSelectors'
 
 export function UsuarioDetalles(props) {
 
-  const { user, reload, onReload, isAdmin, isSuperUser, usuario, onCloseDetalles, onToastSuccess, onToastSuccessMod, toastSuccessDel } = props
-
-  const negocioId = user.negocio_id
+  const { user, reload, onReload, isAdmin, isSuperUser, onCloseDetalles, onToastSuccess, toastSuccessDel } = props
+  
+  const usuario = useSelector(selectUsuario)
+  
+  const negocioId = user?.negocio_id
   
   const [showEdit, setShowEdit] = useState(false)
 
@@ -28,7 +32,7 @@ export function UsuarioDetalles(props) {
   const handleDeleteUsuario = async () => {
     if (usuario?.id) {
       try {
-        await axios.delete(`/api/usuarios/usuarios?id=${usuario.id}`)
+        await axios.delete(`/api/usuarios/usuarios?id=${usuario?.id}`)
         onReload()
         toastSuccessDel()
         onCloseDetalles()
@@ -40,22 +44,9 @@ export function UsuarioDetalles(props) {
     }
   }
 
-  const [usuarioData, setUsuarioData] = useState(usuario)
-
-  useEffect(() => {
-    setUsuarioData(usuario)
-  }, [usuario])
-
-  const actualizarUsuario = (nuevaData) => {
-    setUsuarioData((prevState) => ({
-      ...prevState,
-      ...nuevaData,
-    }))
-  }
-
   let isActive = ''
 
-  if (usuarioData.isactive === 1) {
+  if (usuario?.isactive === 1) {
     isActive = 'Activo'
   } else {
     isActive = 'Inactivo'
@@ -72,20 +63,20 @@ export function UsuarioDetalles(props) {
           <div className={styles.box1_1}>
             <div>
               <h1>Nombre</h1>
-              <h2>{getValueOrDefault(usuarioData?.nombre)}</h2>
+              <h2>{getValueOrDefault(usuario?.nombre)}</h2>
             </div>
             <div>
               <h1>Usuario</h1>
-              <h2>{getValueOrDefault(usuarioData?.usuario)}</h2>
+              <h2>{getValueOrDefault(usuario?.usuario)}</h2>
             </div>
             <div>
               <h1>Nivel</h1>
-              <h2>{getValueOrDefault(usuarioData?.nivel)}</h2>
+              <h2>{getValueOrDefault(usuario?.nivel)}</h2>
             </div>
             {negocioId &&
               <div>
                 <h1>Plan</h1>
-                <h2>{getValueOrDefault(usuarioData?.plan)}</h2>
+                <h2>{getValueOrDefault(usuario?.plan)}</h2>
               </div>
             }
             <div>
@@ -96,23 +87,23 @@ export function UsuarioDetalles(props) {
           <div className={styles.box1_2}>
             <div>
               <h1>Folio</h1>
-              <h2>{getValueOrDefault(usuarioData?.folio)}</h2>
+              <h2>{getValueOrDefault(usuario?.folio)}</h2>
             </div>
             <div>
               <h1>Correo</h1>
-              <h2>{getValueOrDefault(usuarioData?.email)}</h2>
+              <h2>{getValueOrDefault(usuario?.email)}</h2>
             </div>
             <div>
               <h1>Negocio</h1>
-              <h2>{getValueOrDefault(usuarioData?.negocio_nombre)}</h2>
+              <h2>{getValueOrDefault(usuario?.negocio_nombre)}</h2>
             </div>
             {negocioId &&
               <div>
                 <h1>Folios</h1>
                 <h2>
-                  {usuarioData?.plan === 'premium' ?
+                  {usuario?.plan === 'premium' ?
                     <FaInfinity /> :
-                    getValueOrDefault(usuarioData?.folios)
+                    getValueOrDefault(usuario?.folios)
                   }
                 </h2>
               </div>
@@ -137,11 +128,11 @@ export function UsuarioDetalles(props) {
       </div>
 
       <BasicModal title='modificar usuario' show={showEdit} onClose={onOpenCloseEdit}>
-        <UsuarioEditForm user={user} reload={reload} onReload={onReload} isAdmin={isAdmin} isSuperUser={isSuperUser} usuarioData={usuarioData} actualizarUsuario={actualizarUsuario} onOpenCloseEdit={onOpenCloseEdit} onToastSuccess={onToastSuccess} onToastSuccessMod={onToastSuccessMod} />
+        <UsuarioEditForm user={user} reload={reload} onReload={onReload} isAdmin={isAdmin} isSuperUser={isSuperUser} onOpenCloseEdit={onOpenCloseEdit} onToastSuccess={onToastSuccess} />
       </BasicModal>
 
       <BasicModal title='Modificar contraseña' show={showEditPass} onClose={onOpenCloseEditPass}>
-        <EditPass usuario={usuario} onOpenCloseEditPass={onOpenCloseEditPass} onToastSuccessUsuarioMod={onToastSuccessMod} />
+        <EditPass onOpenCloseEditPass={onOpenCloseEditPass} onToastSuccess={onToastSuccess} />
       </BasicModal>
 
       <Confirm

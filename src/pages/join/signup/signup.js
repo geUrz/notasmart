@@ -18,7 +18,7 @@ export default function Signup() {
 
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState({})
-  
+
   const [credentials, setCredentials] = useState({
     nombre: '',
     usuario: '',
@@ -37,7 +37,7 @@ export default function Signup() {
       ...prev,
       [name]: value
     }));
-  };  
+  };
 
   const validarFormSignUp = () => {
     const newErrors = {}
@@ -142,16 +142,6 @@ export default function Signup() {
 
           <Form onSubmit={handleSubmit}>
             <FormGroup>
-              <FormField error={!!errors.nombre}>
-                <Label>Nombre</Label>
-                <Input
-                  name='nombre'
-                  type='text'
-                  value={credentials.nombre}
-                  onChange={handleChange}
-                />
-                {errors.nombre && <Message>{errors.nombre}</Message>}
-              </FormField>
               <FormField error={!!errors.usuario}>
                 <Label>Usuario</Label>
                 <Input
@@ -161,6 +151,16 @@ export default function Signup() {
                   onChange={handleChange}
                 />
                 {errors.usuario && <Message>{errors.usuario}</Message>}
+              </FormField>
+              <FormField error={!!errors.nombre}>
+                <Label>Nombre</Label>
+                <Input
+                  name='nombre'
+                  type='text'
+                  value={credentials.nombre}
+                  onChange={handleChange}
+                />
+                {errors.nombre && <Message>{errors.nombre}</Message>}
               </FormField>
               <FormField>
                 <Label>Correo</Label>

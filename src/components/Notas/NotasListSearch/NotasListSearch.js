@@ -1,3 +1,4 @@
+import styles from './NotasListSearch.module.css'
 import { map, size } from 'lodash'
 import { ListEmpty, Loading } from '@/components/Layouts'
 import { FaFileAlt } from 'react-icons/fa'
@@ -6,17 +7,46 @@ import { NotaDetalles } from '../NotaDetalles'
 import { useOpenNotaConConceptos } from '@/hooks/useOpenNotaConConceptos'
 import { getValueOrDefault } from '@/helpers'
 import { getValueOrDel } from '@/helpers/getValueOrDel'
-import styles from './NotasListSearch.module.css'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectSearchResults } from '@/store/notas/notaSelectors'
+import { clearSearchResults, searchNotas, setNota } from '@/store/notas/notaSlice'
+import { useEffect, useState } from 'react'
 
 export function NotasListSearch(props) {
-  const { user, reload, onReload, notas, onToastSuccessMod } = props
+  const { user, reload, onReload, query, onToastSuccess } = props
 
-  const {
-    notaSeleccionada,
+  const dispatch = useDispatch()
+  const notas = useSelector(selectSearchResults)
+
+  const [showDetalles, setShowDetalles] = useState(false)
+
+  const onOpenDetalles = (nota) => {
+    dispatch(setNota(nota))
+    setShowDetalles(true)
+  }
+
+  const onCloseDetalles = () => {
+    dispatch(setNota(null))
+    setShowDetalles(false)
+  }
+
+  useEffect(() => {
+    if (query.trim().length > 0) {
+      dispatch(searchNotas(query))
+    }
+  }, [query, dispatch])
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearSearchResults())
+    }
+  }, [dispatch])
+
+  /* const {
     showDetalles,
     onOpenDetalles,
     onCloseDetalles,
-  } = useOpenNotaConConceptos()
+  } = useOpenNotaConConceptos() */
 
   return (
     <>
@@ -49,16 +79,13 @@ export function NotasListSearch(props) {
       )}
 
       <BasicModal title="detalles de la nota" show={showDetalles} onClose={onCloseDetalles}>
-        {notaSeleccionada && (
-          <NotaDetalles
-            user={user}
-            reload={reload}
-            onReload={onReload}
-            nota={notaSeleccionada}
-            onOpenClose={onCloseDetalles}
-            onToastSuccessMod={onToastSuccessMod}
-          />
-        )}
+        <NotaDetalles
+          user={user}
+          reload={reload}
+          onReload={onReload}
+          onCloseDetalles={onCloseDetalles}
+          onToastSuccess={onToastSuccess}
+        />
       </BasicModal>
     </>
   )

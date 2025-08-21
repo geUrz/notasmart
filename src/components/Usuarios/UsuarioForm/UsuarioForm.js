@@ -2,20 +2,30 @@
 import { Button, Dropdown, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-import { IconClose } from '@/components/Layouts'
+import { ErrorAccesso, IconClose } from '@/components/Layouts'
 import { genUserId } from '@/helpers'
 import styles from './UsuarioForm.module.css'
 import { BasicModal } from '@/layouts'
 import { FaPlus } from 'react-icons/fa'
 import { NegocioForm } from '@/components/Negocios'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectNegocios } from '@/store/negocios/negocioSelectors'
+import { fetchNegocios } from '@/store/negocios/negocioSlice'
+import { setUsuario } from '@/store/usuarios/usuarioSlice'
 
 export function UsuarioForm(props) {
-  const { user, reload, onReload, onOpenCloseForm, onToastSuccess } = props;
+  const { user, reload, onReload, isAdmin, onOpenCloseForm, onToastSuccess } = props;
 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [negocios, setNegocios] = useState([])
+  const [apiError, setApiError] = useState(null)
+  const [errorModalOpen, setErrorModalOpen] = useState(false)
+
+  const onOpenCloseErrorModal = () => setErrorModalOpen((prev) => !prev)
+
   const [showNegocioForm, setShowNegocioForm] = useState(false)
+
+  const onOpenCloseNegocioForm = () => setShowNegocioForm(prev => !prev)
 
   const [credentials, setCredentials] = useState({
     nombre: '',
@@ -30,18 +40,13 @@ export function UsuarioForm(props) {
 
   const [errors, setErrors] = useState({})
 
-  const onOpenCloseNegocioForm = () => setShowNegocioForm(prev => !prev)
+  const dispatch = useDispatch()
+  const negocios = useSelector(selectNegocios)
 
   useEffect(() => {
-    (async () => {
-      try {
-        const res = await axios.get('/api/negocios/negocios')
-        setNegocios(res.data)
-      } catch (error) {
-        console.error(error)
-      }
-    })()
-  }, [reload, user])
+    if (!isAdmin) return
+    dispatch(fetchNegocios())
+  }, [dispatch, reload, user])
 
   const handleChange = (e, { name, value }) => {
     if (name === 'plan') {
@@ -92,11 +97,18 @@ export function UsuarioForm(props) {
     setError(null)
 
     try {
-      await axios.post('/api/usuarios/usuarios', {
+      const payload = {
         ...credentials,
         folio,
         isactive
-      })
+      }
+
+      if (!isAdmin) {
+        payload.negocio_id = user?.negocio_id
+        payload.negocio_nombre = user?.negocio_nombre
+      }
+
+      await axios.post('/api/usuarios/usuarios', payload)
 
       setCredentials({
         nombre: '',
@@ -113,8 +125,11 @@ export function UsuarioForm(props) {
       onOpenCloseForm()
       onToastSuccess()
     } catch (error) {
-      console.error('Error capturado:', error)
-      setError(error.response?.data?.error || error.message || '¡ Ocurrió un error inesperado !')
+      console.error(error)
+      setApiError(error.response?.data?.error || 'Error al cargar usuarios')
+      setErrorModalOpen(true)
+      setError('No se encontraron usuarios')
+      setUsuario([])
     } finally {
       setIsLoading(false)
     }
@@ -149,7 +164,7 @@ export function UsuarioForm(props) {
                   fluid
                   selection
                   options={[
-                    { key: 'Admin', text: 'Admin', value: 'admin' },
+                    ...(isAdmin ? [{ key: 'Admin', text: 'Admin', value: 'admin' }] : []),
                     { key: 'UsuarioSU', text: 'UsuarioSU', value: 'usuariosu' },
                     { key: 'Usuario', text: 'Usuario', value: 'usuario' }
                   ]}
@@ -158,26 +173,31 @@ export function UsuarioForm(props) {
                 />
                 {errors.nivel && <Message>{errors.nivel}</Message>}
               </FormField>
-              <FormField>
-                <Label>Negocio</Label>
-                <Dropdown
-                  placeholder='Seleccionar'
-                  fluid
-                  selection
-                  name='negocio_id'
-                  options={negocios.map(negocio => ({
-                    key: negocio.id,
-                    text: negocio.negocio,
-                    value: negocio.id
-                  }))}
-                  value={credentials.negocio_id}
-                  onChange={handleChange}
-                />
-                <div className={styles.addNegocio}>
-                  <h1>Crear negocio</h1>
-                  <FaPlus onClick={onOpenCloseNegocioForm} />
-                </div>
-              </FormField>
+
+              {isAdmin &&
+                <FormField>
+                  <Label>Negocio</Label>
+                  <Dropdown
+                    placeholder={negocios.length === 0 ? 'No hay negocios' : 'Seleccionar'}
+                    fluid
+                    selection
+                    name='negocio_id'
+                    options={negocios.map(negocio => ({
+                      key: negocio.id,
+                      text: negocio.negocio,
+                      value: negocio.id
+                    }))}
+                    value={credentials.negocio_id}
+                    onChange={handleChange}
+                    disabled={negocios.length === 0}
+                  />
+                  <div className={styles.addNegocio}>
+                    <h1>Crear negocio</h1>
+                    <FaPlus onClick={onOpenCloseNegocioForm} />
+                  </div>
+                </FormField>
+              }
+
               <FormField error={!!errors.password}>
                 <Label>Contraseña</Label>
                 <Input name='password' type='password' value={credentials.password} onChange={handleChange} />
@@ -198,6 +218,11 @@ export function UsuarioForm(props) {
       <BasicModal title='crear negocio' show={showNegocioForm} onClose={onOpenCloseNegocioForm}>
         <NegocioForm reload={reload} onReload={onReload} onCloseForm={onOpenCloseNegocioForm} onToastSuccess={onToastSuccess} />
       </BasicModal>
+
+      <BasicModal title="Error de acceso" show={errorModalOpen} onClose={onOpenCloseErrorModal}>
+        <ErrorAccesso apiError={apiError} onOpenCloseErrorModal={onOpenCloseErrorModal} />
+      </BasicModal>
+
     </>
   )
 }

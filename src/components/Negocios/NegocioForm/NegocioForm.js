@@ -1,15 +1,21 @@
-import { IconClose } from '@/components/Layouts'
+import { ErrorAccesso, IconClose } from '@/components/Layouts'
 import { Button, Dropdown, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
 import { useState } from 'react'
 import { genNEId } from '@/helpers'
 import axios from 'axios'
 import styles from './NegocioForm.module.css'
+import { BasicModal } from '@/layouts'
 
 export function NegocioForm(props) {
 
   const { user, reload, onReload, onToastSuccess, onCloseForm } = props
 
   const [isLoading, setIsLoading] = useState(false)
+
+  const [apiError, setApiError] = useState(null)
+  const [errorModalOpen, setErrorModalOpen] = useState(false)
+
+  const onOpenCloseErrorModal = () => setErrorModalOpen((prev) => !prev)
 
   const [negocio, setNegocio] = useState('')
   const [cel, setCel] = useState('')
@@ -65,7 +71,7 @@ export function NegocioForm(props) {
         direccion,
         email,
         plan,
-        folios
+        folios: Number(folios)
       })
 
       setNegocio('')
@@ -80,11 +86,20 @@ export function NegocioForm(props) {
       onToastSuccess()
 
     } catch (error) {
-      console.error('Error al crear el negocio:', error)
+      const status = error.response?.status
+      const message = error.response?.data?.error || 'Error al crear el negocio'
+  
+      if (status === 403) {
+        console.log('403: acceso no autorizado, no tienes permiso para crear el negocio')
+      } else {
+        console.error('Error creando negocio:', error)
+      }
+  
+      setApiError(message)
+      setErrorModalOpen(true)
     } finally {
       setIsLoading(false)
     }
-
   }
 
   return (
@@ -159,6 +174,10 @@ export function NegocioForm(props) {
         </FormGroup>
         <Button primary loading={isLoading} onClick={crearNegocio}>Crear</Button>
       </Form>
+
+      <BasicModal title="Error de acceso" show={errorModalOpen} onClose={onOpenCloseErrorModal}>
+        <ErrorAccesso apiError={apiError} onOpenCloseErrorModal={onOpenCloseErrorModal} />
+      </BasicModal>
 
     </>
 

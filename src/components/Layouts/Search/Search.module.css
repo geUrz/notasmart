@@ -27,7 +27,7 @@
   cursor: pointer;
 } 
 
-.searchMain {
+.searchMain{
   padding-top: 10px;
   width: 100%;
   height: 100vh;
@@ -35,8 +35,17 @@
   align-items: flex-start;
   justify-content: center;
   position: fixed;
-  top: 0px;
+  top: 60px;
   left: 0;
   background-color: var(--bgSearch);
   z-index: 1000;
+}
+
+@media screen and (min-width:768px) {
+
+  .searchMain{
+    top: 80px;
+
+  }
+
 }

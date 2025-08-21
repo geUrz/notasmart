@@ -1,3 +1,4 @@
+import styles from './UsuariosLista.module.css'
 import { useEffect, useState } from 'react'
 import { map, size } from 'lodash'
 import { ListEmpty, Loading } from '@/components/Layouts'
@@ -5,23 +6,27 @@ import { FaUser } from 'react-icons/fa'
 import { getValueOrDefault } from '@/helpers'
 import { BasicModal } from '@/layouts'
 import { UsuarioDetalles } from '../UsuarioDetalles'
-import styles from './UsuariosLista.module.css'
+import { selectUsuarios } from '@/store/usuarios/usuarioSelectors'
+import { useDispatch, useSelector } from 'react-redux'
+import { setUsuario } from '@/store/usuarios/usuarioSlice'
 
 export function UsuariosLista(props) {
 
-  const { user, reload, onReload, isAdmin, isUserSuperUser, usuarios, onToastSuccess, onToastSuccessMod, onToastSuccessDel } = props
+  const { user, reload, onReload, isAdmin, isSuperUser, onToastSuccess,onToastSuccessDel } = props
+
+  const dispatch = useDispatch()
+  const usuarios = useSelector(selectUsuarios)
 
   const [showDetalles, setShowDetalles] = useState(false)
-  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null)
   const [showLoading, setShowLoading] = useState(true)
 
   const onOpenDetalles = (usuario) => {
-    setUsuarioSeleccionado(usuario)
+    dispatch(setUsuario(usuario))
     setShowDetalles(true)
   }
 
   const onCloseDetalles = () => {
-    setUsuarioSeleccionado(null)
+    dispatch(setUsuario(null))
     setShowDetalles(false)
   }
 
@@ -68,7 +73,7 @@ export function UsuariosLista(props) {
       )}
 
       <BasicModal title='detalles del usuario' show={showDetalles} onClose={onCloseDetalles}>
-        <UsuarioDetalles user={user} reload={reload} onReload={onReload} isAdmin={isAdmin} isUserSuperUser={isUserSuperUser} usuario={usuarioSeleccionado} onCloseDetalles={onCloseDetalles} onToastSuccess={onToastSuccess} onToastSuccessMod={onToastSuccessMod} toastSuccessDel={onToastSuccessDel} />
+        <UsuarioDetalles user={user} reload={reload} onReload={onReload} isAdmin={isAdmin} isSuperUser={isSuperUser} onCloseDetalles={onCloseDetalles} onToastSuccess={onToastSuccess} toastSuccessDel={onToastSuccessDel} />
       </BasicModal>
 
     </>

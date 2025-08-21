@@ -6,7 +6,7 @@ import { BasicModal } from '../BasicModal'
 import { FaArrowCircleRight, FaInfoCircle } from 'react-icons/fa'
 import Link from 'next/link'
 import { useSelector } from 'react-redux'
-import { selectNegocioId, selectPlan, selectTotalFoliosNgId, selectTotalNotasNgId } from '@/store/notas/notaSelectors'
+import { selectNegocioId, selectPlan, selectTotalFolios, selectTotalNotas } from '@/store/notas/notaSelectors'
 
 export function BasicLayout(props) {
 
@@ -17,32 +17,32 @@ export function BasicLayout(props) {
 
   const plan = useSelector(selectPlan)
   const negocioId = useSelector(selectNegocioId)
-  const totalNotasNgId = useSelector(selectTotalNotasNgId)
-  const totalFoliosNgId = useSelector(selectTotalFoliosNgId)
+  const totalNotas = useSelector(selectTotalNotas)
+  const totalFolios = useSelector(selectTotalFolios)
   
   const [total, setTotal] = useState(false)
 
   useEffect(() => {
       if(negocioId) {
-        if (plan !== 'premium' && totalNotasNgId === totalFoliosNgId - 5) {
+        if (plan !== 'premium' && totalNotas === totalFolios - 5) {
           setTotal(true)
         } else {
           setTotal(false)
         }
       }
-  }, [totalNotasNgId, totalFoliosNgId])
+  }, [totalNotas, totalFolios])
 
   const [prueba, setPrueba] = useState(false)
 
   useEffect(() => {
       if(negocioId) {
-        if (plan !== 'premium' && totalNotasNgId == totalFoliosNgId) {
+        if (plan !== 'premium' && totalNotas == totalFolios) {
           setPrueba(true)
         } else {
           setPrueba(false)
         }
       }
-  }, [totalNotasNgId, totalFoliosNgId])
+  }, [totalNotas, totalFolios])
 
   return (
 

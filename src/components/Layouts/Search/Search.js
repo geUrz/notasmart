@@ -11,11 +11,13 @@ export function Search(props) {
     user,
     reload,
     onReload,
+    isAdmin,
+    isSuperUser,
     resultados,
     setResultados,
     SearchComponent,
     SearchListComponent,
-    onToastSuccessMod
+    onToastSuccess
   } = props
 
   return (
@@ -36,11 +38,13 @@ export function Search(props) {
             onResults={setResultados}
             reload={reload}
             onReload={onReload}
-            onToastSuccessMod={onToastSuccessMod}
+            isAdmin={isAdmin} 
+            isSuperUser={isSuperUser}
+            onToastSuccess={onToastSuccess}
             onOpenCloseSearch={onOpenCloseSearch}
           />
           {resultados.length > 0 && (
-            <SearchListComponent visitas={resultados} reload={reload} onReload={onReload} />
+            <SearchListComponent user={user} visitas={resultados} reload={reload} onReload={onReload} />
           )}
         </div>
       )}

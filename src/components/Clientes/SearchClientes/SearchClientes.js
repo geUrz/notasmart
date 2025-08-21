@@ -4,66 +4,88 @@ import { Input } from 'semantic-ui-react';
 import { ClientesListSearch } from '../ClientesListSearch';
 import { FaTimesCircle } from 'react-icons/fa';
 import styles from './SearchClientes.module.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectClientes } from '@/store/clientes/clienteSelectors';
+import { searchClientes } from '@/store/clientes/clienteSlice';
+import { BasicModal } from '@/layouts';
+import { ErrorAccesso } from '@/components/Layouts';
 
 export function SearchClientes(props) {
 
-  const { user, reload, onReload, onResults, onOpenCloseSearch, onToastSuccessMod } = props
+  const { user, reload, onReload, onResults, onOpenCloseSearch, onToastSuccess } = props
+
+  const dispatch = useDispatch()
+  const clientes = useSelector(selectClientes)
+
+  const [apiError, setApiError] = useState(null)
+  const [errorModalOpen, setErrorModalOpen] = useState(false)
+
+  const onOpenCloseErrorModal = () => setErrorModalOpen((prev) => !prev)
 
   const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [clientes, setClientes] = useState([])
 
   useEffect(() => {
     const fetchData = async () => {
-      if (query.trim() === '') {
-        setClientes([])
-        return
+      if (query.trim().length < 1) {
+        setError('')
+        return;
       }
 
       setLoading(true)
       setError('')
 
       try {
-        const res = await axios.get(`/api/clientes/clientes?search=${query}`)
-        setClientes(res.data)
-      } catch (err) {
-        console.error('Error fetching data:', err)
+        await dispatch(searchClientes(query))
+      } catch (error) {
+        console.error(error)
+        setApiError(error.response?.data?.error || 'Error al cargar clientes')
+        setErrorModalOpen(true)
         setError('No se encontraron clientes')
-        setClientes([])
       } finally {
         setLoading(false)
       }
     }
 
     fetchData()
-  }, [query, user.id])
+  }, [dispatch, query, user.id])
 
   return (
-    <div className={styles.main}>
 
-      <div className={styles.input}>
-        <Input
-          type="text"
-          placeholder="Buscar cliente..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className={styles.searchInput}
-          loading={loading}
-        />
-        <div className={styles.iconSearch} onClick={onOpenCloseSearch}>
-          <FaTimesCircle />
+    <>
+
+      <div className={styles.main}>
+
+        <div className={styles.input}>
+          <Input
+            type="text"
+            placeholder="Buscar cliente..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className={styles.searchInput}
+            loading={loading}
+          />
+          <div className={styles.iconSearch} onClick={onOpenCloseSearch}>
+            <FaTimesCircle />
+          </div>
+        </div>
+
+        <div className={styles.visitaLista}>
+          {error && <p>{error}</p>}
+          {clientes.length > 0 && (
+            <div className={styles.resultsContainer}>
+              <ClientesListSearch reload={reload} onReload={onReload} query={query}  onToastSuccess={onToastSuccess} onOpenCloseSearch={onOpenCloseSearch} />
+            </div>
+          )}
         </div>
       </div>
 
-      <div className={styles.visitaLista}>
-        {error && <p>{error}</p>}
-        {clientes.length > 0 && (
-          <div className={styles.resultsContainer}>
-            <ClientesListSearch clientes={clientes} reload={reload} onReload={onReload} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
-          </div>
-        )}
-      </div>
-    </div>
+      <BasicModal title="Error de acceso" show={errorModalOpen} onClose={onOpenCloseErrorModal}>
+        <ErrorAccesso apiError={apiError} onOpenCloseErrorModal={onOpenCloseErrorModal} />
+      </BasicModal>
+
+    </>
+
   )
 }

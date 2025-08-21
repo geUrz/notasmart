@@ -1,13 +1,13 @@
+import styles from './clientes.module.css'
 import { Add, ErrorAccesso, Loading, Search, Title, ToastDelete, ToastSuccess } from '@/components/Layouts'
 import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
 import { useAuth } from '@/contexts/AuthContext'
 import { BasicLayout, BasicModal } from '@/layouts'
 import { useEffect, useState } from 'react'
 import { ClienteForm, ClientesLista, ClientesListSearch, SearchClientes } from '@/components/Clientes'
-import { FaSearch } from 'react-icons/fa'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { fetchClientes } from '@/store/clientes/clienteSlice'
-import styles from './clientes.module.css'
+import { selectClientesError } from '@/store/clientes/clienteSelectors'
 
 export default function Clientes() {
 
@@ -29,15 +29,22 @@ export default function Clientes() {
 
   const [apiError, setApiError] = useState(null)
   const [errorModalOpen, setErrorModalOpen] = useState(false)
+  const error = useSelector(selectClientesError)
 
   const onOpenCloseErrorModal = () => setErrorModalOpen((prev) => !prev)
 
   const dispatch = useDispatch()
 
   useEffect(() => {
-    if (user) {
-      dispatch(fetchClientes(user.negocio_id))
-    }
+      if (error) {
+        setApiError(error)
+        setErrorModalOpen(true)  
+      }
+    }, [error])
+
+  useEffect(() => {
+    if (!user) return
+      dispatch(fetchClientes(user?.negocio_id))
   }, [dispatch, reload, user])
 
   const [toastSuccess, setToastSuccess] = useState(false)
@@ -48,13 +55,6 @@ export default function Clientes() {
     setToastSuccess(true)
     setTimeout(() => {
       setToastSuccess(false)
-    }, 3000)
-  }
-
-  const onToastSuccessMod = () => {
-    setToastSuccessMod(true)
-    setTimeout(() => {
-      setToastSuccessMod(false)
     }, 3000)
   }
 
@@ -77,8 +77,6 @@ export default function Clientes() {
 
         {toastSuccess && <ToastSuccess contain='Creado exitosamente' onClose={() => setToastSuccess(false)} />}
 
-        {toastSuccessMod && <ToastSuccess contain='Modificado exitosamente' onClose={() => setToastSuccessMod(false)} />}
-
         {toastSuccessDel && <ToastDelete contain='Eliminado exitosamente' onClose={() => setToastSuccessDel(false)} />}
 
         <Title title='clientes' />
@@ -96,10 +94,10 @@ export default function Clientes() {
           setResultados={setResultados}
           SearchComponent={SearchClientes}
           SearchListComponent={ClientesListSearch}
-          onToastSuccessMod={onToastSuccessMod}
+          onToastSuccess={onToastSuccess}
         />
 
-        <ClientesLista user={user} reload={reload} onReload={onReload} onToastSuccessMod={onToastSuccessMod} onToastSuccessDel={onToastSuccessDel} />
+        <ClientesLista user={user} reload={reload} onReload={onReload} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
 
       </BasicLayout>
 

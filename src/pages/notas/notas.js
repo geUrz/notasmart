@@ -1,23 +1,23 @@
+import styles from './Notas.module.css'
 import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
 import { BasicLayout, BasicModal } from '@/layouts'
 import { Add, ErrorAccesso, IconClose, Loading, Search, Title, ToastDelete, ToastSuccess } from '@/components/Layouts'
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { NotaForm, NotasLista, NotasListSearch, SearchNotas } from '@/components/Notas'
-import styles from './Notas.module.css'
-import { FaArrowCircleRight, FaInfoCircle, FaSearch } from 'react-icons/fa'
+import { FaArrowCircleRight, FaInfoCircle } from 'react-icons/fa'
 import Link from 'next/link'
 import { usePermissions } from '@/hooks'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchNotas } from '@/store/notas/notaSlice'
-import { selectNotaError, selectTotalFoliosNgId, selectTotalNotasNgId } from '@/store/notas/notaSelectors'
+import { selectNotaError, selectTotalFolios, selectTotalNotas } from '@/store/notas/notaSelectors'
 
 export default function Notas() {
 
   const { user, loading } = useAuth()
-
+  
   const { isAdmin, isSuperUser, isPremium } = usePermissions()
-
+  
   const [reload, setReload] = useState(false)
 
   const onReload = () => setReload((prevState) => !prevState)
@@ -25,8 +25,12 @@ export default function Notas() {
   const [openCloseForm, setOpenCloseForm] = useState(false)
 
   const [showFolios, setShowFolios] = useState(false)
-
+  
   const onOpenCloseForm = () => setOpenCloseForm((prevState) => !prevState)
+  
+  const [showNoNegocioId, setShowNoNegocioId] = useState(false)
+  
+  const onOpenShowNoNegocioId = () => setShowNoNegocioId((prevState) => !prevState)
 
   const onOpenShowFolios = () => setShowFolios((prevState) => !prevState)
 
@@ -37,9 +41,20 @@ export default function Notas() {
   const [resultados, setResultados] = useState([])
 
   const dispatch = useDispatch()
-  const totalNotasNgId = useSelector(selectTotalNotasNgId)
-  const totalFoliosNgId = useSelector(selectTotalFoliosNgId)
-  const errorNotas = useSelector(selectNotaError)
+  const totalNotas = useSelector(selectTotalNotas)
+  const totalFolios = useSelector(selectTotalFolios)
+  const [apiError, setApiError] = useState(null)
+  const [errorModalOpen, setErrorModalOpen] = useState(false)
+  const error = useSelector(selectNotaError)
+
+  const onOpenCloseErrorModal = () => setErrorModalOpen((prev) => !prev)
+
+  useEffect(() => {
+    if (error) {
+      setApiError(error)
+      setErrorModalOpen(true)
+    }
+  }, [error])
 
   useEffect(() => {
     if (!user) return
@@ -47,28 +62,22 @@ export default function Notas() {
   }, [dispatch, user, reload])
 
   const onOpenCloseFormFolios = () => {
-    if (!isAdmin && !isPremium && totalNotasNgId >= totalFoliosNgId) {
+    if (!isAdmin && !user?.negocio_id) {
+      onOpenShowNoNegocioId()
+    } else if (!isAdmin && !isPremium && totalNotas >= totalFolios) {
       onOpenShowFolios()
     } else {
       onOpenCloseForm()
     }
-  }
+  }  
 
   const [toastSuccess, setToastSuccessReportes] = useState(false)
-  const [toastSuccessMod, setToastSuccessReportesMod] = useState(false)
   const [toastSuccessDel, setToastSuccessReportesDel] = useState(false)
 
   const onToastSuccess = () => {
     setToastSuccessReportes(true)
     setTimeout(() => {
       setToastSuccessReportes(false)
-    }, 3000)
-  }
-
-  const onToastSuccessMod = () => {
-    setToastSuccessReportesMod(true)
-    setTimeout(() => {
-      setToastSuccessReportesMod(false)
     }, 3000)
   }
 
@@ -91,8 +100,6 @@ export default function Notas() {
 
         {toastSuccess && <ToastSuccess onClose={() => setToastSuccessReportes(false)} />}
 
-        {toastSuccessMod && <ToastSuccess onClose={() => setToastSuccessReportesMod(false)} />}
-
         {toastSuccessDel && <ToastDelete onClose={() => setToastSuccessReportesDel(false)} />}
 
         <Title title='notas' />
@@ -110,10 +117,10 @@ export default function Notas() {
           setResultados={setResultados}
           SearchComponent={SearchNotas}
           SearchListComponent={NotasListSearch}
-          onToastSuccessMod={onToastSuccessMod}
+          onToastSuccess={onToastSuccess}
         />
 
-        <NotasLista user={user} loading={loading} reload={reload} onReload={onReload} isAdmin={isAdmin} isSuperUser={isSuperUser} isPremium={isPremium} onToastSuccessMod={onToastSuccessMod} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
+        <NotasLista user={user} loading={loading} reload={reload} onReload={onReload} isAdmin={isAdmin} isSuperUser={isSuperUser} isPremium={isPremium} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
 
       </BasicLayout>
 
@@ -132,16 +139,26 @@ export default function Notas() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Solicitar folios <FaArrowCircleRight />
+            <div className={styles.section2}>
+              <h2>Solicitar folios</h2> 
+              <FaArrowCircleRight />
+            </div>
           </Link>
         </div>
       </BasicModal>
 
-      {/* {errorNotas && (
-        <BasicModal title="Error de acceso" show={true} onClose={() => dispatch(setError(null))}>
-          <ErrorAccesso apiError={errorNotas} onOpenCloseErrorModal={() => dispatch(setError(null))} />
-        </BasicModal>
-      )} */}
+      <BasicModal show={showNoNegocioId} onClose={onOpenShowNoNegocioId}>
+        <IconClose onOpenClose={onOpenShowNoNegocioId} />
+        <div className={styles.noFolios}>
+          <FaInfoCircle />
+          <h1>¡Este usuario no tiene un negocio!</h1>
+          <h2>Por favor, póngase en contacto con el administrador para resolverlo.</h2>
+        </div>
+      </BasicModal>
+
+      <BasicModal title="Error de acceso" show={errorModalOpen} onClose={onOpenCloseErrorModal}>
+        <ErrorAccesso apiError={apiError} />
+      </BasicModal>
 
     </ProtectedRoute>
 

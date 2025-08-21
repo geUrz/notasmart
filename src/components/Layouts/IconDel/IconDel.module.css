@@ -10,14 +10,6 @@
 .iconDel svg, .iconDel path{
   margin-right: 10px;
   font-size: 20px;
-  color: var(--clrR0);
+  color: var(--clrGlobalG);
   cursor: pointer;
-}
-
-.iconDel div:hover svg, .iconDel div:hover path{
-  color: var(--clrR1);
-}
-
-.iconDel div:active svg, .iconDel div:active path{
-  color: var(--clrR2);
 }

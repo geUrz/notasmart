@@ -4,6 +4,7 @@ import axios from 'axios'
 const initialState = {
   negocio: null,
   negocios: [],
+  searchResults: [],
   loading: false,
   error: null
 }
@@ -18,6 +19,12 @@ export const negocioSlice = createSlice({
     setNegocios: (state, action) => {
       state.negocios = action.payload
     },
+    setSearchResults: (state, action) => {
+      state.searchResults = action.payload;
+    },
+    clearSearchResults: (state) => {
+      state.searchResults = [];
+    },
     setLoading: (state, action) => {
       state.loading = action.payload
     },
@@ -25,20 +32,27 @@ export const negocioSlice = createSlice({
       state.error = action.payload
     },
     updateNegocio: (state, action) => {
-      const updated = action.payload
+      const updated = action.payload;
     
+      // Actualiza el negocio seleccionado
       if (state.negocio && state.negocio.id === updated.id) {
-        state.negocio = { ...state.negocio, ...updated }
+        state.negocio = { ...state.negocio, ...updated };
       }
     
+      // Actualiza la lista de negocios
       state.negocios = state.negocios.map((n) =>
         n.id === updated.id ? { ...n, ...updated } : n
       )
-    }    
+    
+      // También actualiza los resultados de búsqueda
+      state.searchResults = state.searchResults.map((n) =>
+        n.id === updated.id ? { ...n, ...updated } : n
+      )
+    }        
   }
 })
 
-export const { setNegocio, setNegocios, setLoading, setError, updateNegocio } = negocioSlice.actions
+export const { setNegocio, setNegocios, setSearchResults, clearSearchResults, setLoading, setError, updateNegocio } = negocioSlice.actions
 export default negocioSlice.reducer
 
 export const fetchNegocios = () => async (dispatch) => {
@@ -64,5 +78,18 @@ export const fetchNegocioById = (id) => async (dispatch) => {
     dispatch(setLoading(false))
   }
 }
+
+export const searchNegocios = (search) => async (dispatch) => {
+  try {
+    const res = await axios.get('/api/negocios/negocios', {
+      params: { search },
+    })
+    dispatch(setSearchResults(res.data))
+  } catch (err) {
+    dispatch(setError('No se encontraron negocios'))
+  }
+}
+
+
 
 

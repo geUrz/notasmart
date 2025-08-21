@@ -5,12 +5,13 @@ import axios from 'axios'
 const initialState = {
   nota: null,
   notas: [],
-  totalNotasNgId: 0,
-  totalFoliosNgId: 0,
+  searchResults: [],
+  totalNotas: 0,
+  totalFolios: 0,
   plan: null,
-  precioGranTotalNgId: 0,
-  porCobrarTotalNgId: 0,
-  precioProductoBaseTotalNgId: 0,
+  precioGranTotal: 0,
+  porCobrarTotal: 0,
+  precioProductoBaseTotal: 0,
   totalNotasGlobal: 0,
   precioGranTotalGlobal: 0,
   porCobrarTotalGlobal: 0,
@@ -30,12 +31,12 @@ export const notaSlice = createSlice({
     setNotasData: (state, action) => {
       const {
         notas,
-        totalNotasNgId,
-        totalFoliosNgId,
+        totalNotas,
+        totalFolios,
         plan,
-        precioGranTotalNgId,
-        porCobrarTotalNgId,
-        precioProductoBaseTotalNgId,
+        precioGranTotal,
+        porCobrarTotal,
+        precioProductoBaseTotal,
         totalNotasGlobal,
         precioGranTotalGlobal,
         porCobrarTotalGlobal,
@@ -44,23 +45,47 @@ export const notaSlice = createSlice({
       } = action.payload
 
       state.notas = notas || []
-      state.totalNotasNgId = totalNotasNgId ?? 0
-      state.totalFoliosNgId = totalFoliosNgId ?? 0
+      state.totalNotas = totalNotas ?? 0
+      state.totalFolios = totalFolios ?? 0
       state.plan = plan ?? null
-      state.precioGranTotalNgId = precioGranTotalNgId ?? 0
-      state.porCobrarTotalNgId = porCobrarTotalNgId ?? 0
-      state.precioProductoBaseTotalNgId = precioProductoBaseTotalNgId ?? 0
+      state.precioGranTotal = precioGranTotal ?? 0
+      state.porCobrarTotal = porCobrarTotal ?? 0
+      state.precioProductoBaseTotal = precioProductoBaseTotal ?? 0
       state.totalNotasGlobal = totalNotasGlobal ?? 0
       state.precioGranTotalGlobal = precioGranTotalGlobal ?? 0
       state.porCobrarTotalGlobal = porCobrarTotalGlobal ?? 0
       state.precioProductoBaseTotalGlobal = precioProductoBaseTotalGlobal ?? 0
       state.negocioId = negocioId ?? null
     },
+    setSearchResults: (state, action) => {
+      state.searchResults = action.payload;
+    },
+    clearSearchResults: (state) => {
+      state.searchResults = [];
+    },
     setLoading: (state, action) => {
       state.loading = action.payload
     },
     setError: (state, action) => {
       state.error = action.payload
+    },
+    updateNota: (state, action) => {
+      const updated = action.payload;
+    
+      // Actualiza el nota seleccionado
+      if (state.nota && state.nota.id === updated.id) {
+        state.nota = { ...state.nota, ...updated }
+      }
+    
+      // Actualiza la lista de notas
+      state.notas = state.notas.map((n) =>
+        n.id === updated.id ? { ...n, ...updated } : n
+      )
+    
+      // También actualiza los resultados de búsqueda
+      state.searchResults = state.searchResults.map((n) =>
+        n.id === updated.id ? { ...n, ...updated } : n
+      )
     },
     updateConcepto: (state, action) => {
       const concepto = action.payload
@@ -93,8 +118,11 @@ export const notaSlice = createSlice({
 export const {
   setNota,
   setNotasData,
+  setSearchResults, 
+  clearSearchResults,
   setLoading,
   setError,
+  updateNota,
   updateConcepto,
   updateAbono,
   updateAnticipo,
@@ -103,14 +131,10 @@ export const {
 
 export default notaSlice.reducer
 
-export const fetchNotas = (negocio_id = null) => async (dispatch) => {
+export const fetchNotas = (negocio_id) => async (dispatch) => {
   try {
     dispatch(setLoading(true))
-    const url = negocio_id
-      ? `/api/notas/notas?negocio_id=${negocio_id}`
-      : '/api/notas/notas'
-
-    const res = await axios.get(url)
+    const res = await axios.get(`/api/notas/notas?negocio_id=${negocio_id}`)
     dispatch(setNotasData(res.data))
   } catch (error) {
     dispatch(setError(error.response?.data?.error || 'Error al cargar notas'))
@@ -130,3 +154,36 @@ export const fetchNotaById = (id) => async (dispatch) => {
     dispatch(setLoading(false))
   }
 }
+
+export const searchNotas = (search) => async (dispatch) => {
+  try {
+    const res = await axios.get('/api/notas/notas', {
+      params: { search },
+    })
+    dispatch(setSearchResults(res.data))
+  } catch (err) {
+    dispatch(setError('No se encontraron notas'))
+  }
+}
+
+/* export const fetchNotas = (user) => async (dispatch) => {
+  try {
+    dispatch(setLoading(true))
+
+    const isAdmin = user?.nivel === 'admin'
+    const negocio_id = user?.negocio_id
+
+    const url = isAdmin
+      ? '/api/notas/notas' 
+      : `/api/notas/notas?negocio_id=${negocio_id}`
+
+    const res = await axios.get(url)
+    dispatch(setNotasData(res.data))
+  } catch (error) {
+    dispatch(setError(error.response?.data?.error || 'Error al cargar notas'))
+  } finally {
+    dispatch(setLoading(false))
+  }
+} */
+
+

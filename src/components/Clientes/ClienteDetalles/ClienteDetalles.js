@@ -1,10 +1,10 @@
+import styles from './ClienteDetalles.module.css'
 import { IconClose, Confirm, IconDel, IconEdit, ErrorAccesso } from '@/components/Layouts'
-import { useEffect, useMemo, useState } from 'react'
+import { useState } from 'react'
 import { BasicModal } from '@/layouts'
 import { ClienteEditForm } from '../ClienteEditForm'
 import axios from 'axios'
 import { getValueOrDefault } from '@/helpers'
-import styles from './ClienteDetalles.module.css'
 import { usePermissions } from '@/hooks'
 import { selectCliente } from '@/store/clientes/clienteSelectors'
 import { useDispatch, useSelector } from 'react-redux'
@@ -12,7 +12,7 @@ import { fetchClientes, setCliente } from '@/store/clientes/clienteSlice'
 
 export function ClienteDetalles(props) {
 
-  const { user, reload, onReload, syncNota, onCloseDetalles, onToastSuccessMod, onToastSuccessDel } = props
+  const { user, reload, onReload, syncNota, onCloseDetalles, onToastSuccess, onToastSuccessDel } = props
   
   const dispatch = useDispatch()
   const cliente = useSelector(selectCliente)
@@ -109,7 +109,7 @@ export function ClienteDetalles(props) {
       </div>
 
       <BasicModal title='modificar cliente' show={showEdit} onClose={onOpenCloseEdit}>
-        <ClienteEditForm user={user} reload={reload} onReload={onReload} onOpenCloseEdit={onOpenCloseEdit} onToastSuccessMod={onToastSuccessMod} />
+        <ClienteEditForm user={user} reload={reload} onReload={onReload} onOpenCloseEdit={onOpenCloseEdit} onToastSuccess={onToastSuccess} />
       </BasicModal>
 
       <BasicModal title="Error de acceso" show={errorModalOpen} onClose={onOpenCloseErrorModal}>

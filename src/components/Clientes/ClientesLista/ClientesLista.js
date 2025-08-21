@@ -1,3 +1,4 @@
+import styles from './ClientesLista.module.css'
 import { useState } from 'react'
 import { ListEmpty, Loading } from '@/components/Layouts'
 import { map, size } from 'lodash'
@@ -5,7 +6,6 @@ import { FaUsers } from 'react-icons/fa'
 import { BasicModal } from '@/layouts'
 import { ClienteDetalles } from '../ClienteDetalles'
 import { getValueOrDefault } from '@/helpers'
-import styles from './ClientesLista.module.css'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectClientes } from '@/store/clientes/clienteSelectors'
 import { setCliente } from '@/store/clientes/clienteSlice'
@@ -13,7 +13,7 @@ import { fetchNotas } from '@/store/notas/notaSlice'
 
 export function ClientesLista(props) {
 
-  const { user, reload, onReload, onToastSuccessMod, onToastSuccessDel } = props
+  const { user, reload, onReload, onToastSuccess, onToastSuccessDel } = props
 
   const dispatch = useDispatch()
   const clientes = useSelector(selectClientes)
@@ -69,7 +69,7 @@ export function ClientesLista(props) {
       )}
 
       <BasicModal title='detalles del cliente' show={showDetalles} onClose={onCloseDetalles}>
-        <ClienteDetalles user={user} reload={reload} onReload={onReload} syncNota={syncNota} onCloseDetalles={onCloseDetalles} onToastSuccessMod={onToastSuccessMod} onToastSuccessDel={onToastSuccessDel} />
+        <ClienteDetalles user={user} reload={reload} onReload={onReload} syncNota={syncNota} onCloseDetalles={onCloseDetalles} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
       </BasicModal>
 
     </>

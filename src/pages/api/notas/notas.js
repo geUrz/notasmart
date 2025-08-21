@@ -4,102 +4,67 @@ import fs from 'fs'
 import path from 'path'
 
 async function getFoliosYTotalNotas(negocio_id) {
-    const [[{ totalNotasGlobal }]] = await connection.query('SELECT COUNT(*) AS totalNotasGlobal FROM notas')
-
-    const [[{ conTotalGlobalRaw }]] = await connection.query(
-        `SELECT SUM(c.total) AS conTotalGlobalRaw FROM conceptosnot c JOIN notas n ON c.nota_id = n.id`
-    )
-
-    const [[{ aboProBaseTotalGlobalRaw }]] = await connection.query(
-        'SELECT SUM(a.monto) AS aboProBaseTotalGlobalRaw FROM abonosnot a JOIN notas n ON a.nota_id = n.id WHERE a.producto_base = 1'
-    )
-
-    const [[{ antProBaseTotalGlobalRaw }]] = await connection.query(
-        'SELECT SUM(a.monto) AS antProBaseTotalGlobalRaw FROM anticiposnot a JOIN notas n ON a.nota_id = n.id WHERE a.producto_base = 1'
-    )
-
-    const [[{ aboTotalGlobalRaw }]] = await connection.query(
-        'SELECT SUM(a.monto) AS aboTotalGlobalRaw FROM abonosnot a JOIN notas n ON a.nota_id = n.id WHERE a.producto_base IS NULL OR a.producto_base != 1'
-    )
-
-    const [[{ antTotalGlobalRaw }]] = await connection.query(
-        'SELECT SUM(a.monto) AS antTotalGlobalRaw FROM anticiposnot a JOIN notas n ON a.nota_id = n.id WHERE a.producto_base IS NULL OR a.producto_base != 1'
-    )
-
-    const [[{ ivaTotalGlobalRaw }]] = await connection.query('SELECT SUM(iva_total) AS ivaTotalGlobalRaw FROM notas')
 
     const [[negocioData]] = await connection.query(
-        'SELECT folios, plan FROM negocios WHERE id = ?', [negocio_id]
-    )
+        'SELECT folios, plan FROM negocios WHERE id = ?',
+        [negocio_id]
+    )    
 
     const folios = negocioData?.folios || 0
     const plan = negocioData?.plan || null
 
     const [[{ totalNotasNegocioId }]] = await connection.query(
-        'SELECT COUNT(*) AS totalNotasNegocioId FROM notas WHERE negocio_id = ?', [negocio_id]
-    );
+        `SELECT COUNT(*) AS totalNotasNegocioId 
+         FROM notas 
+         WHERE negocio_id = ?`, 
+        [negocio_id]
+    )    
 
-    const [[{ conTotalNgIdRaw }]] = await connection.query(
-        `SELECT SUM(c.total) AS conTotalNgIdRaw FROM conceptosnot c JOIN notas n ON c.nota_id = n.id WHERE n.negocio_id = ?`, [negocio_id]
+    const [[{ conTotalRaw }]] = await connection.query(
+        `SELECT SUM(c.total) AS conTotalRaw FROM conceptosnot c JOIN notas n ON c.nota_id = n.id WHERE n.negocio_id = ?`, [negocio_id]
     )
 
-    const [[{ aboProBaseTotalNgIdRaw }]] = await connection.query(
-        'SELECT SUM(a.monto) AS aboProBaseTotalNgIdRaw FROM abonosnot a JOIN notas n ON a.nota_id = n.id WHERE n.negocio_id = ? AND (a.producto_base = 1)', [negocio_id]
+    const [[{ aboProBaseTotalRaw }]] = await connection.query(
+        'SELECT SUM(a.monto) AS aboProBaseTotalRaw FROM abonosnot a JOIN notas n ON a.nota_id = n.id WHERE n.negocio_id = ? AND (a.producto_base = 1)', [negocio_id]
     )
 
-    const [[{ antProBaseTotalNgIdRaw }]] = await connection.query(
-        'SELECT SUM(a.monto) AS antProBaseTotalNgIdRaw FROM anticiposnot a JOIN notas n ON a.nota_id = n.id WHERE n.negocio_id = ? AND (a.producto_base = 1)', [negocio_id]
+    const [[{ antProBaseTotalRaw }]] = await connection.query(
+        'SELECT SUM(a.monto) AS antProBaseTotalRaw FROM anticiposnot a JOIN notas n ON a.nota_id = n.id WHERE n.negocio_id = ? AND (a.producto_base = 1)', [negocio_id]
     )
 
-    const [[{ aboTotalNgIdRaw }]] = await connection.query(
-        'SELECT SUM(a.monto) AS aboTotalNgIdRaw FROM abonosnot a JOIN notas n ON a.nota_id = n.id WHERE n.negocio_id = ? AND (a.producto_base IS NULL OR a.producto_base != 1)', [negocio_id]
+    const [[{ aboTotalRaw }]] = await connection.query(
+        'SELECT SUM(a.monto) AS aboTotalRaw FROM abonosnot a JOIN notas n ON a.nota_id = n.id WHERE n.negocio_id = ? AND (a.producto_base IS NULL OR a.producto_base != 1)', [negocio_id]
     )
 
-    const [[{ antTotalNgIdRaw }]] = await connection.query(
-        'SELECT SUM(a.monto) AS antTotalNgIdRaw FROM anticiposnot a JOIN notas n ON a.nota_id = n.id WHERE n.negocio_id = ? AND (a.producto_base IS NULL OR a.producto_base != 1)', [negocio_id]
+    const [[{ antTotalRaw }]] = await connection.query(
+        'SELECT SUM(a.monto) AS antTotalRaw FROM anticiposnot a JOIN notas n ON a.nota_id = n.id WHERE n.negocio_id = ? AND (a.producto_base IS NULL OR a.producto_base != 1)', [negocio_id]
     )
 
-    const [[{ ivaTotalNgIdRaw }]] = await connection.query(
-        'SELECT SUM(iva_total) AS ivaTotalNgIdRaw FROM notas WHERE negocio_id = ?', [negocio_id]
+    const [[{ ivaTotalRaw }]] = await connection.query(
+        'SELECT SUM(iva_total) AS ivaTotalRaw FROM notas WHERE negocio_id = ?', [negocio_id]
     )
 
-    const conTotalGlobal = parseFloat(conTotalGlobalRaw) || 0
-    const aboProBaseTotalGlobal = parseFloat(aboProBaseTotalGlobalRaw) || 0
-    const antProBaseTotalGlobal = parseFloat(antProBaseTotalGlobalRaw) || 0
-    const aboTotalGlobal = parseFloat(aboTotalGlobalRaw) || 0
-    const antTotalGlobal = parseFloat(antTotalGlobalRaw) || 0
-    const ivaTotalGlobal = parseFloat(ivaTotalGlobalRaw) || 0
-    const conTotalNgId = parseFloat(conTotalNgIdRaw) || 0
-    const aboProBaseTotalNgId = parseFloat(aboProBaseTotalNgIdRaw) || 0
-    const antProBaseTotalNgId = parseFloat(antProBaseTotalNgIdRaw) || 0
-    const aboTotalNgId = parseFloat(aboTotalNgIdRaw) || 0
-    const antTotalNgId = parseFloat(antTotalNgIdRaw) || 0
-    const aboPorCobrarTotalGlobal = aboProBaseTotalGlobal - aboTotalGlobal
-    const antPorCobrarTotalGlobal = antProBaseTotalGlobal - antTotalGlobal
-    const aboPorCobrarTotalNgId = aboProBaseTotalNgId - aboTotalNgId
-    const antPorCobrarTotalNgId = antProBaseTotalNgId - antTotalNgId
-    const ivaTotalNgId = parseFloat(ivaTotalNgIdRaw) || 0
+    const conTotal = parseFloat(conTotalRaw) || 0
+    const aboProBaseTotal = parseFloat(aboProBaseTotalRaw) || 0
+    const antProBaseTotal = parseFloat(antProBaseTotalRaw) || 0
+    const aboTotal = parseFloat(aboTotalRaw) || 0
+    const antTotal = parseFloat(antTotalRaw) || 0
+    const aboPorCobrarTotal = aboProBaseTotal - aboTotal
+    const antPorCobrarTotal = antProBaseTotal - antTotal
+    const ivaTotal = parseFloat(ivaTotalRaw) || 0
 
     return {
-        totalNotasGlobal: totalNotasGlobal || 0,
-        conTotalGlobal,
-        ivaTotalGlobal,
-        precioIvaTotalGlobal: conTotalGlobal + ivaTotalGlobal,
-        aboProBaseTotalGlobal,
-        aboTotalGlobal,
-        precioGranTotalGlobal: conTotalGlobal + aboTotalGlobal + antTotalGlobal,
-        porCobrarTotalGlobal: aboPorCobrarTotalGlobal + antPorCobrarTotalGlobal,
-        precioProductoBaseTotalGlobal: conTotalGlobal + aboProBaseTotalGlobal + antProBaseTotalGlobal,
+ 
         plan,
-        totalFoliosNgId: folios || 0,
-        totalNotasNgId: totalNotasNegocioId || 0,
-        conTotalNgId,
-        aboProBaseTotalNgId,
-        aboTotalNgId,
-        ivaTotalNgId,
-        precioGranTotalNgId: conTotalNgId + aboTotalNgId + antTotalNgId,
-        porCobrarTotalNgId: aboPorCobrarTotalNgId + antPorCobrarTotalNgId,
-        precioProductoBaseTotalNgId: conTotalNgId + aboProBaseTotalNgId + antProBaseTotalNgId
+        totalFolios: folios || 0,
+        totalNotas: totalNotasNegocioId || 0,
+        conTotal,
+        aboProBaseTotal,
+        aboTotal,
+        ivaTotal,
+        precioGranTotal: conTotal + aboTotal + antTotal,
+        porCobrarTotal: aboPorCobrarTotal + antPorCobrarTotal,
+        precioProductoBaseTotal: conTotal + aboProBaseTotal + antProBaseTotal
     }
 }
 
@@ -112,7 +77,7 @@ export async function handler(req, res) {
     const negocioSolicitado = parseInt(negocio_id)
     const negocioId = user?.negocio_id
     const isAdmin = user?.nivel === 'admin'
-
+    
     if (req.method === 'GET') {
 
         const getDatos = async (notaId, formaPago) => {
@@ -197,10 +162,10 @@ export async function handler(req, res) {
           }              
 
         if (negocio_id) {
-            const { totalFoliosNgId, plan, totalNotasNgId, precioGranTotalNgId, precioProductoBaseTotalNgId, porCobrarTotalNgId } = await getFoliosYTotalNotas(negocioId)
+            const { totalFolios, plan, totalNotas, precioGranTotal, precioProductoBaseTotal, porCobrarTotal } = await getFoliosYTotalNotas(negocioId)
     
             if (!isAdmin && negocioSolicitado !== negocioId) {
-                return res.status(403).json({ error: 'No tienes permiso para ver este negocio' })
+                return res.status(403).json({ error: 'No tienes permiso para accesar' });
             }
     
             try {
@@ -256,12 +221,12 @@ export async function handler(req, res) {
                   }                  
     
                 res.status(200).json({
-                    totalNotasNgId,
-                    precioGranTotalNgId,
-                    porCobrarTotalNgId,
-                    precioProductoBaseTotalNgId,
+                    totalNotas,
+                    precioGranTotal,
+                    porCobrarTotal,
+                    precioProductoBaseTotal,
                     plan,
-                    totalFoliosNgId,
+                    totalFolios,
                     negocioId,
                     notas: rows
                 })
@@ -340,7 +305,7 @@ export async function handler(req, res) {
             return res.status(403).json({ error: 'No tienes permiso para accesar' })
         }
     
-        const { totalNotasGlobal, precioGranTotalGlobal, porCobrarTotalGlobal, precioProductoBaseTotalGlobal,  } = await getFoliosYTotalNotas()
+        const { totalNotas, precioGranTotal, porCobrarTotal, precioProductoBaseTotal,  } = await getFoliosYTotalNotas()
     
         try {
             const [rows] = await connection.query(`
@@ -374,10 +339,10 @@ export async function handler(req, res) {
               
     
             return res.status(200).json({
-                totalNotasGlobal,
-                precioGranTotalGlobal,
-                porCobrarTotalGlobal,
-                precioProductoBaseTotalGlobal,
+                totalNotas,
+                precioGranTotal,
+                porCobrarTotal,
+                precioProductoBaseTotal,
                 notas: rows
             })
         } catch (error) {
@@ -396,11 +361,11 @@ export async function handler(req, res) {
 
                 const negocio_id = user.negocio_id;
 
-                const { totalNotasNgId, totalFoliosNgId, plan } = await getFoliosYTotalNotas(negocio_id)
+                const { totalNotas, totalFolios, plan } = await getFoliosYTotalNotas(negocio_id)
 
                 const isPremium = plan === 'premium';
 
-                if (!isAdmin && !isPremium && totalNotasNgId >= totalFoliosNgId) {
+                if (!isAdmin && !isPremium && totalNotas >= totalFolios) {
                     return res.status(403).json({ error: 'Has agotado tus folios disponibles' });
                 }
 

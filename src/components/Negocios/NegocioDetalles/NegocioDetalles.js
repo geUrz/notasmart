@@ -1,18 +1,18 @@
+import styles from './NegocioDetalles.module.css'
 import { IconClose, Confirm, IconDel, IconEdit } from '@/components/Layouts'
 import { useState } from 'react'
 import { BasicModal } from '@/layouts'
 import { NegocioEditForm } from '../NegocioEditForm'
 import axios from 'axios'
 import { getValueOrDefault } from '@/helpers'
-import styles from './NegocioDetalles.module.css'
 import { FaInfinity } from 'react-icons/fa'
 import { useSelector } from 'react-redux'
 import { selectNegocio } from '@/store/negocios/negocioSelectors'
 
 export function NegocioDetalles(props) {
 
-  const { reload, onReload, isAdmin, isPremium, onCloseDetalles, onToastSuccess, onToastSuccessMod, onToastSuccessDel } = props
-
+  const { reload, onReload, isAdmin, isPremium, onCloseDetalles, onToastSuccess, onToastSuccessDel } = props
+  
   const negocio = useSelector(selectNegocio)
   
   const [showEdit, setShowEdit] = useState(false)
@@ -62,7 +62,7 @@ export function NegocioDetalles(props) {
             </div>
             <div>
               <h1>Folios</h1>
-              <h2>{isPremium ?
+              <h2>{negocio?.plan === 'premium' ?
                 <FaInfinity /> :
                 getValueOrDefault(negocio?.folios)
               }</h2>
@@ -95,7 +95,7 @@ export function NegocioDetalles(props) {
       </div>
 
       <BasicModal title='modificar negocio' show={showEdit} onClose={onOpenCloseEdit}>
-        <NegocioEditForm reload={reload} onReload={onReload} onOpenCloseEdit={onOpenCloseEdit} onToastSuccess={onToastSuccess} onToastSuccessMod={onToastSuccessMod} />
+        <NegocioEditForm reload={reload} onReload={onReload} onOpenCloseEdit={onOpenCloseEdit} onToastSuccess={onToastSuccess} />
       </BasicModal>
 
       <Confirm

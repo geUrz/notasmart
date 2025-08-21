@@ -9,10 +9,16 @@ export async function handler(req, res) {
 
     const { id, negocio_id, search } = req.query;
     const isAdmin = user?.nivel === 'admin'
-    const negocioSolicitado = parseInt(negocio_id)
-    const negocioId = user?.negocio_id;
+    const isUsuarioSu = user?.nivel === 'usuariosu'
+    const isUsuario = user?.nivel === 'usuario'
+    const negocioSolicitado = Number(negocio_id)
+    const negocioId = Number(user?.negocio_id)
     
-    if (req.method === 'GET') {
+    if (isUsuario) {
+        return res.status(403).json({ error: 'No tienes permiso para accesar' });
+    } 
+    
+    if (req.method === 'GET') {  
 
         if (search) {
             const searchQuery = `%${search.toLowerCase()}%`
@@ -28,13 +34,13 @@ export async function handler(req, res) {
 
                 // Construir cláusulas dinámicamente
                 const whereClauses = [
-                    "LOWER(nombre) LIKE ?",
-                    "LOWER(folio) LIKE ?",
-                    "LOWER(usuario) LIKE ?",
-                    "LOWER(email) LIKE ?",
-                    "LOWER(nivel) LIKE ?",
-                    "LOWER(negocio_nombre) LIKE ?",
-                    "LOWER(CAST(isactive AS CHAR)) LIKE ?"
+                    "LOWER(u.nombre) LIKE ?",
+                    "LOWER(u.folio) LIKE ?",
+                    "LOWER(u.usuario) LIKE ?",
+                    "LOWER(u.email) LIKE ?",
+                    "LOWER(u.nivel) LIKE ?",
+                    "LOWER(u.negocio_nombre) LIKE ?",
+                    "LOWER(CAST(u.isactive AS CHAR)) LIKE ?"
                 ];
 
                 const params = [
@@ -43,32 +49,34 @@ export async function handler(req, res) {
                 ];
 
                 if (isActiveQuery !== null) {
-                    whereClauses.push("usuarios.isactive = ?");
+                    whereClauses.push("u.isactive = ?");
                     params.push(isActiveQuery);
                 }
 
                 let whereClause = `(${whereClauses.join(" OR ")})`;
 
                 if (!isAdmin && negocioId) {
-                    whereClause += ` AND usuarios.negocio_id = ?`;
+                    whereClause += ` AND u.negocio_id = ?`;
                     params.push(negocioId);
                 }
 
                 const query = `
                 SELECT  
-                  id,
-                  folio, 
-                  nombre, 
-                  usuario, 
-                  email, 
-                  nivel,
-                  negocio_id,
-                  negocio_nombre,
-                  isactive
-                FROM 
-                 usuarios
+                  u.id,
+                  u.folio, 
+                  u.nombre, 
+                  u.usuario, 
+                  u.email, 
+                  u.nivel,
+                  u.negocio_id,
+                  u.negocio_nombre,
+                  u.isactive,
+                  n.plan,
+                  n.folios
+                FROM usuarios u
+                LEFT JOIN negocios n ON u.negocio_id = n.id
                  WHERE ${whereClause}
-                 ORDER BY updatedAt DESC
+                 ORDER BY u.updatedAt DESC
               `;
 
                 const [rows] = await connection.query(query, params);
@@ -79,42 +87,19 @@ export async function handler(req, res) {
                 return res.status(500).json({ error: 'Error al realizar la búsqueda' });
             }
         }
-
+  
         if (id) {
-            try {
-                const [rows] = await connection.query(
-                    `SELECT 
-                    u.id,
-                    u.folio, 
-                    u.nombre, 
-                    u.usuario,
-                    u.email, 
-                    u.nivel,
-                    u.negocio_id,
-                    u.negocio_nombre,
-                    u.isactive,
-                    n.plan
-                  FROM usuarios u
-                  LEFT JOIN negocios n ON u.negocio_id = n.id
-                    WHERE id = ?`,
-                    [id]
-                );
+            const [rows] = await connection.query(`SELECT * FROM usuarios WHERE id = ?`, [id]);
+            const usuario = rows[0];
 
-                /* if (rows.length === 0) {
-                    return res.status(404).json({ error: 'Usuario no encontrado' });
-                } */
-
-                res.status(200).json(rows[0]);
-            } catch (error) {
-                res.status(500).json({ error: error.message });
-            }
+            return res.status(200).json(usuario);
         }
-
+         
         if (negocio_id) {
 
             if (!isAdmin && negocioSolicitado !== negocioId) {
                 return res.status(403).json({ error: 'No tienes permiso para accesar' });
-            }
+            } 
 
             try {
                 const [rows] = await connection.query(
@@ -128,7 +113,8 @@ export async function handler(req, res) {
                         u.negocio_id,
                         u.negocio_nombre,
                         u.isactive,
-                        n.plan
+                        n.plan,
+                        n.folios
                         FROM usuarios u
                         LEFT JOIN negocios n ON u.negocio_id = n.id
                         WHERE u.negocio_id = ?
@@ -144,7 +130,7 @@ export async function handler(req, res) {
 
             if (!isAdmin) {
                 return res.status(403).json({ error: 'No tienes permiso para accesar' });
-            }
+            } 
             
                 try {
                     const [rows] = await connection.query(
@@ -158,7 +144,8 @@ export async function handler(req, res) {
                             u.negocio_id,
                             u.negocio_nombre,
                             u.isactive,
-                            n.plan
+                            n.plan,
+                            n.folios
                         FROM usuarios u
                         LEFT JOIN negocios n ON u.negocio_id = n.id
                         ORDER BY u.updatedAt DESC`
@@ -171,8 +158,12 @@ export async function handler(req, res) {
             }
 
     } else if (req.method === 'POST') {
-        // Crear un nuevo usuario
-        const { folio, nombre, usuario, email, nivel, negocio_id, negocio_nombre, isactive, password } = req.body;
+ 
+        const { folio, nombre, usuario, email, nivel, negocio_id, negocio_nombre, isactive, password } = req.body
+
+        if (!isAdmin && (isUsuario || negocio_id !== negocioId)) {
+            return res.status(403).json({ error: "No tienes permiso para accesar" });
+        }
 
         if (!password) {
             return res.status(400).json({ error: 'Se requiere una contraseña' });
@@ -225,7 +216,7 @@ export async function handler(req, res) {
 
             res.status(200).json({ id, ...updateData });
         } catch (error) {
-            console.error("Error details: ", error); // Muestra más detalles sobre el error
+            console.error("Error details: ", error); 
             res.status(500).json({ error: error.message })
         }
     } else if (req.method === 'DELETE') {

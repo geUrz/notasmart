@@ -7,15 +7,18 @@ import { useEffect, useState } from 'react'
 import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
 import { ModCuentaForm, UsuarioAddDatosImage, UsuarioFormEditPDF, UsuarioFormPDF } from '@/components/Usuario'
 import { BiSolidToggleLeft, BiSolidToggleRight } from 'react-icons/bi'
-import { getValueOrDefault } from '@/helpers'
+import { getValueOrDefault, getValueOrDel } from '@/helpers'
 import { useTheme } from '@/contexts/ThemeContext'
 import axios from 'axios'
 import styles from './usuario.module.css'
+import { usePermissions } from '@/hooks'
 
 export default function Usuario() {
 
   const { user, logout, loading } = useAuth()
-  
+
+  const { isAdmin, isSuperUser, isPremium } = usePermissions()
+
   const { theme, toggleTheme } = useTheme()
 
   const [reload, setReload] = useState(false)
@@ -35,12 +38,12 @@ export default function Usuario() {
   const onOpenCloseEditPDF = () => setShowEditPDF((prevState) => !prevState)
 
   const [datoPDF, setDatoPDF] = useState(null)
-  
+
   useEffect(() => {
-    if (user && user.id) {
+    if (user && user?.id) {
       (async () => {
         try {
-          const res = await axios.get(`/api/usuarios/datos_pdf?usuario_id=${user.id}`)
+          const res = await axios.get(`/api/usuarios/datos_pdf?usuario_id=${user?.id}`)
           setDatoPDF(res.data)
         } catch (error) {
           console.error(error)
@@ -85,7 +88,7 @@ export default function Usuario() {
       }))
 
       onReload()
- 
+
       setShowConfirmDelImg(false)
     } catch (error) {
       console.error('Error al eliminar la imagen:', error)
@@ -140,35 +143,35 @@ export default function Usuario() {
           <FaUser />
 
           <div className={styles.datos_usuario}>
-            {user && user.usuario &&
+            {user && user?.usuario &&
               <>
-                <h1>{getValueOrDefault(user.usuario)}</h1>
+                <h1>{getValueOrDefault(user?.usuario)}</h1>
                 <div>
                   <h2>Nombre:</h2>
-                  <h3>{getValueOrDefault(user.nombre)}</h3>
+                  <h3>{getValueOrDefault(user?.nombre)}</h3>
                 </div>
                 <div>
                   <h2>Correo:</h2>
-                  <h3>{getValueOrDefault(user.email)}</h3>
+                  <h3>{getValueOrDefault(user?.email)}</h3>
                 </div>
                 <div>
                   <h2>Nivel:</h2>
-                  <h3>{getValueOrDefault(user.nivel)}</h3>
+                  <h3>{getValueOrDefault(user?.nivel)}</h3>
                 </div>
                 <div>
                   <h2>Negocio:</h2>
-                  <h3>{getValueOrDefault(user.negocio_nombre)}</h3>
+                  <h3>{getValueOrDel(user?.negocio_nombre, !user?.negocio_id)}</h3>
                 </div>
                 <div>
                   <h2>Plan:</h2>
-                  <h3>{getValueOrDefault(user.negocio_plan)}</h3>
+                  <h3>{getValueOrDefault(user?.negocio_plan)}</h3>
                 </div>
                 <div>
                   <h2>Folios:</h2>
                   <h3>
-                    {user.negocio_plan === 'premium' ? 
+                    {isPremium ?
                       <FaInfinity /> :
-                      getValueOrDefault(user.negocio_folios)
+                      getValueOrDefault(user?.negocio_folios)
                     }
                   </h3>
                 </div>
@@ -176,104 +179,112 @@ export default function Usuario() {
             }
           </div>
 
-          <div className={styles.iconEdit}>
-            <div onClick={onOpenClose}>
-              <FaEdit />
-            </div>
-          </div>
+          {(isAdmin || isSuperUser) &&
 
-          <div className={styles.datos_pdf}>
-            <h1>Datos de mi negocio</h1>
-            <div className={styles.datos}>
-              <div>
-                <h1>Nombre de mi negocio</h1>
-                <h2>{getValueOrDefault(datoPDF?.fila1)}</h2>
-              </div>
-              <div>
-                <h1>Calle / Número</h1>
-                <h2>{getValueOrDefault(datoPDF?.fila2)}</h2>
-              </div>
-              <div>
-                <h1>Colonia</h1>
-                <h2>{getValueOrDefault(datoPDF?.fila3)}</h2>
-              </div>
-              <div>
-                <h1>Código postal</h1>
-                <h2>{getValueOrDefault(datoPDF?.fila4)}</h2>
-              </div>
-              <div>
-                <h1>Ciudad / Estado</h1>
-                <h2>{getValueOrDefault(datoPDF?.fila5)}</h2>
-              </div>
-              <div>
-                <h1>Teléfono</h1>
-                <h2>{getValueOrDefault(datoPDF?.fila7)}</h2>
-              </div>
-              <div>
-                <h1>Logo</h1>
-                {!datoPDF?.logo ? (
-                  <FaImage onClick={() => onShowSubirImg()} />
-                ) : (
-                  <Image
-                    src={datoPDF.logo}
-                    onClick={() => {
-                      setImageToDelete()
-                      onShowConfirmDelImg()
-                    }}
-                  />
-                )}
-              </div>
-            </div>
-          </div>
+            <>
 
-          <div className={styles.iconEdit}>
-            <div onClick={onOpenCloseFormPDF}>
-              <FaEdit />
-            </div>
-          </div>
+              <div className={styles.iconEdit}>
+                <div onClick={onOpenClose}>
+                  <FaEdit />
+                </div>
+              </div>
 
-          <div className={styles.toggleMain}>
-            <h1>Selecciona la combinación de colores de la nota</h1>
-            <div>
-              <h2>Encabezado</h2>
-              {[
-                { id: 1, label: "Blanco", onClass: styles.toggleClr1ONBan },
-                { id: 2, label: "Gris", onClass: styles.toggleClr2ONBan },
-              ].map(({ id, label, onClass }) => (
-                <div key={id}>
-                  <h3>{label}</h3>
-                  <div
-                    className={activeToggleBan === id ? onClass : styles.toggleClrOFF}
-                    onClick={() => onToggleBan(id)}
-                  >
-                    {activeToggleBan === id ? <BiSolidToggleRight /> : <BiSolidToggleLeft />}
+              <div className={styles.datos_pdf}>
+                <h1>Datos de mi negocio</h1>
+                <div className={styles.datos}>
+                  <div>
+                    <h1>Nombre de mi negocio</h1>
+                    <h2>{getValueOrDefault(datoPDF?.fila1)}</h2>
+                  </div>
+                  <div>
+                    <h1>Calle / Número</h1>
+                    <h2>{getValueOrDefault(datoPDF?.fila2)}</h2>
+                  </div>
+                  <div>
+                    <h1>Colonia</h1>
+                    <h2>{getValueOrDefault(datoPDF?.fila3)}</h2>
+                  </div>
+                  <div>
+                    <h1>Código postal</h1>
+                    <h2>{getValueOrDefault(datoPDF?.fila4)}</h2>
+                  </div>
+                  <div>
+                    <h1>Ciudad / Estado</h1>
+                    <h2>{getValueOrDefault(datoPDF?.fila5)}</h2>
+                  </div>
+                  <div>
+                    <h1>Teléfono</h1>
+                    <h2>{getValueOrDefault(datoPDF?.fila7)}</h2>
+                  </div>
+                  <div>
+                    <h1>Logo</h1>
+                    {!datoPDF?.logo ? (
+                      <FaImage onClick={() => onShowSubirImg()} />
+                    ) : (
+                      <Image
+                        src={datoPDF.logo}
+                        onClick={() => {
+                          setImageToDelete()
+                          onShowConfirmDelImg()
+                        }}
+                      />
+                    )}
                   </div>
                 </div>
-              ))}
-            </div>
-            <div>
-              <h2>Datos generales</h2>
-              {[
-                { id: 1, label: "Gris / Negro", onClass: styles.toggleClr1ON },
-                { id: 2, label: "Gris / Azul", onClass: styles.toggleClr2ON },
-                { id: 3, label: "Gris / Verde", onClass: styles.toggleClr3ON },
-                { id: 4, label: "Gris / Rojo", onClass: styles.toggleClr4ON },
-                { id: 5, label: "Gris / Naranja", onClass: styles.toggleClr5ON }
-              ].map(({ id, label, onClass }) => (
-                <div key={id}>
-                  <h3>{label}</h3>
-                  <div
-                    className={activeToggle === id ? onClass : styles.toggleClrOFF}
-                    onClick={() => onToggle(id)}
-                  >
-                    {activeToggle === id ? <BiSolidToggleRight /> : <BiSolidToggleLeft />}
-                  </div>
-                </div>
-              ))}
-            </div>
+              </div>
 
-          </div>
-          
+              <div className={styles.iconEdit}>
+                <div onClick={onOpenCloseFormPDF}>
+                  <FaEdit />
+                </div>
+              </div>
+
+              <div className={styles.toggleMain}>
+                <h1>Selecciona la combinación de colores de la nota</h1>
+                <div>
+                  <h2>Encabezado</h2>
+                  {[
+                    { id: 1, label: "Blanco", onClass: styles.toggleClr1ONBan },
+                    { id: 2, label: "Gris", onClass: styles.toggleClr2ONBan },
+                  ].map(({ id, label, onClass }) => (
+                    <div key={id}>
+                      <h3>{label}</h3>
+                      <div
+                        className={activeToggleBan === id ? onClass : styles.toggleClrOFF}
+                        onClick={() => onToggleBan(id)}
+                      >
+                        {activeToggleBan === id ? <BiSolidToggleRight /> : <BiSolidToggleLeft />}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div>
+                  <h2>Datos generales</h2>
+                  {[
+                    { id: 1, label: "Gris / Negro", onClass: styles.toggleClr1ON },
+                    { id: 2, label: "Gris / Azul", onClass: styles.toggleClr2ON },
+                    { id: 3, label: "Gris / Verde", onClass: styles.toggleClr3ON },
+                    { id: 4, label: "Gris / Rojo", onClass: styles.toggleClr4ON },
+                    { id: 5, label: "Gris / Naranja", onClass: styles.toggleClr5ON }
+                  ].map(({ id, label, onClass }) => (
+                    <div key={id}>
+                      <h3>{label}</h3>
+                      <div
+                        className={activeToggle === id ? onClass : styles.toggleClrOFF}
+                        onClick={() => onToggle(id)}
+                      >
+                        {activeToggle === id ? <BiSolidToggleRight /> : <BiSolidToggleLeft />}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+              </div>
+
+            </>
+
+          }
+
           <div className={styles.toggleTheme}>
             {theme != 'dark' ?
               <div className={styles.iconThemeSun}>
@@ -283,7 +294,7 @@ export default function Usuario() {
                 <FaMoon onClick={toggleTheme} />
               </div>
             }
-          </div>       
+          </div>
 
           <Button negative onClick={logout}>
             Cerrar sesión

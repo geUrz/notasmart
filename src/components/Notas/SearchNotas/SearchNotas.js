@@ -1,43 +1,47 @@
+import styles from './SearchNotas.module.css';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Input } from 'semantic-ui-react';
 import { NotasListSearch } from '../NotasListSearch';
 import { FaTimesCircle } from 'react-icons/fa';
-import styles from './SearchNotas.module.css';
+import { searchNotas } from '@/store/notas/notaSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectNotas } from '@/store/notas/notaSelectors';
 
 export function SearchNotas(props) {
 
-  const {user, reload, onReload, onResults, onOpenCloseSearch, onToastSuccessMod} = props
+  const { user, reload, onReload, onResults, onOpenCloseSearch, onToastSuccess } = props
 
   const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [notas, setNotas] = useState([])
-  
+  const notas = useSelector(selectNotas)
+
+  const dispatch = useDispatch()
+
   useEffect(() => {
     const fetchData = async () => {
-      if (query.trim() === '') {
-        setNotas([])
-        return
+      if (query.trim().length < 1) {
+        setError('')
+        return;
       }
 
       setLoading(true)
       setError('')
 
       try {
-        const res = await axios.get(`/api/notas/notas?search=${query}`)
-        setNotas(res.data)
-      } catch (err) {
-        console.error('Error fetching data:', err)
+        await dispatch(searchNotas(query))
+      } catch (error) {
+        console.error(error)
+        setApiError(error.response?.data?.error || 'Error al cargar notas')
+        setErrorModalOpen(true)
         setError('No se encontraron notas')
-        setNotas([])
       } finally {
         setLoading(false)
       }
     }
 
     fetchData()
-  }, [query])
+  }, [query, dispatch, user.negocio_id])
 
   return (
     <div className={styles.main}>
@@ -60,7 +64,7 @@ export function SearchNotas(props) {
         {error && <p>{error}</p>}
         {notas.length > 0 && (
           <div className={styles.resultsContainer}>
-            <NotasListSearch user={user} notas={notas} reload={reload} onReload={onReload} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
+            <NotasListSearch user={user} reload={reload} onReload={onReload} query={query} onToastSuccess={onToastSuccess} onOpenCloseSearch={onOpenCloseSearch} />
           </div>
         )}
       </div>

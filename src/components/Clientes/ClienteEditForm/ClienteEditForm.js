@@ -1,15 +1,15 @@
+import styles from './ClienteEditForm.module.css'
 import { IconClose } from '@/components/Layouts'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Button, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchClientes, setCliente, updateCliente } from '@/store/clientes/clienteSlice'
-import styles from './ClienteEditForm.module.css'
+import { setCliente, updateCliente } from '@/store/clientes/clienteSlice'
 import { selectCliente } from '@/store/clientes/clienteSelectors'
 
 export function ClienteEditForm(props) {
 
-  const { reload, onReload, onOpenCloseEdit, onToastSuccessMod } = props
+  const { reload, onReload, onOpenCloseEdit, onToastSuccess } = props
 
   const dispatch = useDispatch()
   const cliente = useSelector(selectCliente)
@@ -83,11 +83,11 @@ export function ClienteEditForm(props) {
       })
       
       const res = await axios.get(`/api/clientes/clientes?id=${cliente.id}`) 
-      dispatch(setCliente(res.data))
+      dispatch(updateCliente(res.data))
 
       onReload()
       onOpenCloseEdit()
-      onToastSuccessMod()
+      onToastSuccess()
     } catch (error) {
       console.error('Error actualizando el cliente:', error)
     } finally {

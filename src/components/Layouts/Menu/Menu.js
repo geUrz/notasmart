@@ -5,15 +5,6 @@ import { useEffect, useState } from 'react'
 
 export function Menu() {
 
-  const [theme, setTheme] = useState('light')
-
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') || 'light'
-    setTheme(savedTheme)
-  }, [])
-
-  const logoSrc = theme === 'dark' ? '/img/logo.png' : '/img/logoDark.png'
-
   return (
 
     <>
@@ -21,7 +12,7 @@ export function Menu() {
       <div className={styles.mainTop}>
         <h1>Nota</h1>
         <Link href='/'>
-          <Image src={logoSrc} />
+          <Image src='/img/logo.png' />
         </Link>
         <h1>Smart</h1>
       </div>

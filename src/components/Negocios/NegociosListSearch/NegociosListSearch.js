@@ -2,28 +2,45 @@ import { map, size } from 'lodash'
 import { ListEmpty, Loading } from '@/components/Layouts'
 import { FaBuilding } from 'react-icons/fa'
 import { BasicModal } from '@/layouts'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { NegocioDetalles } from '../NegocioDetalles'
 import styles from './NegociosListSearch.module.css'
 import { getValueOrDefault } from '@/helpers'
+import { useDispatch, useSelector } from 'react-redux'
+import { clearSearchResults, searchNegocios, setNegocio } from '@/store/negocios/negocioSlice'
+import { selectNegocios, selectSearchResults } from '@/store/negocios/negocioSelectors'
 
 export function NegociosListSearch(props) {
 
-  const { reload, onReload, negocios, onToastSuccessMod } = props
+  const { reload, onReload, query, onToastSuccess } = props
+
+  const dispatch = useDispatch()
+  const negocios = useSelector(selectSearchResults)
 
   const [showDetalles, setShowDetalles] = useState(false)
-  const [negocioSeleccionada, setNegocioSeleccionada] = useState(null)
 
   const onOpenDetalles = (negocio) => {
-    setNegocioSeleccionada(negocio)
-    setShowDetalles(true)
-  }
+      dispatch(setNegocio(negocio))
+      setShowDetalles(true)
+    }
+  
+    const onCloseDetalles = () => {
+      dispatch(setNegocio(null))
+      setShowDetalles(false)
+    }
 
-  const onCloseDetalles = () => {
-    setNegocioSeleccionada(null)
-    setShowDetalles(false)
-  }
-
+    useEffect(() => {
+      if (query.trim().length > 0) {
+        dispatch(searchNegocios(query)) // Buscar negocios cuando el query cambie
+      }
+    }, [query, dispatch]) // Solo dependemos de `query` y `dispatch`
+  
+    useEffect(() => {
+      return () => {
+        dispatch(clearSearchResults()) // Limpiar los resultados cuando el componente se desmonte
+      }
+    }, [dispatch])
+    
   return (
 
     <>
@@ -59,15 +76,12 @@ export function NegociosListSearch(props) {
       )}
 
       <BasicModal title='detalles del negocio' show={showDetalles} onClose={onCloseDetalles}>
-        {negocioSeleccionada && (
           <NegocioDetalles
             reload={reload}
             onReload={onReload}
-            negocio={negocioSeleccionada}
             onCloseDetalles={onCloseDetalles}
-            onToastSuccessMod={onToastSuccessMod}
+            onToastSuccess={onToastSuccess}
           />
-        )}
       </BasicModal>
 
     </>

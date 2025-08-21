@@ -1,15 +1,15 @@
+import styles from './NegocioEditForm.module.css'
 import { IconClose } from '@/components/Layouts'
 import { useState } from 'react'
 import axios from 'axios'
 import { Button, Dropdown, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
-import styles from './NegocioEditForm.module.css'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectNegocio } from '@/store/negocios/negocioSelectors'
-import { setNegocio } from '@/store/negocios/negocioSlice'
+import { updateNegocio } from '@/store/negocios/negocioSlice'
 
 export function NegocioEditForm(props) {
 
-  const { reload, onReload, onOpenCloseEdit, onToastSuccessMod } = props
+  const { reload, onReload, onOpenCloseEdit, onToastSuccess } = props
 
   const dispatch = useDispatch()
   const negocio = useSelector(selectNegocio)
@@ -61,15 +61,16 @@ export function NegocioEditForm(props) {
 
     try {
       await axios.put(`/api/negocios/negocios?id=${negocio.id}`, {
-        ...formData
+        ...formData,
+        folios: Number(formData.folios)
       })
 
       const res = await axios.get(`/api/negocios/negocios?id=${negocio.id}`)
-      dispatch(setNegocio(res.data))
+      dispatch(updateNegocio(res.data))
 
       onReload()
       onOpenCloseEdit()
-      onToastSuccessMod()
+      onToastSuccess()
     } catch (error) {
       console.error('Error actualizando el negocio:', error)
     } finally {

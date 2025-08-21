@@ -1,21 +1,22 @@
-import { Add, ErrorAccesso, Loading, Title, ToastDelete, ToastSuccess } from '@/components/Layouts'
+import styles from './usuarios.module.css'
+import { Add, ErrorAccesso, Loading, Search, Title, ToastDelete, ToastSuccess } from '@/components/Layouts'
 import ProtectedRoute from '@/components/Layouts/ProtectedRoute/ProtectedRoute'
 import { SearchUsuarios, UsuarioForm, UsuariosLista, UsuariosListSearch } from '@/components/Usuarios'
 import { useAuth } from '@/contexts/AuthContext'
 import { BasicLayout, BasicModal } from '@/layouts'
-import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { FaSearch } from 'react-icons/fa'
-import styles from './usuarios.module.css'
 import { usePermissions } from '@/hooks'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectUsuariosError } from '@/store/usuarios/usuarioSelectors'
+import { fetchUsuarios } from '@/store/usuarios/usuarioSlice'
 
 export default function Usuarios() {
 
   const { user, loading } = useAuth()
-  
-  const {isAdmin, isUserSuperUser} = usePermissions()
 
-  const [reload, setReload]  = useState(false)
+  const { isAdmin, isSuperUser } = usePermissions()
+
+  const [reload, setReload] = useState(false)
 
   const onReload = () => setReload((prevState) => !prevState)
 
@@ -24,54 +25,38 @@ export default function Usuarios() {
   const onOpenCloseForm = () => setOpenCloseForm((prevState) => !prevState)
 
   const [search, setSearch] = useState(false)
-  
+
   const onOpenCloseSearch = () => setSearch((prevState) => !prevState)
-  
+
   const [resultados, setResultados] = useState([])
 
   const [apiError, setApiError] = useState(null)
   const [errorModalOpen, setErrorModalOpen] = useState(false)
+  const error = useSelector(selectUsuariosError)
 
   const onOpenCloseErrorModal = () => setErrorModalOpen((prev) => !prev)
 
-  const [usuarios, setUsuarios] = useState(null)
-  
+  const dispatch = useDispatch()
+
   useEffect(() => {
+    if (error) {
+      setApiError(error)
+      setErrorModalOpen(true)  
+    }
+  }, [error])
 
-    if(!user) return
-    
-    (async () => {
-      try {
-
-        const url = isAdmin || !user.negocio_id
-        ? '/api/usuarios/usuarios'
-        : `/api/usuarios/usuarios?negocio_id=${user?.negocio_id}`
-
-        const res = await axios.get(url)
-        setUsuarios(res.data)
-      } catch (error) {
-        console.error(error)
-        setApiError(error.response?.data?.error || 'Error al cargar usuarios')
-        setErrorModalOpen(true)
-      }
-    })()
-  }, [reload, user])
+  useEffect(() => {
+    if (!user) return
+    dispatch(fetchUsuarios(user?.negocio_id))
+  }, [dispatch, reload, user])  
 
   const [toastSuccess, setToastSuccessReportes] = useState(false)
-  const [toastSuccessMod, setToastSuccessReportesMod] = useState(false)
   const [toastSuccessDel, setToastSuccessReportesDel] = useState(false)
 
   const onToastSuccess = () => {
     setToastSuccessReportes(true)
     setTimeout(() => {
       setToastSuccessReportes(false)
-    }, 3000)
-  }
-
-  const onToastSuccessMod = () => {
-    setToastSuccessReportesMod(true)
-    setTimeout(() => {
-      setToastSuccessReportesMod(false)
     }, 3000)
   }
 
@@ -92,44 +77,36 @@ export default function Usuarios() {
 
       <BasicLayout relative onReload={onReload}>
 
-        {toastSuccess && <ToastSuccess contain='Creado exitosamente' onClose={() => setToastSuccessReportes(false)} />}
+        {toastSuccess && <ToastSuccess onClose={() => setToastSuccessReportes(false)} />}
 
-        {toastSuccessMod && <ToastSuccess contain='Modificado exitosamente' onClose={() => setToastSuccessReportesMod(false)} />}
-
-        {toastSuccessDel && <ToastDelete contain='Eliminado exitosamente' onClose={() => setToastSuccessReportesDel(false)} />}
+        {toastSuccessDel && <ToastDelete onClose={() => setToastSuccessReportesDel(false)} />}
 
         <Title title='usuarios' />
 
         <Add onOpenClose={onOpenCloseForm} />
 
-        {!search ? (
-          ''
-        ) : (
-          <div className={styles.searchMain}>
-            <SearchUsuarios user={user} onResults={setResultados} reload={reload} onReload={onReload} isAdmin={isAdmin} isUserSuperUser={isUserSuperUser} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
-            {resultados.length > 0 && (
-              <UsuariosListSearch visitas={resultados} reload={reload} onReload={onReload} />
-            )}
-          </div>
-        )}
+        <Search
+          title='usuario'
+          search={search}
+          onOpenCloseSearch={onOpenCloseSearch}
+          user={user}
+          reload={reload}
+          onReload={onReload}
+          isAdmin={isAdmin} 
+          isSuperUser={isSuperUser}
+          resultados={resultados}
+          setResultados={setResultados}
+          SearchComponent={SearchUsuarios}
+          SearchListComponent={UsuariosListSearch}
+          onToastSuccess={onToastSuccess}
+        />
 
-        {!search ? (
-          <div className={styles.iconSearchMain}>
-            <div className={styles.iconSearch} onClick={onOpenCloseSearch}>
-              <h1>Buscar usuario</h1>
-              <FaSearch />
-            </div>
-          </div>
-        ) : (
-          ''
-        )}
-
-        <UsuariosLista user={user} loading={loading} reload={reload} onReload={onReload} isAdmin={isAdmin} isUserSuperUser={isUserSuperUser} usuarios={usuarios} setUsuarios={setUsuarios} onToastSuccessMod={onToastSuccessMod} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
+        <UsuariosLista user={user} loading={loading} reload={reload} onReload={onReload} isAdmin={isAdmin} isSuperUser={isSuperUser} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
 
       </BasicLayout>
 
       <BasicModal title='crear usuario' show={openCloseForm} onClose={onOpenCloseForm}>
-        <UsuarioForm user={user} reload={reload} onReload={onReload} onToastSuccess={onToastSuccess} onOpenCloseForm={onOpenCloseForm} />
+        <UsuarioForm user={user} reload={reload} isAdmin={isAdmin} onReload={onReload} onToastSuccess={onToastSuccess} onOpenCloseForm={onOpenCloseForm} />
       </BasicModal>
 
       <BasicModal title="Error de acceso" show={errorModalOpen} onClose={onOpenCloseErrorModal}>

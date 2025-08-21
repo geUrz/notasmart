@@ -1,3 +1,4 @@
+import styles from './NotaDetalles.module.css'
 import { Confirm, IconClose, IconDel, IconEdit, SkeletonPlaceholder, ToastSuccess } from '@/components/Layouts'
 import { FaInfoCircle, FaPlus } from 'react-icons/fa'
 import { BasicModal } from '@/layouts'
@@ -12,7 +13,6 @@ import { RowHeadModal } from '../RowHead'
 import { NotaEditForm } from '../NotaEditForm'
 import { NotaConceptosEditForm } from '../NotaConceptosEditForm'
 import QRCode from 'qrcode'
-import styles from './NotaDetalles.module.css'
 import { QRScan } from '../QRScan'
 import { generarPDF } from '../generarPDF'
 import { getValueOrDel } from '@/helpers/getValueOrDel/getValueOrDel'
@@ -23,7 +23,7 @@ import { NotaProductoBaseEditForm } from '../NotaProductoBaseEditForm'
 import { ClienteDetalles } from '@/components/Clientes'
 
 import { useDispatch, useSelector } from 'react-redux'
-import { updateConcepto, updateAbono, updateIVA, fetchNotaById, updateAnticipo } from '@/store/notas/notaSlice'
+import { updateConcepto, updateAbono, fetchNotaById, updateAnticipo } from '@/store/notas/notaSlice'
 import { NotaAnticipos } from '../NotaAnticipos'
 import { selectAbonos, selectAnticipos, selectConceptos, selectNota } from '@/store/notas/notaSelectors'
 import ProductoBaseViewer from '../ProductoBaseViewer/ProductoBaseViewer'
@@ -32,7 +32,7 @@ import { NotaAnticiposForm } from '../NotaAnticiposForm'
 import { NotaAnticiposEditForm } from '../NotaAnticiposEditForm'
 
 export function NotaDetalles(props) {
-  const { user, isAdmin, isSuperUser, isPremium, reload, onReload, onCloseDetalles, onAddConcept, onAddAbono, onAddAnticipo, onDeleteConcept, onDeleteAbono, onDeleteAnticipo, onToastSuccess, onToastSuccessMod, onToastSuccessDel } = props
+  const { user, isAdmin, isSuperUser, isPremium, reload, onReload, onCloseDetalles, onAddConcept, onAddAbono, onAddAnticipo, onDeleteConcept, onDeleteAbono, onDeleteAnticipo, onToastSuccess, onToastSuccessDel } = props
 
   const dispatch = useDispatch()
   const nota = useSelector(selectNota)
@@ -239,7 +239,7 @@ export function NotaDetalles(props) {
 
   const updateIVA = async (ivaPercentage, ivaTotalValue) => {
     try {
-      await axios.put(`/api/notas/ivaTotal?id=${nota.id}`, {
+      await axios.put(`/api/notas/ivaTotal?id=${nota?.id}`, {
         iva: ivaPercentage,
         iva_total: ivaTotalValue,
       })
@@ -317,8 +317,9 @@ export function NotaDetalles(props) {
     }
 
     try {
-      await axios.delete(`/api/notas/notas?id=${nota.id}&folio=${nota.folio}`)
-      onOpenClose()
+      await axios.delete(`/api/notas/notas?id=${nota?.id}&folio=${nota?.folio}`)
+      onCloseDetalles()
+      onOpenCloseConfirmDel()
       onReload()
       onToastSuccessDel()
     } catch (error) {
@@ -329,10 +330,10 @@ export function NotaDetalles(props) {
   const [datoPDF, setDatoPDF] = useState(null)
 
   useEffect(() => {
-    if (user && user.id) {
+    if (user && user?.id) {
       (async () => {
         try {
-          const res = await axios.get(`/api/usuarios/datos_pdf?usuario_id=${user.id}`)
+          const res = await axios.get(`/api/usuarios/datos_pdf?usuario_id=${user?.id}`)
           setDatoPDF(res.data)
         } catch (error) {
           console.error(error)
@@ -461,15 +462,15 @@ export function NotaDetalles(props) {
           )
         }
 
-        {(isAdmin || isSuperUser || user.id === nota.usuario_id) && nota?.forma_pago && (
+        {(isAdmin || isSuperUser || user.id === nota?.usuario_id) && nota?.forma_pago && (
           <div className={styles.iconPlus}>
             {(['abonos', 'anticipo'].includes(nota?.forma_pago) && calcularSaldoRestante() <= 0) ? null : (
               <div onClick={() => {
-                if (nota.forma_pago === 'abonos' || nota.forma_pago === 'anticipo') {
+                if (nota?.forma_pago === 'abonos' || nota?.forma_pago === 'anticipo') {
                   if (!tieneProductoBase) {
                     setShowProductoBaseModal(true)
                   } else {
-                    if (nota.forma_pago === 'abonos') {
+                    if (nota?.forma_pago === 'abonos') {
                       setShowAbonoForm(true)
                     } else {
                       setTituloAnticipo(yaTieneAnticipo ? 'Agregar abono' : 'Agregar anticipo')
@@ -517,15 +518,15 @@ export function NotaDetalles(props) {
         </div>
 
         <ProductoBaseViewer
-          data={nota.abonos}
-          visible={nota.forma_pago === 'abonos'}
+          data={nota?.abonos}
+          visible={nota?.forma_pago === 'abonos'}
           onEdit={() => setShowEditProductoBase(true)}
           isLoading={isSyncingNota}
         />
 
         <ProductoBaseViewer
-          data={nota.anticipos}
-          visible={nota.forma_pago === 'anticipo'}
+          data={nota?.anticipos}
+          visible={nota?.forma_pago === 'anticipo'}
           onEdit={() => setShowEditProductoBase(true)}
           isLoading={isSyncingNota}
         />
@@ -558,7 +559,7 @@ export function NotaDetalles(props) {
       </div>
 
       <BasicModal title='modificar la nota' show={showEditNota} onClose={onOpenEditNota}>
-        <NotaEditForm user={user} reload={reload} onReload={onReload} onOpenEditNota={onOpenEditNota} onToastSuccessMod={onToastSuccessMod} />
+        <NotaEditForm user={user} reload={reload} onReload={onReload} onOpenEditNota={onOpenEditNota} onToastSuccess={onToastSuccess} />
       </BasicModal>
 
       <BasicModal title='Agregar concepto' show={showConcep} onClose={onOpenCloseConcep}>
@@ -650,7 +651,7 @@ export function NotaDetalles(props) {
           user={user}
           onReload={onReload}
           syncNota={syncNota}
-          onToastSuccessMod={onToastSuccessMod}
+          onToastSuccess={onToastSuccess}
           onToastSuccessDel={onToastSuccessDel}
           onCloseDetalles={onCloseCliente}
         />

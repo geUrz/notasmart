@@ -1,28 +1,36 @@
+import styles from './UsuarioEditForm.module.css'
 import { IconClose } from '@/components/Layouts'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { Button, Dropdown, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
-import styles from './UsuarioEditForm.module.css'
 import { BasicModal } from '@/layouts'
 import { NegocioForm } from '@/components/Negocios'
 import { FaPlus } from 'react-icons/fa'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectNegocios } from '@/store/negocios/negocioSelectors'
+import { fetchNegocios, updateNegocio } from '@/store/negocios/negocioSlice'
+import { setUsuario, updateUsuario } from '@/store/usuarios/usuarioSlice'
+import { selectUsuario } from '@/store/usuarios/usuarioSelectors'
 
 export function UsuarioEditForm(props) {
 
-  const { user, reload, onReload, isAdmin, usuarioData, actualizarUsuario, onToastSuccess, onOpenCloseEdit, onToastSuccessMod } = props
+  const { user, reload, onReload, isAdmin, onToastSuccess, onOpenCloseEdit } = props
+
+  const dispatchUsr = useDispatch()
+  const usuario = useSelector(selectUsuario)
 
   const [isLoading, setIsLoading] = useState(false)
 
   const [formData, setFormData] = useState({
-    nombre: usuarioData.nombre,
-    usuario: usuarioData.usuario,
-    email: usuarioData.email,
-    nivel: usuarioData.nivel,
-    negocio_id: usuarioData.negocio_id,
-    negocio_nombre: usuarioData.negocio_nombre,
-    isactive: usuarioData.isactive
+    nombre: usuario?.nombre,
+    usuario: usuario?.usuario,
+    email: usuario?.email,
+    nivel: usuario?.nivel,
+    negocio_id: usuario?.negocio_id,
+    negocio_nombre: usuario?.negocio_nombre,
+    isactive: usuario?.isactive
   })
-
+  
   const [errors, setErrors] = useState({})
 
   const validarForm = () => {
@@ -50,20 +58,16 @@ export function UsuarioEditForm(props) {
 
   }
 
-  const [negocios, setNegocios] = useState([])
   const [showNegocioForm, setShowNegocioForm] = useState(false)
   const onOpenCloseNegocioForm = () => setShowNegocioForm((prevState) => !prevState)
 
+  const dispatch = useDispatch()
+  const negocios = useSelector(selectNegocios)
+  
   useEffect(() => {
-    (async () => {
-      try {
-        const res = await axios.get('/api/negocios/negocios')
-        setNegocios(res.data)
-      } catch (error) {
-        console.error(error)
-      }
-    })()
-  }, [reload])
+    if(!isAdmin) return
+    dispatch(fetchNegocios())
+  }, [dispatch, reload, user])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -95,33 +99,28 @@ export function UsuarioEditForm(props) {
     }
 
     try {
-      await axios.put(`/api/usuarios/usuarios?id=${usuarioData.id}`, {
+      await axios.put(`/api/usuarios/usuarios?id=${usuario?.id}`, {
         ...formData,
       })
 
-      actualizarUsuario({
-        ...formData,
-        negocio_nombre: formData.negocio_nombre
-      })
+      const res = await axios.get(`/api/usuarios/usuarios?id=${usuario?.id}`)
+      dispatchUsr(updateUsuario(res.data))
 
       onReload()
       onOpenCloseEdit()
-      onToastSuccessMod()
+      onToastSuccess()
     } catch (error) {
-      console.error('Error actualizando el usuario:', error)
+      console.error('Error actualizando el usuario:', error.response?.data?.error || error.message)
     } finally {
       setIsLoading(false)
     }
   }
 
-  let opcionesNivel = [
+  const opcionesNivel = [
+    ...(isAdmin ? [{ key: 'Admin', text: 'Admin', value: 'admin' }] : []),
     { key: 2, text: 'UsuarioSU', value: 'usuariosu' },
     { key: 3, text: 'Usuario', value: 'usuario' }
-  ];
-
-  if (isAdmin) {
-    opcionesNivel.unshift({ key: 1, text: 'Admin', value: 'admin' });
-  }
+  ]
 
   const opcionesIsActive = [
     { key: 1, text: 'Activo', value: 1 },
@@ -191,7 +190,7 @@ export function UsuarioEditForm(props) {
             <FormField>
               <Label>Negocio</Label>
               <Dropdown
-                placeholder='Seleccionar'
+                placeholder={negocios.length === 0 ? 'No hay negocios' : 'Seleccionar'}
                 fluid
                 selection
                 options={negocios.map(negocio => ({
@@ -201,6 +200,7 @@ export function UsuarioEditForm(props) {
                 }))}
                 value={formData.negocio_id}
                 onChange={handleDropdownChange}
+                disabled={negocios.length === 0}
               />
               <div className={styles.addNegocio}>
                 <h1>Crear negocio</h1>

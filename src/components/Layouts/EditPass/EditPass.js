@@ -2,10 +2,13 @@ import { IconClose } from '@/components/Layouts'
 import React, { useState } from 'react'
 import { Button, Form, FormField, Input, Label, Message } from 'semantic-ui-react'
 import axios from 'axios'
+import { useSelector } from 'react-redux'
 
 export function EditPass(props) {
 
-  const { usuario, onOpenCloseEditPass, onToastSuccessUsuarioMod } = props
+  const { onOpenCloseEditPass, onToastSuccess } = props
+
+  const usuario = useSelector(selectUsuario)
 
   const [isLoading, setIsLoading] = useState(false)
   
@@ -53,7 +56,7 @@ export function EditPass(props) {
       })
 
       onOpenCloseEditPass()
-      onToastSuccessUsuarioMod()
+      onToastSuccess()
 
     } catch (error) {
       console.error('Error al actualizar la contraseña:', error)

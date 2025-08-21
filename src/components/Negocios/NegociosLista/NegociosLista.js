@@ -12,7 +12,7 @@ import { setNegocio } from '@/store/negocios/negocioSlice'
 
 export function NegociosLista(props) {
 
-  const { reload, onReload, isAdmin, isPremium, onToastSuccess, onToastSuccessMod, onToastSuccessDel } = props
+  const { reload, onReload, isAdmin, isPremium, onToastSuccess, onToastSuccessDel } = props
 
   const dispatch = useDispatch()
   const negocios = useSelector(selectNegocios)
@@ -64,7 +64,7 @@ export function NegociosLista(props) {
       )}
 
       <BasicModal title='detalles del negocio' show={showDetalles} onClose={onCloseDetalles}>
-        <NegocioDetalles reload={reload} onReload={onReload} isAdmin={isAdmin} isPremium={isPremium} onCloseDetalles={onCloseDetalles} onToastSuccess={onToastSuccess} onToastSuccessMod={onToastSuccessMod} onToastSuccessDel={onToastSuccessDel} />
+        <NegocioDetalles reload={reload} onReload={onReload} isAdmin={isAdmin} isPremium={isPremium} onCloseDetalles={onCloseDetalles} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
       </BasicModal>
 
     </>

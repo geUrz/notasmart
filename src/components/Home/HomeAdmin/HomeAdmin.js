@@ -1,9 +1,9 @@
+import styles from './HomeAdmin.module.css'
 import { FaArrowDown, FaDollarSign, FaFileAlt } from 'react-icons/fa'
 import { Loading } from '@/components/Layouts'
 import { formatCurrency } from '@/helpers'
 import { useSelector } from 'react-redux'
 import { selectNotas, selectPorCobrarTotalGlobal, selectPrecioGranTotalGlobal, selectPrecioProductoBaseTotalGlobal, selectTotalNotasGlobal } from '@/store/notas/notaSelectors'
-import styles from './HomeAdmin.module.css'
 
 export function HomeAdmin() {
 
@@ -12,7 +12,7 @@ export function HomeAdmin() {
   const precioProductoBaseTotalGlobal = useSelector(selectPrecioProductoBaseTotalGlobal)
   const porCobrarTotalGlobal = useSelector(selectPorCobrarTotalGlobal)
   const precioGranTotalGlobal = useSelector(selectPrecioGranTotalGlobal)
-
+  
   return (
 
     <div className={styles.main}>

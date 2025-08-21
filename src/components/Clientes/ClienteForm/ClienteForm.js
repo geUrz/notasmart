@@ -1,9 +1,9 @@
+import styles from './ClienteForm.module.css'
 import { IconClose } from '@/components/Layouts'
 import { Button, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
 import { useState } from 'react'
 import { genCLId } from '@/helpers'
 import axios from 'axios'
-import styles from './ClienteForm.module.css'
 import { useDispatch } from 'react-redux'
 import { fetchClientes } from '@/store/clientes/clienteSlice'
 

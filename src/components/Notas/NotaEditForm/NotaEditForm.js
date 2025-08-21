@@ -161,6 +161,7 @@ export function NotaEditForm(props) {
               }))}
               value={formData.cliente_id}
               onChange={handleDropdownChange}
+              disabled={clientes.length === 0}
             />
             <div className={styles.addCliente} onClick={onOpenCloseClienteForm}>
               <h1>Crear cliente</h1>

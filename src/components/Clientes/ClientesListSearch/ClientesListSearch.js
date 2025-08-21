@@ -1,28 +1,45 @@
+import styles from './ClientesListSearch.module.css'
 import { map, size } from 'lodash'
 import { ListEmpty, Loading } from '@/components/Layouts'
 import { FaUsers } from 'react-icons/fa'
 import { BasicModal } from '@/layouts'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ClienteDetalles } from '../ClienteDetalles'
-import styles from './ClientesListSearch.module.css'
 import { getValueOrDefault } from '@/helpers'
+import { clearSearchResults, searchClientes, setCliente } from '@/store/clientes/clienteSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectSearchResults } from '@/store/clientes/clienteSelectors'
 
 export function ClientesListSearch(props) {
 
-  const { reload, onReload, clientes, onToastSuccessMod } = props
+  const { reload, onReload, query, onToastSuccess } = props
+
+  const dispatch = useDispatch()
+  const clientes = useSelector(selectSearchResults)
 
   const [showDetalles, setShowDetalles] = useState(false)
-  const [clienteSeleccionada, setClienteSeleccionada] = useState(null)
 
   const onOpenDetalles = (cliente) => {
-    setClienteSeleccionada(cliente)
+    dispatch(setCliente(cliente))
     setShowDetalles(true)
   }
 
   const onCloseDetalles = () => {
-    setClienteSeleccionada(null)
+    dispatch(setCliente(null))
     setShowDetalles(false)
   }
+
+  useEffect(() => {
+    if (query.trim().length > 0) {
+      dispatch(searchClientes(query))
+    }
+  }, [query, dispatch])
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearSearchResults())
+    }
+  }, [dispatch])
 
   return (
 
@@ -59,15 +76,12 @@ export function ClientesListSearch(props) {
       )}
 
       <BasicModal title='detalles del cliente' show={showDetalles} onClose={onCloseDetalles}>
-        {clienteSeleccionada && (
-          <ClienteDetalles
-            reload={reload}
-            onReload={onReload}
-            cliente={clienteSeleccionada}
-            onCloseDetalles={onCloseDetalles}
-            onToastSuccessMod={onToastSuccessMod}
-          />
-        )}
+        <ClienteDetalles
+          reload={reload}
+          onReload={onReload}
+          onCloseDetalles={onCloseDetalles}
+          onToastSuccess={onToastSuccess}
+        />
       </BasicModal>
 
     </>

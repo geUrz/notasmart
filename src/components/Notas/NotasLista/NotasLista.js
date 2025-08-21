@@ -14,7 +14,7 @@ import { selectNota, selectNotas } from '@/store/notas/notaSelectors'
 
 export function NotasLista(props) {
 
-  const { user, reload, onReload, isAdmin, isSuperUser, isPremium, onToastSuccess, onToastSuccessMod, onToastSuccessDel } = props
+  const { user, reload, onReload, isAdmin, isSuperUser, isPremium, onToastSuccess, onToastSuccessDel } = props
 
   const dispatch = useDispatch()
   const nota = useSelector(selectNota)
@@ -24,7 +24,6 @@ export function NotasLista(props) {
   const [showConfirm, setShowConfirm] = useState(false)
   
   const [toastSuccess, setToastSuccess] = useState(false)
-  const [toastSuccessConfirm, setToastSuccessConfirm] = useState(false)
   const [toastSuccessDelete, setToastSuccessDelete] = useState(false)
 
   const onShowConfirm = () => setShowConfirm((prevState) => !prevState)
@@ -121,11 +120,9 @@ export function NotasLista(props) {
 
     <>
 
-      {toastSuccess && <ToastSuccess contain='Concepto creado exitosamente' onClose={() => setToastSuccess(false)} />}
+      {toastSuccess && <ToastSuccess onClose={() => setToastSuccess(false)} />}
 
-      {toastSuccessConfirm && <ToastSuccess contain='Nota eliminada exitosamente' onClose={() => setToastSuccessConfirm(false)} />}
-
-      {toastSuccessDelete && <ToastSuccess contain='Concepto eliminado exitosamente' onClose={() => setToastSuccessConfirm(false)} />}
+      {toastSuccessDelete && <ToastSuccess onClose={() => setToastSuccessDelete(false)} />}
 
       {!notas ? (
         <Loading size={45} loading={1} />
@@ -158,7 +155,7 @@ export function NotasLista(props) {
       )}
 
       <BasicModal title='detalles de la nota' show={showDetalles} onClose={onCloseDetalles}>
-        <NotaDetalles user={user} isAdmin={isAdmin} isSuperUser={isSuperUser} isPremium={isPremium} reload={reload} onReload={onReload} onShowConfirm={onShowConfirm} onCloseDetalles={onCloseDetalles} onToastSuccess={onToastSuccess} onToastSuccessMod={onToastSuccessMod} onToastSuccessDel={onToastSuccessDel} onAddConcept={onAddConcept} onAddAbono={onAddAbono} onAddAnticipo={onAddAnticipo} onDeleteConcept={onDeleteConcept} onDeleteAbono={onDeleteAbono} onDeleteAnticipo={onDeleteAnticipo} />
+        <NotaDetalles user={user} isAdmin={isAdmin} isSuperUser={isSuperUser} isPremium={isPremium} reload={reload} onReload={onReload} onShowConfirm={onShowConfirm} onCloseDetalles={onCloseDetalles} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} onAddConcept={onAddConcept} onAddAbono={onAddAbono} onAddAnticipo={onAddAnticipo} onDeleteConcept={onDeleteConcept} onDeleteAbono={onDeleteAbono} onDeleteAnticipo={onDeleteAnticipo} />
       </BasicModal>
 
     </>

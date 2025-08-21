@@ -3,7 +3,8 @@ import axios from 'axios'
 
 const initialState = {
   clientes: [],        
-  cliente: null,       
+  cliente: null,    
+  searchResults: [],
   loading: false,
   error: null
 }
@@ -18,6 +19,12 @@ const clientesSlice = createSlice({
     setCliente: (state, action) => {
       state.cliente = action.payload
     },
+    setSearchResults: (state, action) => {
+      state.searchResults = action.payload;
+    },
+    clearSearchResults: (state) => {
+      state.searchResults = [];
+    },
     setLoading: (state, action) => {
       state.loading = action.payload
     },
@@ -25,16 +32,23 @@ const clientesSlice = createSlice({
       state.error = action.payload
     },
     updateCliente: (state, action) => {
-      const updated = action.payload
+      const updated = action.payload;
     
+      // Actualiza el cliente seleccionado
       if (state.cliente && state.cliente.id === updated.id) {
         state.cliente = { ...state.cliente, ...updated }
       }
     
-      state.clientes = state.clientes.map((cli) =>
-        cli.id === updated.id ? { ...cli, ...updated } : cli
+      // Actualiza la lista de clientes
+      state.clientes = state.clientes.map((n) =>
+        n.id === updated.id ? { ...n, ...updated } : n
       )
-    }
+    
+      // También actualiza los resultados de búsqueda
+      state.searchResults = state.searchResults.map((n) =>
+        n.id === updated.id ? { ...n, ...updated } : n
+      )
+    } 
     
   }
 })
@@ -42,20 +56,19 @@ const clientesSlice = createSlice({
 export const {
   setClientes,
   setCliente,
+  setSearchResults, 
+  clearSearchResults,
   setLoading,
-  setError
+  setError,
+  updateCliente
 } = clientesSlice.actions
 
 export default clientesSlice.reducer
 
-export const fetchClientes = (negocio_id = null) => async (dispatch) => {
+export const fetchClientes = (negocio_id) => async (dispatch) => {
   try {
     dispatch(setLoading(true))
-    const url = negocio_id
-      ? `/api/clientes/clientes?negocio_id=${negocio_id}`
-      : '/api/clientes/clientes'
-
-    const res = await axios.get(url)
+    const res = await axios.get(`/api/clientes/clientes?negocio_id=${negocio_id}`)
     dispatch(setClientes(res.data))
   } catch (error) {
     dispatch(setError(error.response?.data?.error || 'Error al cargar clientes'))
@@ -76,20 +89,34 @@ export const fetchClienteById = (id) => async (dispatch) => {
   }
 }
 
-export const updateCliente = (clienteData) => async (dispatch) => {
+export const searchClientes = (search) => async (dispatch) => {
+  try {
+    const res = await axios.get('/api/clientes/clientes', {
+      params: { search },
+    })
+    dispatch(setSearchResults(res.data))
+  } catch (err) {
+    dispatch(setError('No se encontraron clientes'))
+  }
+}
+
+/* export const fetchClientes = (user) => async (dispatch) => {
   try {
     dispatch(setLoading(true))
 
-    const res = await axios.put(`/api/clientes/clientes?id=${clienteData.id}`, clienteData)
+    const isAdmin = user?.nivel === 'admin'
+    const negocio_id = user?.negocio_id
 
-    dispatch({
-      type: 'clientes/updateCliente',
-      payload: res.data
-    })
+    const url = isAdmin
+      ? '/api/clientes/clientes' 
+      : `/api/clientes/clientes?negocio_id=${negocio_id}`
+
+    const res = await axios.get(url)
+    dispatch(setClientes(res.data))
   } catch (error) {
-    dispatch(setError(error.response?.data?.error || 'Error al actualizar cliente'))
+    dispatch(setError(error.response?.data?.error || 'Error al cargar clientes'))
   } finally {
     dispatch(setLoading(false))
   }
-}
+} */
 

@@ -8,6 +8,10 @@ export async function handler(req, res) {
 
     const { id, search } = req.query;
     const isAdmin = user?.nivel === 'admin'
+    
+    if (!isAdmin) {
+        return res.status(403).json({ error: "No tienes permiso para accesar" });
+    }  
 
     if (req.method === 'GET') {
 
@@ -39,52 +43,46 @@ export async function handler(req, res) {
         }
 
         if (search) {
-
-            if (!isAdmin) {
-                return res.status(403).json({ error: 'No tienes permiso para accesar.' });
-            }
-
             const searchQuery = `%${search.toLowerCase()}%`;
+          
             try {
-                const [rows] = await connection.query(`
-                        SELECT
-                            id, 
-                            folio, 
-                            negocio, 
-                            cel, 
-                            direccion, 
-                            email,
-                            plan,
-                            folios  
-                        FROM negocios
-                        WHERE 
-                            LOWER(folio) LIKE ? 
-                        OR 
-                            LOWER(negocio) LIKE ?
-                        OR 
-                            LOWER(cel) LIKE ?
-                        OR 
-                            LOWER(direccion) LIKE ?
-                        OR 
-                            LOWER(email) LIKE ?  
-                        OR 
-                            LOWER(plan) LIKE ? 
-                        OR 
-                            LOWER(createdAt) LIKE ?
-                        ORDER BY updatedAt DESC`, [searchQuery, searchQuery, searchQuery, searchQuery, searchQuery, searchQuery, searchQuery]);
-
-                res.status(200).json(rows);
-
+    
+              const whereClauses = [
+                "LOWER(n.folio) LIKE ?",
+                "LOWER(n.negocio) LIKE ?",
+                "LOWER(n.cel) LIKE ?",
+                "LOWER(n.direccion) LIKE ?",
+                "LOWER(n.email) LIKE ?",
+                "LOWER(n.plan) LIKE ?",
+                "LOWER(CAST(n.createdAt AS CHAR)) LIKE ?"
+              ];
+          
+              const params = Array(whereClauses.length).fill(searchQuery);
+          
+              const query = `
+                SELECT
+                  n.id,
+                  n.folio,
+                  n.negocio,
+                  n.cel,
+                  n.direccion,
+                  n.email,
+                  n.plan,
+                  n.folios
+                FROM negocios n
+                WHERE (${whereClauses.join(" OR ")})
+                ORDER BY n.updatedAt DESC
+              `;
+          
+              const [rows] = await connection.query(query, params);
+              return res.status(200).json(rows);
+          
             } catch (error) {
-                res.status(500).json({ error: 'Error al realizar la búsqueda' });
-            }
-            return;
+              console.error(error);
+              return res.status(500).json({ error: 'Error al realizar la búsqueda' });
+            }                    
 
         } else {
-
-            if (!isAdmin) {
-                return res.status(403).json({ error: 'No tienes permiso para accesar.' });
-            }
 
             try {
                 const [rows] = await connection.query(`
@@ -109,6 +107,11 @@ export async function handler(req, res) {
     } else if (req.method === 'POST') {
         try {
             const { folio, negocio, cel, direccion, email, plan, folios } = req.body
+
+            if (!isAdmin) {
+                return res.status(403).json({ error: 'No tienes permiso para accesar.' });
+            }
+
             if (!negocio) {
                 return res.status(400).json({ error: 'Todos los datos son obligatorios' })
             }

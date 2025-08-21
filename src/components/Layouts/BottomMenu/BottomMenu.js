@@ -23,12 +23,14 @@ export function BottomMenu() {
               </div>
             </Link>
           }
+          {(isAdmin || isSuperUser) &&
             <Link href='/' className={styles.tab}>
               <div>
                 <FaHome />
                 <h1>Home</h1>
               </div>
             </Link>
+          }
             <Link href='/notas' className={styles.tab}>
               <div>
                 <FaFileAlt />

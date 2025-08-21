@@ -1,69 +1,90 @@
+import styles from './SearchUsuarios.module.css';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Input } from 'semantic-ui-react';
 import { UsuariosListSearch } from '../UsuariosListSearch';
 import { FaTimesCircle } from 'react-icons/fa';
-import styles from './SearchUsuarios.module.css';
+import { ErrorAccesso } from '@/components/Layouts';
+import { BasicModal } from '@/layouts';
+import { useDispatch, useSelector } from 'react-redux';
+import { searchUsuarios, searchUsuariosAll } from '@/store/usuarios/usuarioSlice';
+import { selectUsuarios } from '@/store/usuarios/usuarioSelectors';
 
 export function SearchUsuarios(props) {
 
-  const {user, reload, onReload, onResults, isAdmin, isUserSuperUser, onOpenCloseSearch, onToastSuccessMod} = props
+  const { user, reload, onReload, modo, onResults, isAdmin, isSuperUser, onOpenCloseSearch, onToastSuccess } = props
+
+  const [apiError, setApiError] = useState(null)
+  const [errorModalOpen, setErrorModalOpen] = useState(false)
+
+  const onOpenCloseErrorModal = () => setErrorModalOpen((prev) => !prev)
 
   const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [usuarios, setUsuarios] = useState([])
-  
+  const usuarios = useSelector(selectUsuarios)
+
+  const dispatch = useDispatch()
+
   useEffect(() => {
     const fetchData = async () => {
-      if (query.trim() === '') {
-        setUsuarios([])
-        return
+      if (query.trim().length < 1) {
+        setError('')
+        return;
       }
 
       setLoading(true)
       setError('')
 
       try {
-        const res = await axios.get(`/api/usuarios/usuarios?search=${query}`)
-        setUsuarios(res.data)
-      } catch (err) {
-        console.error('Error fetching data:', err)
+        await dispatch(searchUsuarios(query))
+      } catch (error) {
+        console.error(error)
+        setApiError(error.response?.data?.error || 'Error al cargar usuarios')
+        setErrorModalOpen(true)
         setError('No se encontraron usuarios')
-        setUsuarios([])
       } finally {
         setLoading(false)
       }
     }
-  
+
     fetchData()
-  }, [query])
+  }, [query, dispatch, user.negocio_id])
 
   return (
-    <div className={styles.main}>
 
-      <div className={styles.input}>
-        <Input
-          type="text"
-          placeholder="Buscar usuario..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className={styles.searchInput}
-          loading={loading}
-        />
-        <div className={styles.iconSearch} onClick={onOpenCloseSearch}>
-          <FaTimesCircle />
+    <>
+
+      <div className={styles.main}>
+
+        <div className={styles.input}>
+          <Input
+            type="text"
+            placeholder="Buscar usuario..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className={styles.searchInput}
+            loading={loading}
+          />
+          <div className={styles.iconSearch} onClick={onOpenCloseSearch}>
+            <FaTimesCircle />
+          </div>
+        </div>
+
+        <div className={styles.visitaLista}>
+          {error && <p>{error}</p>}
+          {usuarios.length > 0 && (
+            <div className={styles.resultsContainer}>
+              <UsuariosListSearch user={user} reload={reload} onReload={onReload} isAdmin={isAdmin} isSuperUser={isSuperUser} query={query} onToastSuccess={onToastSuccess} onOpenCloseSearch={onOpenCloseSearch} />
+            </div>
+          )}
         </div>
       </div>
 
-      <div className={styles.visitaLista}>
-        {error && <p>{error}</p>}
-        {usuarios.length > 0 && (
-          <div className={styles.resultsContainer}>
-            <UsuariosListSearch user={user} usuarios={usuarios} reload={reload} onReload={onReload} isAdmin={isAdmin} isUserSuperUser={isUserSuperUser} onToastSuccessMod={onToastSuccessMod} onOpenCloseSearch={onOpenCloseSearch} />
-          </div>
-        )}
-      </div>
-    </div>
+      <BasicModal title="Error de acceso" show={errorModalOpen} onClose={onOpenCloseErrorModal}>
+        <ErrorAccesso apiError={apiError} onOpenCloseErrorModal={onOpenCloseErrorModal} />
+      </BasicModal>
+
+    </>
+
   )
 }
