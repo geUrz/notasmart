@@ -160,6 +160,11 @@ export async function handler(req, res) {
 
         try {
             const { usuario_id, usuario_nombre, folio, cliente, contacto, cel, direccion, email, negocio_id, negocio_nombre } = req.body
+
+            if (!negocioId) {
+                return res.status(403).json({ error: "No tienes permiso para accesar" });
+            }
+
             if (!cliente) {
                 return res.status(400).json({ error: 'Todos los datos son obligatorios' })
             }

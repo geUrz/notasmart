@@ -121,7 +121,7 @@ export default function Signin() {
           <Form onSubmit={handleSubmit}>
             <FormGroup widths='equal'>
               <FormField error={!!errors.emailOrUsuario}>
-                <Label>Usuario / Correo</Label>
+                <Label>Usuario</Label>
                 <Input
                   name='emailOrUsuario'
                   type='text'

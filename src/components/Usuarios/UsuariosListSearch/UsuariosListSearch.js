@@ -12,7 +12,7 @@ import { selectSearchResults } from '@/store/usuarios/usuarioSelectors'
 
 export function UsuariosListSearch(props) {
 
-  const { user, reload, onReload, isAdmin, isSuperUser, query, onToastSuccess } = props
+  const { user, logout, reload, onReload, isAdmin, isSuperUser, query, onToastSuccess } = props
 
   const dispatch = useDispatch()
   const usuarios = useSelector(selectSearchResults)
@@ -82,6 +82,7 @@ export function UsuariosListSearch(props) {
       <BasicModal title='detalles del usuario' show={showDetalles} onClose={onCloseDetalles}>
         <UsuarioDetalles
           user={user}
+          logout={logout}
           reload={reload}
           onReload={onReload}
           isAdmin={isAdmin}

@@ -1,6 +1,6 @@
 import { BiSolidFilePdf } from 'react-icons/bi'
 import jsPDF from 'jspdf'
-import 'jspdf-autotable'
+import autoTable from 'jspdf-autotable'
 import { formatCurrency, formatDateIncDet, formatDateLong, getValueOrDefault } from '@/helpers'
 import styles from './NotaPDF.module.css'
 import { getValueOrWhite } from '@/helpers/getValueOrWhite'
@@ -166,7 +166,7 @@ export function NotaPDF(props) {
 
     doc.text(text, xCenter, 55)
 
-    doc.autoTable({
+    autoTable(doc, {
       startY: 98,
       head: [
         isAbono
@@ -283,7 +283,7 @@ export function NotaPDF(props) {
     const tableWidth = 44
     const marginLeft = pWidth - mRight - tableWidth
 
-    doc.autoTable({
+    autoTable(doc, {
       startY: 275,
       margin: { left: marginLeft, bottom: 0, right: marginRight },
       body: verticalData,

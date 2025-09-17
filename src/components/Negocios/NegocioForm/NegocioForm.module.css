@@ -1,0 +1,25 @@
+.main{
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.section{
+  width: 100%;
+  height: auto;
+}
+
+.datosOblig{
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.datosOblig h2{
+  font-size: 14px;
+  color: var(--clrGlobalG);
+}

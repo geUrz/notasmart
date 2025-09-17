@@ -1,19 +1,25 @@
 import styles from './ClienteForm.module.css'
-import { IconClose } from '@/components/Layouts'
+import { ErrorAccesso, IconClose } from '@/components/Layouts'
 import { Button, Form, FormField, FormGroup, Input, Label, Message } from 'semantic-ui-react'
 import { useState } from 'react'
 import { genCLId } from '@/helpers'
 import axios from 'axios'
 import { useDispatch } from 'react-redux'
 import { fetchClientes } from '@/store/clientes/clienteSlice'
+import { BasicModal } from '@/layouts'
 
 export function ClienteForm(props) {
 
   const { user, reload, onReload, onToastSuccess, onCloseForm } = props
-
-  const dispatch = useDispatch()
   
+  const dispatch = useDispatch()
+
   const [isLoading, setIsLoading] = useState(false)
+
+  const [apiError, setApiError] = useState(null)
+  const [errorModalOpen, setErrorModalOpen] = useState(false)
+
+  const onOpenCloseErrorModal = () => setErrorModalOpen((prev) => !prev)
 
   const [cliente, setCliente] = useState('')
   const [contacto, setContacto] = useState('')
@@ -38,7 +44,7 @@ export function ClienteForm(props) {
   const crearCliente = async (e) => {
     e.preventDefault()
 
-    if(!validarForm()){
+    if (!validarForm()) {
       return
     }
 
@@ -47,17 +53,17 @@ export function ClienteForm(props) {
     const folio = genCLId(4)
 
     try {
-      await axios.post ('/api/clientes/clientes', {
+      await axios.post('/api/clientes/clientes', {
         usuario_id: user.id,
         usuario_nombre: user.nombre,
         folio,
-        cliente, 
-        contacto, 
-        cel, 
+        cliente,
+        contacto,
+        cel,
         email,
         direccion,
         negocio_id: user.negocio_id,
-        negocio_nombre: user.negocio_nombre 
+        negocio_nombre: user.negocio_nombre
       })
 
       dispatch(fetchClientes(user.negocio_id))
@@ -73,11 +79,20 @@ export function ClienteForm(props) {
       onToastSuccess()
 
     } catch (error) {
-        console.error('Error al crear el cliente:', error)
-    } finally {
-        setIsLoading(false)
-    }
+      const status = error.response?.status
+      const message = error.response?.data?.error || 'Error al crear el cliente'
 
+      if (status === 403) {
+        console.log('403: acceso no autorizado, no tienes permiso para crear el cliente')
+      } else {
+        console.error('Error creando cliente:', error)
+      }
+
+      setApiError(message)
+      setErrorModalOpen(true)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -132,6 +147,10 @@ export function ClienteForm(props) {
         </FormGroup>
         <Button primary loading={isLoading} onClick={crearCliente}>Crear</Button>
       </Form>
+
+      <BasicModal title="Error de acceso" show={errorModalOpen} onClose={onOpenCloseErrorModal}>
+        <ErrorAccesso apiError={apiError} onOpenCloseErrorModal={onOpenCloseErrorModal} />
+      </BasicModal>
 
     </>
 

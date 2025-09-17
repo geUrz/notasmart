@@ -12,7 +12,7 @@ import { setUsuario } from '@/store/usuarios/usuarioSlice'
 
 export function UsuariosLista(props) {
 
-  const { user, reload, onReload, isAdmin, isSuperUser, onToastSuccess,onToastSuccessDel } = props
+  const { user, logout, reload, onReload, isAdmin, isSuperUser, onToastSuccess,onToastSuccessDel } = props
 
   const dispatch = useDispatch()
   const usuarios = useSelector(selectUsuarios)
@@ -73,7 +73,7 @@ export function UsuariosLista(props) {
       )}
 
       <BasicModal title='detalles del usuario' show={showDetalles} onClose={onCloseDetalles}>
-        <UsuarioDetalles user={user} reload={reload} onReload={onReload} isAdmin={isAdmin} isSuperUser={isSuperUser} onCloseDetalles={onCloseDetalles} onToastSuccess={onToastSuccess} toastSuccessDel={onToastSuccessDel} />
+        <UsuarioDetalles user={user} logout={logout} reload={reload} onReload={onReload} isAdmin={isAdmin} isSuperUser={isSuperUser} onCloseDetalles={onCloseDetalles} onToastSuccess={onToastSuccess} toastSuccessDel={onToastSuccessDel} />
       </BasicModal>
 
     </>

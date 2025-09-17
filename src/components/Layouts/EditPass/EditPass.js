@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { Button, Form, FormField, Input, Label, Message } from 'semantic-ui-react'
 import axios from 'axios'
 import { useSelector } from 'react-redux'
+import { selectUsuario } from '@/store/usuarios/usuarioSelectors'
 
 export function EditPass(props) {
 

@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf'
-import 'jspdf-autotable'
+import autoTable from 'jspdf-autotable'
 import { formatCurrency, formatDateIncDet, formatDateLong, getValueOrDefault } from '@/helpers'
 import styles from './generarPDF.module.css'
 import { getValueOrWhite } from '@/helpers/getValueOrWhite'
@@ -173,7 +173,7 @@ const xCenter = (pageWidth - textWidth) / 2;
 
 doc.text(text, xCenter, 55)
 
-  doc.autoTable({
+  autoTable(doc, {
         startY: 98,
         head: [
           isAbono
@@ -290,7 +290,7 @@ doc.text(text, xCenter, 55)
       const tableWidth = 44
       const marginLeft = pWidth - mRight - tableWidth
   
-      doc.autoTable({
+      autoTable(doc, {
         startY: 275,
         margin: { left: marginLeft, bottom: 0, right: marginRight },
         body: verticalData,

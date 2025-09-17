@@ -14,10 +14,16 @@ import { selectUsuario } from '@/store/usuarios/usuarioSelectors'
 
 export function UsuarioEditForm(props) {
 
-  const { user, reload, onReload, isAdmin, onToastSuccess, onOpenCloseEdit } = props
+  const { user, logout, reload, onReload, isAdmin, onToastSuccess, onOpenCloseEdit } = props
 
   const dispatchUsr = useDispatch()
   const usuario = useSelector(selectUsuario)
+
+  const logOut = () => {
+    if (usuario?.id === user?.id){
+      logout()
+    } 
+  } 
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -30,7 +36,7 @@ export function UsuarioEditForm(props) {
     negocio_nombre: usuario?.negocio_nombre,
     isactive: usuario?.isactive
   })
-  
+
   const [errors, setErrors] = useState({})
 
   const validarForm = () => {
@@ -63,9 +69,9 @@ export function UsuarioEditForm(props) {
 
   const dispatch = useDispatch()
   const negocios = useSelector(selectNegocios)
-  
+
   useEffect(() => {
-    if(!isAdmin) return
+    if (!isAdmin) return
     dispatch(fetchNegocios())
   }, [dispatch, reload, user])
 
@@ -75,13 +81,13 @@ export function UsuarioEditForm(props) {
   }
 
   const handleDropdownChange = (e, { value }) => {
-    const negocioSeleccionado = negocios.find((negocio) => negocio.id === value);
+    const negocioSeleccionado = value ? negocios.find((negocio) => negocio.id === value) : null;
 
     setFormData({
       ...formData,
       negocio_id: value,
       negocio_nombre: negocioSeleccionado ? negocioSeleccionado.negocio : ''
-    })
+    });
   }
 
   const handleSubmit = async (e) => {
@@ -101,11 +107,13 @@ export function UsuarioEditForm(props) {
     try {
       await axios.put(`/api/usuarios/usuarios?id=${usuario?.id}`, {
         ...formData,
+        negocio_id: formData.negocio_id === null ? null : formData.negocio_id,  // Aseguramos que si no se selecciona un negocio, se mande null
       })
 
       const res = await axios.get(`/api/usuarios/usuarios?id=${usuario?.id}`)
       dispatchUsr(updateUsuario(res.data))
 
+      logOut()
       onReload()
       onOpenCloseEdit()
       onToastSuccess()
@@ -131,104 +139,116 @@ export function UsuarioEditForm(props) {
 
     <>
 
-      <IconClose onOpenClose={onOpenCloseEdit} />
+      <div className={styles.main}>
+        <div className={styles.section}>
+          <IconClose onOpenClose={onOpenCloseEdit} />
 
-      <Form>
-        <FormGroup widths='equal'>
-          <FormField error={!!errors.nombre}>
-            <Label>
-              Nombre
-            </Label>
-            <Input
-              type="text"
-              name="nombre"
-              value={formData.nombre}
-              onChange={handleChange}
-            />
-            {errors.nombre && <Message>{errors.nombre}</Message>}
-          </FormField>
-          <FormField error={!!errors.usuario}>
-            <Label>
-              Usuario
-            </Label>
-            <Input
-              type="text"
-              name="usuario"
-              value={formData.usuario}
-              onChange={handleChange}
-            />
-            {errors.usuario && <Message>{errors.usuario}</Message>}
-          </FormField>
-          <FormField>
-            <Label>
-              Correo
-            </Label>
-            <Input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-            />
-          </FormField>
-          <FormField error={!!errors.nivel}>
-            <Label>
-              Nivel
-            </Label>
-            <Dropdown
-              placeholder='Seleccionar'
-              fluid
-              selection
-              options={opcionesNivel}
-              value={formData.nivel}
-              onChange={(e, { value }) => setFormData({ ...formData, nivel: value })}
-            />
-            {errors.nivel && <Message>{errors.nivel}</Message>}
-          </FormField>
+          <Form>
+            <FormGroup widths='equal'>
+              <FormField error={!!errors.nombre}>
+                <Label>
+                  Nombre *
+                </Label>
+                <Input
+                  type="text"
+                  name="nombre"
+                  value={formData.nombre}
+                  onChange={handleChange}
+                />
+                {errors.nombre && <Message>{errors.nombre}</Message>}
+              </FormField>
+              <FormField error={!!errors.usuario}>
+                <Label>
+                  Usuario *
+                </Label>
+                <Input
+                  type="text"
+                  name="usuario"
+                  value={formData.usuario}
+                  onChange={handleChange}
+                />
+                {errors.usuario && <Message>{errors.usuario}</Message>}
+              </FormField>
+              <FormField>
+                <Label>
+                  Correo
+                </Label>
+                <Input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                />
+              </FormField>
+              <FormField error={!!errors.nivel}>
+                <Label>
+                  Nivel *
+                </Label>
+                <Dropdown
+                  placeholder='Seleccionar'
+                  fluid
+                  selection
+                  options={opcionesNivel}
+                  value={formData.nivel}
+                  onChange={(e, { value }) => setFormData({ ...formData, nivel: value })}
+                />
+                {errors.nivel && <Message>{errors.nivel}</Message>}
+              </FormField>
 
-          {isAdmin &&
+              {isAdmin &&
 
-            <FormField>
-              <Label>Negocio</Label>
-              <Dropdown
-                placeholder={negocios.length === 0 ? 'No hay negocios' : 'Seleccionar'}
-                fluid
-                selection
-                options={negocios.map(negocio => ({
-                  key: negocio.id,
-                  text: negocio.negocio,
-                  value: negocio.id
-                }))}
-                value={formData.negocio_id}
-                onChange={handleDropdownChange}
-                disabled={negocios.length === 0}
-              />
-              <div className={styles.addNegocio}>
-                <h1>Crear negocio</h1>
-                <FaPlus onClick={onOpenCloseNegocioForm} />
-              </div>
-            </FormField>
+                <FormField>
+                  <Label>
+                    Negocio *
+                  </Label>
+                  <Dropdown
+                    placeholder={negocios.length === 0 ? 'No hay negocios' : 'Seleccionar'}
+                    fluid
+                    selection
+                    options={[
+                      { key: 'none', text: 'Ninguno', value: null },
+                      ...negocios.map(negocio => ({
+                        key: negocio.id,
+                        text: negocio.negocio,
+                        value: negocio.id
+                      }))
+                    ]}
+                    value={formData.negocio_id}
+                    onChange={handleDropdownChange}
+                    disabled={negocios.length === 0}
+                  />
+                  <div className={styles.addNegocio}>
+                    <h1>Crear negocio</h1>
+                    <FaPlus onClick={onOpenCloseNegocioForm} />
+                  </div>
+                </FormField>
 
-          }
+              }
 
-          <FormField error={!!errors.isactive}>
-            <Label>
-              Activo
-            </Label>
-            <Dropdown
-              placeholder='Seleccionar'
-              fluid
-              selection
-              options={opcionesIsActive}
-              value={formData.isactive}
-              onChange={(e, { value }) => setFormData({ ...formData, isactive: Number(value) })}
-            />
-            {errors.isactive && <Message>{errors.isactive}</Message>}
-          </FormField>
-        </FormGroup>
-        <Button primary loading={isLoading} onClick={handleSubmit}>
-          Guardar
-        </Button>
-      </Form>
+              <FormField error={!!errors.isactive}>
+                <Label>
+                  Activo *
+                </Label>
+                <Dropdown
+                  placeholder='Seleccionar'
+                  fluid
+                  selection
+                  options={opcionesIsActive}
+                  value={formData.isactive}
+                  onChange={(e, { value }) => setFormData({ ...formData, isactive: Number(value) })}
+                />
+                {errors.isactive && <Message>{errors.isactive}</Message>}
+              </FormField>
+            </FormGroup>
+            <Button primary loading={isLoading} onClick={handleSubmit}>
+              Guardar
+            </Button>
+          </Form>
+        </div>
+        <div className={styles.datosOblig}>
+          <h2>Datos obligatorios *</h2>
+        </div>
+      </div>
 
       <BasicModal title='crear negocio' show={showNegocioForm} onClose={onOpenCloseNegocioForm}>
         <NegocioForm user={user} reload={reload} onReload={onReload} onCloseForm={onOpenCloseNegocioForm} onToastSuccess={onToastSuccess} />

@@ -3,7 +3,7 @@ import { IconClose, Confirm, IconKey, EditPass, IconEdit, IconDel } from '@/comp
 import { useState } from 'react'
 import { BasicModal } from '@/layouts'
 import axios from 'axios'
-import { getValueOrDefault } from '@/helpers'
+import { getValueOrDefault, getValueOrDel } from '@/helpers'
 import { UsuarioEditForm } from '../UsuarioEditForm'
 import { FaInfinity } from 'react-icons/fa'
 import { useSelector } from 'react-redux'
@@ -11,7 +11,7 @@ import { selectUsuario } from '@/store/usuarios/usuarioSelectors'
 
 export function UsuarioDetalles(props) {
 
-  const { user, reload, onReload, isAdmin, isSuperUser, onCloseDetalles, onToastSuccess, toastSuccessDel } = props
+  const { user, logout, reload, onReload, isAdmin, isSuperUser, onCloseDetalles, onToastSuccess, toastSuccessDel } = props
   
   const usuario = useSelector(selectUsuario)
   
@@ -95,7 +95,7 @@ export function UsuarioDetalles(props) {
             </div>
             <div>
               <h1>Negocio</h1>
-              <h2>{getValueOrDefault(usuario?.negocio_nombre)}</h2>
+              <h2>{getValueOrDel(usuario?.negocio_nombre, !usuario?.negocio_id)}</h2>
             </div>
             {negocioId &&
               <div>
@@ -128,7 +128,7 @@ export function UsuarioDetalles(props) {
       </div>
 
       <BasicModal title='modificar usuario' show={showEdit} onClose={onOpenCloseEdit}>
-        <UsuarioEditForm user={user} reload={reload} onReload={onReload} isAdmin={isAdmin} isSuperUser={isSuperUser} onOpenCloseEdit={onOpenCloseEdit} onToastSuccess={onToastSuccess} />
+        <UsuarioEditForm user={user} logout={logout} reload={reload} onReload={onReload} isAdmin={isAdmin} isSuperUser={isSuperUser} onOpenCloseEdit={onOpenCloseEdit} onToastSuccess={onToastSuccess} />
       </BasicModal>
 
       <BasicModal title='Modificar contraseña' show={showEditPass} onClose={onOpenCloseEditPass}>

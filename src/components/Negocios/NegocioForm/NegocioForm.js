@@ -88,13 +88,13 @@ export function NegocioForm(props) {
     } catch (error) {
       const status = error.response?.status
       const message = error.response?.data?.error || 'Error al crear el negocio'
-  
+
       if (status === 403) {
         console.log('403: acceso no autorizado, no tienes permiso para crear el negocio')
       } else {
         console.error('Error creando negocio:', error)
       }
-  
+
       setApiError(message)
       setErrorModalOpen(true)
     } finally {
@@ -106,74 +106,81 @@ export function NegocioForm(props) {
 
     <>
 
-      <IconClose onOpenClose={onCloseForm} />
+      <div className={styles.main}>
+        <div className={styles.section}>
+          <IconClose onOpenClose={onCloseForm} />
 
-      <Form>
-        <FormGroup widths='equal'>
-          <FormField error={!!errors.negocio}>
-            <Label>Negocio</Label>
-            <Input
-              type="text"
-              value={negocio}
-              onChange={(e) => setNegocio(e.target.value)}
-            />
-            {errors.negocio && <Message>{errors.negocio}</Message>}
-          </FormField>
-          <FormField>
-            <Label>Celular</Label>
-            <Input
-              type="number"
-              value={cel}
-              onChange={(e) => setCel(e.target.value)}
-            />
-          </FormField>
-          <FormField>
-            <Label>Dirección</Label>
-            <Input
-              type="text"
-              value={direccion}
-              onChange={(e) => setDireccion(e.target.value)}
-            />
-          </FormField>
-          <FormField>
-            <Label>Correo</Label>
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </FormField>
-          <FormField error={!!errors.plan}>
-            <Label>Plan</Label>
-            <Dropdown
-              name='plan'
-              placeholder='Seleccionar'
-              fluid
-              selection
-              options={[
-                { key: 'Prueba', text: 'Prueba', value: 'prueba' },
-                { key: 'Básico', text: 'Básico', value: 'basico' },
-                { key: 'Emprendedor', text: 'Emprendedor', value: 'emprendedor' },
-                { key: 'Negocio', text: 'Negocio', value: 'negocio' },
-                { key: 'Empresarial', text: 'Empresarial', value: 'empresarial' },
-                { key: 'Premium', text: 'Premium', value: 'premium' },
-              ]}
-              value={plan}
-              onChange={(e, { value }) => {
-                setPlan(value)
-                setFolios(foliosPorPlan[value] || '')
-              }}
-            />
+          <Form>
+            <FormGroup widths='equal'>
+              <FormField error={!!errors.negocio}>
+                <Label>Negocio *</Label>
+                <Input
+                  type="text"
+                  value={negocio}
+                  onChange={(e) => setNegocio(e.target.value)}
+                />
+                {errors.negocio && <Message>{errors.negocio}</Message>}
+              </FormField>
+              <FormField>
+                <Label>Celular</Label>
+                <Input
+                  type="number"
+                  value={cel}
+                  onChange={(e) => setCel(e.target.value)}
+                />
+              </FormField>
+              <FormField>
+                <Label>Dirección</Label>
+                <Input
+                  type="text"
+                  value={direccion}
+                  onChange={(e) => setDireccion(e.target.value)}
+                />
+              </FormField>
+              <FormField>
+                <Label>Correo</Label>
+                <Input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </FormField>
+              <FormField error={!!errors.plan}>
+                <Label>Plan *</Label>
+                <Dropdown
+                  name='plan'
+                  placeholder='Seleccionar'
+                  fluid
+                  selection
+                  options={[
+                    { key: 'Prueba', text: 'Prueba', value: 'prueba' },
+                    { key: 'Básico', text: 'Básico', value: 'basico' },
+                    { key: 'Emprendedor', text: 'Emprendedor', value: 'emprendedor' },
+                    { key: 'Negocio', text: 'Negocio', value: 'negocio' },
+                    { key: 'Empresarial', text: 'Empresarial', value: 'empresarial' },
+                    { key: 'Premium', text: 'Premium', value: 'premium' },
+                  ]}
+                  value={plan}
+                  onChange={(e, { value }) => {
+                    setPlan(value)
+                    setFolios(foliosPorPlan[value] || '')
+                  }}
+                />
 
-            {errors.plan && <Message>{errors.plan}</Message>}
-          </FormField>
-          <FormField>
-            <Label>Folios</Label>
-            <Input name='folios' type='number' value={folios} readOnly />
-          </FormField>
-        </FormGroup>
-        <Button primary loading={isLoading} onClick={crearNegocio}>Crear</Button>
-      </Form>
+                {errors.plan && <Message>{errors.plan}</Message>}
+              </FormField>
+              <FormField>
+                <Label>Folios</Label>
+                <Input name='folios' type='number' value={folios} readOnly />
+              </FormField>
+            </FormGroup>
+            <Button primary loading={isLoading} onClick={crearNegocio}>Crear</Button>
+          </Form>
+        </div>
+        <div className={styles.datosOblig}>
+          <h2>Datos obligatorios *</h2>
+        </div>
+      </div>
 
       <BasicModal title="Error de acceso" show={errorModalOpen} onClose={onOpenCloseErrorModal}>
         <ErrorAccesso apiError={apiError} onOpenCloseErrorModal={onOpenCloseErrorModal} />

@@ -143,12 +143,12 @@ export function UsuarioForm(props) {
           <Form onSubmit={handleSubmit}>
             <FormGroup widths='equal'>
               <FormField error={!!errors.nombre}>
-                <Label>Nombre</Label>
+                <Label>Nombre *</Label>
                 <Input name='nombre' type='text' value={credentials.nombre} onChange={handleChange} />
                 {errors.nombre && <Message>{errors.nombre}</Message>}
               </FormField>
               <FormField error={!!errors.usuario}>
-                <Label>Usuario</Label>
+                <Label>Usuario *</Label>
                 <Input name='usuario' type='text' value={credentials.usuario} onChange={handleChange} />
                 {errors.usuario && <Message>{errors.usuario}</Message>}
               </FormField>
@@ -157,7 +157,7 @@ export function UsuarioForm(props) {
                 <Input name='email' type='email' value={credentials.email} onChange={handleChange} />
               </FormField>
               <FormField error={!!errors.nivel}>
-                <Label>Nivel</Label>
+                <Label>Nivel *</Label>
                 <Dropdown
                   name='nivel'
                   placeholder='Seleccionar'
@@ -199,12 +199,12 @@ export function UsuarioForm(props) {
               }
 
               <FormField error={!!errors.password}>
-                <Label>Contraseña</Label>
+                <Label>Contraseña *</Label>
                 <Input name='password' type='password' value={credentials.password} onChange={handleChange} />
                 {errors.password && <Message>{errors.password}</Message>}
               </FormField>
               <FormField error={!!errors.confirmarPassword}>
-                <Label>Confirmar contraseña</Label>
+                <Label>Confirmar contraseña *</Label>
                 <Input name='confirmarPassword' type='password' value={credentials.confirmarPassword} onChange={handleChange} />
                 {errors.confirmarPassword && <Message>{errors.confirmarPassword}</Message>}
               </FormField>
@@ -212,6 +212,9 @@ export function UsuarioForm(props) {
             {error && <Message>{error}</Message>}
             <Button primary loading={isLoading} type='submit'>Crear</Button>
           </Form>
+        </div>
+        <div className={styles.datosOblig}>
+          <h2>Datos obligatorios *</h2>
         </div>
       </div>
 

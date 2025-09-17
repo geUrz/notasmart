@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import { serialize } from 'cookie'
-import connection from '@/libs/db'
+import connection from '@/libs/db';
 import bcrypt from 'bcrypt'
 
 export default async function loginHandler(req, res) {

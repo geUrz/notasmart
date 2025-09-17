@@ -204,10 +204,16 @@
   cursor: pointer;
 }
 
-.main span{
-  margin-top: 5px;
-  font-size: 11.5px;
-  color: red;
+.datosOblig{
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.datosOblig h2{
+  font-size: 14px;
+  color: var(--clrGlobalG);
 }
 
 @media screen and (min-width: 768px) {

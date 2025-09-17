@@ -65,7 +65,7 @@ export const {
 
 export default usuarioSlice.reducer
 
-export const fetchUsuarios = (negocio_id) => async (dispatch) => {
+/* export const fetchUsuarios = (negocio_id) => async (dispatch) => {
   try {
     dispatch(setLoading(true))
     const res = await axios.get(`/api/usuarios/usuarios?negocio_id=${negocio_id}`)
@@ -75,7 +75,7 @@ export const fetchUsuarios = (negocio_id) => async (dispatch) => {
   } finally {
     dispatch(setLoading(false))
   }
-}
+} */
 
 export const fetchUsuarioById = (id) => async (dispatch) => {
   try {
@@ -100,7 +100,7 @@ export const searchUsuarios = (search) => async (dispatch) => {
   }
 }
 
-/* export const fetchUsuarios = (user) => async (dispatch) => {
+export const fetchUsuarios = (user) => async (dispatch) => {
   try {
     dispatch(setLoading(true))
 
@@ -118,5 +118,5 @@ export const searchUsuarios = (search) => async (dispatch) => {
   } finally {
     dispatch(setLoading(false))
   }
-} */
+}
 

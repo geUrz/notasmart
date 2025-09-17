@@ -11,7 +11,7 @@ import { selectUsuarios } from '@/store/usuarios/usuarioSelectors';
 
 export function SearchUsuarios(props) {
 
-  const { user, reload, onReload, modo, onResults, isAdmin, isSuperUser, onOpenCloseSearch, onToastSuccess } = props
+  const { user, logout, reload, onReload, modo, onResults, isAdmin, isSuperUser, onOpenCloseSearch, onToastSuccess } = props
 
   const [apiError, setApiError] = useState(null)
   const [errorModalOpen, setErrorModalOpen] = useState(false)
@@ -74,7 +74,7 @@ export function SearchUsuarios(props) {
           {error && <p>{error}</p>}
           {usuarios.length > 0 && (
             <div className={styles.resultsContainer}>
-              <UsuariosListSearch user={user} reload={reload} onReload={onReload} isAdmin={isAdmin} isSuperUser={isSuperUser} query={query} onToastSuccess={onToastSuccess} onOpenCloseSearch={onOpenCloseSearch} />
+              <UsuariosListSearch user={user} logout={logout} reload={reload} onReload={onReload} isAdmin={isAdmin} isSuperUser={isSuperUser} query={query} onToastSuccess={onToastSuccess} onOpenCloseSearch={onOpenCloseSearch} />
             </div>
           )}
         </div>

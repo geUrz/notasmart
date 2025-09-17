@@ -12,7 +12,7 @@ import { fetchUsuarios } from '@/store/usuarios/usuarioSlice'
 
 export default function Usuarios() {
 
-  const { user, loading } = useAuth()
+  const { user, logout, loading } = useAuth()
 
   const { isAdmin, isSuperUser } = usePermissions()
 
@@ -47,7 +47,7 @@ export default function Usuarios() {
 
   useEffect(() => {
     if (!user) return
-    dispatch(fetchUsuarios(user?.negocio_id))
+    dispatch(fetchUsuarios(user))
   }, [dispatch, reload, user])  
 
   const [toastSuccess, setToastSuccessReportes] = useState(false)
@@ -90,6 +90,7 @@ export default function Usuarios() {
           search={search}
           onOpenCloseSearch={onOpenCloseSearch}
           user={user}
+          logout={logout}
           reload={reload}
           onReload={onReload}
           isAdmin={isAdmin} 
@@ -101,7 +102,7 @@ export default function Usuarios() {
           onToastSuccess={onToastSuccess}
         />
 
-        <UsuariosLista user={user} loading={loading} reload={reload} onReload={onReload} isAdmin={isAdmin} isSuperUser={isSuperUser} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
+        <UsuariosLista user={user} logout={logout} loading={loading} reload={reload} onReload={onReload} isAdmin={isAdmin} isSuperUser={isSuperUser} onToastSuccess={onToastSuccess} onToastSuccessDel={onToastSuccessDel} />
 
       </BasicLayout>
 
