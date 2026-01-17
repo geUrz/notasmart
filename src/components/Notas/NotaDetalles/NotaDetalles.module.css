@@ -31,7 +31,6 @@
 
 .datos_1 h1, .datos_2 h1{
   font-size: 14px;
-  font-weight: 600 !important;
   color: var(--clrGlobalB);
 }
 
@@ -142,7 +141,6 @@
 
 .pagado{
   font-size: 14px !important;
-  font-weight: 600 !important;
   color: var(--clrGlobalB) !important;
 }
 
@@ -167,7 +165,6 @@
 }
 
 .sectionTotal_1 h1:nth-child(3), .sectionTotal_2 h1:nth-child(3){
-  font-weight: 600 !important;
 }
 
 .sectionTotal_2 h1{

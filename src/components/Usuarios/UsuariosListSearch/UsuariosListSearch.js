@@ -9,6 +9,7 @@ import { getStatusClass } from '@/helpers/getStatusClass/getStatusClass'
 import { useDispatch, useSelector } from 'react-redux'
 import { clearSearchResults, searchUsuarios, setUsuario } from '@/store/usuarios/usuarioSlice'
 import { selectSearchResults } from '@/store/usuarios/usuarioSelectors'
+import { getValueOrDefault } from '@/helpers'
 
 export function UsuariosListSearch(props) {
 
@@ -30,16 +31,16 @@ export function UsuariosListSearch(props) {
   }
 
   useEffect(() => {
-      if (query.trim().length > 0) {
-        dispatch(searchUsuarios(query))
-      }
-    }, [query, dispatch])
-  
-    useEffect(() => {
-      return () => {
-        dispatch(clearSearchResults())
-      }
-    }, [dispatch])
+    if (query.trim().length > 0) {
+      dispatch(searchUsuarios(query))
+    }
+  }, [query, dispatch])
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearSearchResults())
+    }
+  }, [dispatch])
 
   return (
 
@@ -62,13 +63,13 @@ export function UsuariosListSearch(props) {
                       <FaUsers />
                     </div>
                     <div className={styles.column2}>
-                      <div >
+                      <div>
                         <h1>Nombre</h1>
-                        <h2>{usuario.nombre}</h2>
+                        <h2>{getValueOrDefault(usuario?.nombre)}</h2>
                       </div>
-                      <div >
+                      <div>
                         <h1>Usuario</h1>
-                        <h2>{usuario.usuario}</h2>
+                        <h2>{getValueOrDefault(usuario?.usuario)}</h2>
                       </div>
                     </div>
                   </div>
